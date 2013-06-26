@@ -1,0 +1,3 @@
+[submodule "PGC"]
+	path = PGC
+	url = https://github.com/wouterbeek/PrologGenericsCollection.git
