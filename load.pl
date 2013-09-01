@@ -1,4 +1,8 @@
+% The load file for the DataHives project.
+
 project_name('DataHives').
+
+:- initialization(load_datahives).
 
 load_datahives:-
   source_file(load_datahives, ThisFile),
@@ -22,6 +26,5 @@ load_datahives:-
   ),
   
   % DataHives main module.
-  ensure_loaded(datahives(datahives)).
-:- load_datahives.
+  use_module(datahives(datahives)).
 
