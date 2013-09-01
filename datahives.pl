@@ -13,12 +13,12 @@ Bzzzzzzzzz... DataHives!
 @version 2013/08
 */
 
-:- use_module(generics(cowspeak)).
-:- use_module(graph_theory(graph_travel)).
+:- use_module(graph_theory(graph_traversal)).
 :- use_module(gv(gv_file)).
 :- use_module(library(debug)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(rdf(rdf_export)).
+:- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_read)).
 :- use_module(rdf(rdf_serial)).
 :- use_module(rdf_graph(rdf_graph_theory)).
@@ -34,7 +34,8 @@ Bzzzzzzzzz... DataHives!
 
 :- register_module(datahives).
 
-:- initialization(init_dh).
+:- use_module(datahives(hives_test)).
+:- initialization(run_tests(hives)).
 
 
 
@@ -51,10 +52,21 @@ init_dh:-
   rdf_load2(File, [graph(dh)]).
 
 start_dh_web(SVG):-
+  rdf_random_term(dh, V1),
+  rdf_random_term(dh, V2),
 gtrace,
-  rdf_random(V1, _, _, dh, _),
-  rdf_random(V2, _, _, dh, _),
-  travel1([], dh, rdf_edges, rdf_neighbor, V1, V2, Dist, Vs, Es, Hist),
+  traverse(
+    [deb_vertex_name(rdf_term_name)],
+    dh,
+    rdf_edges,
+    rdf_neighbor,
+    V1,
+    V2,
+    Dist,
+    Vs,
+    Es,
+    Hist
+  ),
   format(user_output, '~w\n~w\n~w\n~w\n', [Dist,Vs,Es,Hist]),
   export_rdf_graph(
     [
