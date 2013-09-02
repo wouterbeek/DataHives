@@ -19,7 +19,10 @@ Bzzzzzzzzz... DataHives!
 :- use_module(generics(meta_ext)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(logic(rdf_axiom)).
-:- use_module(server(dev_server)). % Loads the development server.
+% Loads the development server.
+:- use_module(server(dev_server)).
+% Sends debug statements to the development server.
+:- use_module(server(web_message)).
 
 % Set the global stack to 2GB. This requires a 64-bit machine and OS.
 :- set_prolog_stack(global, limit(2*10**9)).

@@ -38,6 +38,7 @@
 :- use_module(html(html)).
 :- use_module(library(debug)).
 :- use_module(rdf(rdf_dataset)).
+:- use_module(rdf(rdf_graph)).
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_random)).
 :- use_module(rdf(rdf_term)).
@@ -98,7 +99,8 @@ connect_hives(_Hs):-
 %!   ?Graph2:atom
 %! ) is nondet.
 
-connected(H, G, _, H, G).
+connected(H, G1, _, H, G2):-
+  rdf_graph:rdf_same_graph(G1, G2).
 connected(H1, G1, T, H2, G2):-
   connection(H1, G1, T, H2, G2).
 connected(H1, G1, T, H2, G2):-
