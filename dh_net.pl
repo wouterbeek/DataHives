@@ -1,7 +1,7 @@
 :- module(
-  hives,
+  dh_net,
   [
-    connect_hives/0,
+    connect_hives/1, % +Hives:list(compound)
     connected/5, % ?HiveName1:atom
                  % ?Graph1:atom
                  % ?RDF_Term:iri
@@ -26,13 +26,14 @@
   ]
 ).
 
-/** <module> HIVES
+/** <module> DataHives Network
 
 @author Wouter Beek
 @version 2013/09
 */
 
 :- use_module(generics(db_ext)).
+:- use_module(generics(list_ext)).
 :- use_module(gv(gv_file)).
 :- use_module(html(html)).
 :- use_module(library(debug)).
@@ -55,15 +56,16 @@
 %! home_hive(?Hive:compound) is semidet.
 :- dynamic(home_hive/1).
 
-:- register_module(hives).
+:- register_module(dh_net).
 
-:- debug(hives).
+:- debug(dh_net).
 
 
 
-%! connect_hives is det.
+%! connect_hives(+Hives:list(compound)) is det.
 
-connect_hives:-
+connect_hives(Hs):-
+  member(H1, H2, Hs),
   hive_graph(H1, G1),
   hive_graph(H2, G2),
   % Assuming the connectivity relation is symmetric,
@@ -73,7 +75,7 @@ connect_hives:-
   ;
     G1 @< G2
   )),
-  debug(hives, 'Comparing ~w:~w and ~w:~w.', [H1,G1,H2,G2]),
+  debug(dh_net, 'Comparing ~w:~w and ~w:~w.', [H1,G1,H2,G2]),
   rdf_node(G1, T),
   rdf_is_iri(T),
   rdf_node(G2, T),
@@ -84,9 +86,9 @@ connect_hives:-
     flag(conn, C, C+1)
   )),
   fail.
-connect_hives:-
+connect_hives(_Hs):-
   flag(conn, C, 0),
-  debug(hives, 'Added ~w connections.', [C]).
+  debug(dh_net, 'Added ~w connections.', [C]).
 
 %! connected(
 %!   ?HiveName1:atom,

@@ -1,18 +1,18 @@
 :- module(
-  hive_sampling,
+  dh_samp,
   [
     start_sampler/2 % +DestinationGraph:atom
                     % +Interval:positive_integer
   ]
 ).
 
-/** <module> HIVE_SAMPLING
+/** <module> DataHives Sampling
 
 @author Wouter Beek
 @version 2013/09
 */
 
-:- use_module(datahives(hives)).
+:- use_module(dh(dh_net)).
 :- use_module(generics(thread_ext)).
 :- use_module(library(debug)).
 :- use_module(library(semweb/rdf_db)).
@@ -23,7 +23,7 @@
 :- rdf_meta(rdf_next_triple(+,+,r,r,r,-,-,r,r,r)).
 :- rdf_meta(sampling(+,r)).
 
-:- debug(hive_sampling).
+:- debug(dh_samp).
 
 
 
@@ -51,7 +51,7 @@ sampling(state(H1,G1,rdf(S1,P1,O1)), I, ToG):-
   rdf_triple_name(S2, P2, O2, TripleName),
   hive_graph_name(H2, G2, HG_Name),
   debug(
-    hive_sampling,
+    dh_samp,
     'Moved to state [~w/~w/~w]',
     [ThreadId,HG_Name,TripleName]
   ),

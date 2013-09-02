@@ -11,12 +11,12 @@ load_datahives:-
   % to this from within the PGC (which does not 'know' that DataHives is
   % using it).
   assert(user:file_search_path(project, ThisDirectory)),
-  assert(user:file_search_path(datahives, ThisDirectory)),
+  assert(user:file_search_path(dh, ThisDirectory)),
 
-  assert(user:file_search_path(data, datahives('Data'))),
+  assert(user:file_search_path(data, dh('Data'))),
 
   % Load the PGC.
-  assert(user:file_search_path(pgc, datahives('PGC'))),
+  assert(user:file_search_path(pgc, dh('PGC'))),
   (
     predicate_property(debug_project, visible)
   ->
@@ -26,5 +26,5 @@ load_datahives:-
   ),
 
   % DataHives main module.
-  use_module(datahives(datahives)).
+  use_module(dh(dh_test)).
 
