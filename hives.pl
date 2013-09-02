@@ -13,6 +13,9 @@
                    % -Hive:compound
     hive/2, % ?Name:atom
             % ?RDF_Dataset:compound
+    hive_graph_name/3, % +Hive:atom
+                       % +Graph:atom
+                       % -HiveGraphName:atom
     home_hive/1, % ?HomeHive:or([atom,compound])
     initial_state/1, % -State:compound
     register_home_hive/1, % +Hive:compound
@@ -35,7 +38,7 @@
 :- use_module(library(debug)).
 :- use_module(rdf(rdf_dataset)).
 :- use_module(rdf(rdf_name)).
-:- use_module(rdf(rdf_read)).
+:- use_module(rdf(rdf_random)).
 :- use_module(rdf(rdf_term)).
 :- use_module(server(web_console)).
 
@@ -93,6 +96,7 @@ connect_hives:-
 %!   ?Graph2:atom
 %! ) is nondet.
 
+connected(H, G, _, H, G).
 connected(H1, G1, T, H2, G2):-
   connection(H1, G1, T, H2, G2).
 connected(H1, G1, T, H2, G2):-
@@ -147,12 +151,16 @@ hive_graph(N, G):-
   hive(N, DS),
   rdf_dataset_graph(DS, G).
 
+hive_graph_name(H, G, N):-
+  format(atom(N), '~w/~w', [H,G]).
+
 %! initial_state(-InitialState:compound) is det.
 
-initial_state(state(H,DG,T)):-
-  home_hive(hive(H,DS)),
+initial_state(state(H,DG,rdf(S,P,O))):-
+  home_hive(H),
+  hive(H, DS),
   rdf_default_graph(DS, DG),
-  rdf_random_term(DG, valid_initial_state(DG), T).
+  rdf_random_triple(DG, S, P, O).
 
 %! register_home_hive(+Hive:or([atom,compound])) is det.
 
@@ -167,7 +175,8 @@ register_home_hive(N):-
 
 state_display(state(H,G,T), N):-
   rdf_term_name(T, T_Name),
-  format(atom(N), '[~w/~w/~w]', [H,G,T_Name]).
+  hive_graph_name(H, G, HG_Name),
+  format(atom(N), '[~w/~w]', [HG_Name,T_Name]).
 
 %! state_identity(+State1:compound, +State2:compound) is semidet.
 

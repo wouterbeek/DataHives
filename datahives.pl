@@ -1,7 +1,7 @@
 :- module(
   datahives,
   [
-    start_dh_web/1 % -DOM:list
+%    start_dh_web/1 % -DOM:list
   ]
 ).
 
@@ -39,15 +39,14 @@ Bzzzzzzzzz... DataHives!
 
 
 
-init_dh:-
 /*
+init_dh:-
   absolute_file_name(
     data('STCN_Agents'),
     File,
     [access(read),file_type(turtle)]
   ),
   rdf_load2(File, [format(turtle),graph(dh)]).
-*/
   absolute_file_name(rdfs(rdfs), File, [access(read),file_type(rdf)]),
   rdf_load2(File, [graph(dh)]).
 
@@ -80,4 +79,5 @@ gtrace,
     GIF
   ),
   graph_to_svg_dom([], GIF, sfdp, SVG).
+*/
 
