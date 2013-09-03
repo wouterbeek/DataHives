@@ -1,6 +1,7 @@
 :- module(
   dh_test,
   [
+    test0/0,
     test1/0,
     test2/0
   ]
@@ -21,6 +22,14 @@
 :- use_module(rdf(rdf_serial)).
 
 
+
+:- use_module(logic(rdf_axiom)).
+test0:-
+  rdf_create_graph(test),
+  materialize(test),
+  rdf_assert(rdf:a, owl:sameAs, rdf:b, test),
+  write('---'), nl,
+  materialize(test).
 
 test1:-
   rdf_assert(rdf:n1, rdf:e12, rdf:n2, g1),

@@ -35,6 +35,6 @@ start_dh(HomeHive, Hives):-
   register_home_hive(HomeHive),
   connect_hives(Hives),
   rdf_create_graph(stash),
-  start_materializer(stash, 10),
-  multi(start_sampler(stash, 30), 5).
+  start_materializer(stash, 60),
+  multi(start_sampler(stash, 1), 5).
 

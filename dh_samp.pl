@@ -22,6 +22,7 @@
 :- dynamic(location/5).
 
 :- rdf_meta(rdf_next_triple(+,+,r,r,r,-,-,r,r,r)).
+:- rdf_meta(rdf_next_triple_random(+,+,r,r,r,-,-,r,r,r)).
 :- rdf_meta(sampling(+,r)).
 
 :- debug(dh_samp).
@@ -54,7 +55,7 @@ start_sampler(G, I):-
   debug(dh_samp, 'A sampler was started in graph ~w.', [G]).
 
 sampling(state(H1,G1,rdf(S1,P1,O1)), I, ToG):-
-  rdf_next_triple(H1, G1, S1, P1, O1, H2, G2, S2, P2, O2),
+  rdf_next_triple_random(H1, G1, S1, P1, O1, H2, G2, S2, P2, O2),
 
   send_to_store(H2, G2, S2, P2, O2, ToG),
 
