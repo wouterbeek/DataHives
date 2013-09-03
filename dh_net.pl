@@ -124,8 +124,8 @@ connected_hives_web([Table|SVG]):-
     edge(N1,N2,[label(T_Name)]),
     (
       connection(H1, G1, T, H2, G2),
-      term_hash(node(H1,G1), N1),
-      term_hash(node(H2,G2), N2),
+      variant_sha1(node(H1,G1), N1),
+      variant_sha1(node(H2,G2), N2),
       rdf_term_name(T, T_Name)
     ),
     Edges
@@ -135,7 +135,7 @@ connected_hives_web([Table|SVG]):-
     (
       connection(H1, G1, _T, H2, G2),
       ((H = H1, G = G1) ; (H = H2, G = G2)),
-      term_hash(node(H,G), N),
+      variant_sha1(node(H,G), N),
       format(atom(HG), '~w:~w', [H,G])
     ),
     Vertices
