@@ -42,7 +42,6 @@
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_random)).
 :- use_module(rdf(rdf_term)).
-:- use_module(server(web_console)).
 
 %! connection(
 %!   ?HiveName1:atom,
@@ -56,8 +55,6 @@
 :- dynamic(hive/2).
 %! home_hive(?Hive:compound) is semidet.
 :- dynamic(home_hive/1).
-
-:- register_module(dh_net).
 
 :- debug(dh_net).
 

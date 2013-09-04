@@ -22,12 +22,15 @@ Bzzzzzzzzz... DataHives!
 % Loads the development server.
 :- use_module(server(dev_server)).
 % Sends debug statements to the development server.
-:- use_module(server(web_message)).
+:- use_module(server(web_console)).
 
 % Set the global stack to 2GB. This requires a 64-bit machine and OS.
 :- set_prolog_stack(global, limit(2*10**9)).
 % Set the local stack to 2GB. This requires a 64-bit machine and OS.
 :- set_prolog_stack(local, limit(2*10**9)).
+
+:- register_module(dh_net).
+:- register_module(rdf_axiom).
 
 
 
