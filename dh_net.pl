@@ -112,7 +112,7 @@ connected(H1, G1, T, H2, G2):-
 connected(H1, G1, T, H2, G2):-
   connection(H2, G2, T, H1, G1).
 
-connected_hives_web([Table|SVG]):-
+connected_hives_web([HTML_Table|SVG]):-
   findall(
     [H1,G1,T_Name,H2,G2],
     (
@@ -128,7 +128,7 @@ connected_hives_web([Table|SVG]):-
       indexed(true)
     ],
     [['Hive1','Graph1','Connecting term','Hive2','Graph2']|Rows],
-    Table
+    HTML_Table
   ),
   findall(
     edge(N1,N2,[label(T_Name)]),

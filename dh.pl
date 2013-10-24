@@ -32,6 +32,7 @@ Bzzzzzzzzz... DataHives!
 :- set_prolog_stack(local, limit(2*10**9)).
 
 :- register_module(dh_net).
+:- register_module(dh_samp).
 :- register_module(rdf_web).
 :- register_module(tms_web).
 

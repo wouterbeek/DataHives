@@ -1,8 +1,16 @@
 :- module(
   dh_samp,
   [
-    start_sampler/2 % +DestinationGraph:atom
-                    % +Interval:positive_integer
+    location/6, % ?Hive:atom
+                % ?Graph:atom
+                % ?Subject:or([bnode,iri])
+                % ?Predicate:iri
+                % ?Object:or([bnode,iri,literal])
+                % ?Count:positive_integer
+    start_sampler/2, % +DestinationGraph:atom
+                     % +Interval:positive_integer
+    top_position_locations/1, % -AscendingPairs:list(pair(integer,compound))
+    toplocs_web/1 % -DOM:list
   ]
 ).
 
@@ -13,6 +21,7 @@
 */
 
 :- use_module(dh(dh_net)).
+:- use_module(html(html_table)).
 :- use_module(library(debug)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
@@ -20,7 +29,33 @@
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_read)).
 
-:- dynamic(location/5).
+%! location(
+%!   ?Hive:atom,
+%!   ?Graph:atom,
+%!   ?Subject:or([bnode,iri]),
+%!   ?Predicate:iri,
+%!   ?Object:or([bnode,iri,literal]),
+%!   ?Count:positive_integer
+%! ) is nondet.
+%
+% In line with the DataHives metaphor,
+% we do not register triples we have not seen before.
+%
+% @param Hive The atomic name of a hive.
+% @param Graph The atomic name of a graph.
+% @param Subject An RDF subject term;
+%        either a blank node or an IRI.
+% @param Predicate An RDF predicate term;
+%        an IRI.
+% @param Object An RDF object term;
+%        either a blank node, a literal, or an IRI.
+% @param Count The number of occurrences of a triple.
+
+:- dynamic(location/6).
+
+%! locations(?Pairs:list(nvpair)) is det.
+
+:- dynamic(locations/1).
 
 :- rdf_meta(rdf_next_triple(+,+,r,r,r,-,-,r,r,r)).
 :- rdf_meta(rdf_next_triple_random(+,+,r,r,r,-,-,r,r,r)).
@@ -28,7 +63,12 @@
 
 :- debug(dh_samp).
 
+:- initialization(init_locations).
 
+
+
+init_locations:-
+  assert(locations([])).
 
 %! rdf_next_triple(
 %!   +FromHive:atom,
@@ -187,8 +227,8 @@ sampling(state(H1,G1,rdf(S1,P1,O1)), I, ToG):-
 
 send_to_store(H, G, S, P, O, ToG):-
   rdf_assert(S, P, O, ToG),
-  assert(location(H, G, S, P, O)),
-
+  tick_position(H, G, S, P, O),
+  
   % DEB
   hive_graph_name(H, G, HG_Name),
   with_output_to(atom(TripleName), rdf_triple_name([], S, P, O)),
@@ -196,5 +236,66 @@ send_to_store(H, G, S, P, O, ToG):-
     dh_samp,
     'A sampler has sent to the store: [~w] ~w',
     [HG_Name,TripleName]
+  ).
+
+%! tick_position(
+%!   +Hive:atom,
+%!   +Graph:atom,
+%!   +Subject:or([bnode,iri]),
+%!   +Predicate:iri,
+%!   +Object:or([bnode,iri,literal])
+%! ) is det.
+% Update the per-triple counter.
+%
+% @param Hive The atomic name of a hive.
+% @param Graph The atomic name of a graph.
+% @param Subject An RDF subject term;
+%        either a blank node or an IRI.
+% @param Predicate An RDF predicate term;
+%        an IRI.
+% @param Object An RDF object term;
+%        either a blank node, a literal, or an IRI.
+
+tick_position(H, G, S, P, O):-
+  tick_position_location(H, G, S, P, O),
+  retract(locations(A1)),
+  tick_position_locations(S, P, O, A1, A2),
+  assert(locations(A2)).
+
+tick_position_location(H, G, S, P, O):-
+  location(H, G, S, P, O, I1), !,
+  retract(location(H,G,S,P,O,I1)),
+  I2 is I1 + 1,
+  assert(location(H,G,S,P,O,I2)).
+tick_position_location(H, G, S, P, O):-
+  assert(location(H,G,S,P,O,1)).
+
+tick_position_locations(S, P, O, A1, [I2-rdf(S,P,O)|A2]):-
+  select(I1-rdf(S,P,O), A1, A2), !,
+  I2 is I1 + 1.
+tick_position_locations(S, P, O, A, [1-rdf(S,P,O)|A]).
+
+top_position_locations(A3):-
+  locations(A1),
+  keysort(A1, A2),
+  reverse(A2, A3).
+
+toplocs_web([HTML_Table]):-
+  top_position_locations(L0),
+  length(L1, 10),
+  append(L1, _, L0),
+  findall(
+    [K,V],
+    member(K-V, L1),
+    Rows
+  ),
+  html_table(
+    [
+      caption('The top locations until now.'),
+      header(true),
+      indexed(true)
+    ],
+    [['Count','Triple']|Rows],
+    HTML_Table
   ).
 
