@@ -1,0 +1,168 @@
+\documentclass{article}
+
+\usepackage{bnaic}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref}
+
+\title{\textbf{\huge DataHives:\\
+    Swarm-Based Triple Store Enhancement}}
+\author{Pepijn Kroes \affila \and
+    Wouter Beek \affilb \and
+    Stefan Schlobach \affila}
+\date{\affila\ \textit{Vrije Universiteit Amsterdam, 1081HV Amsterdam}}
+
+\pagestyle{empty}
+
+\begin{document}
+\ttl
+\thispagestyle{empty}
+
+\begin{abstract}
+\noindent
+The Linked Open Data (LOD) cloud is too big for efficient computation
+and too heterogeneous for standard materialization techniques to cope with.
+The purpose of the DataHives system is to solve both of these problems
+by utilizing swarm intelligence to enhance a curated dataset.
+The system spawns software agents that traverse the LOD cloud
+looking for extensions to the curated dataset that are relevant and trusted.
+\end{abstract}
+
+% Proposals for demonstrations will be evaluated based on submitted
+% demonstration summaries stating the following:
+%   1. the purpose of the system to be demonstrated,
+%   2. its user groups,
+%   3. the organization or project for which it is developed,
+%   4. the developers,
+%   5. and the technology used.
+% In addition:
+%   6. the system requirements and
+%   7. the duration of the demo (not exceeding 30 minutes)
+% should be mentioned. The maximum size of demonstration summaries is
+% 2 pages (in English).
+
+\section{Purpose}
+
+The Linked Open Data (LOD) cloud is too big to handle queries that are both
+  complex and exhaustive.
+Moreover, the LOD cloud contains contradictory information.
+
+DatahHives provides solutions to both problems.
+For the first problem, instead of answering queries over the entire
+  LOD cloud, DataHives only answers queries over a local dataset
+  that is continuously enriched with information from the global
+  dataset.
+The enrichments that are made consist of those triples that are
+  \emph{relevant} for the local dataset.
+Relevance is defined in terms schema-matching.
+An RDF triple is a candidate for local dataset enrichment if it contains
+  an RDF term that occurs in the schema of the local dataset
+  (i.e., its classes and properties).
+
+The schema matches are established by scout agents that traverse
+  the LOD graph.
+The scouts start from the curated dataset and spread out across the
+  LOD cloud by using existing links between the datasets.
+Once a schema match is established, a group of forager agents is sent
+  straight to this location to perform a more intensive graph traversal
+  in the region.
+The triples that result from this localized traversal effort
+  are sent back to the curated dataset (called the `hive').
+
+To solve the second problem, the chance that contradictory information
+  is introduced in the curated dataset is lessened by
+  only enriching it with triples that come from \emph{trusted} sources.
+Trust is defined in terms of the physical graph structure of the LOD cloud.
+DataHives assumes that a data provider's trust structure is a partial
+  ordering on the collection of LOD sources, that is based on the links
+  (i.e., RDF linksets) that are defined between those sources.
+
+\begin{figure}[ht]
+  \centering
+  \caption{
+An example of the in-broser graph representation of DataHives.
+Scouts (red) and foragers (blue) are sent from the hive of
+data curator \emph{Wouter} to the dataset that is curated by
+data curator \emph{Stefan}, who is one of his most trusted
+(i.e, directly linked to) sources.
+  }
+  \includegraphics[scale=0.75]{datahives2.png} \label{fig:datahives}
+\end{figure}
+
+%A dataset that is maintained by a French traveling company
+%may qualify Amsterdam as a city for which a visum is not necessary,
+%while another dataset maintained by a Chinese traveling company
+%may quality Amsterdam as a city for which a visum is needed.
+
+\section{User groups}
+
+The first intended user group of DataHives consists of data publishers
+in the LOD cloud.
+This comprises a reasonably big and continuously growing number of
+institutions and companies.
+By setting up DataHives, a data publisher will automatically enrich
+her curated database with triples that are relevant and trusted.
+Uptake of the DataHives system is made easy by the system not requiring
+any changes to existing datasets and by the fact that its enrichments
+can be kept separate from the original dataset.
+
+The second intended user group of DataHives consists of small
+organizations, institutions, and maybe individuals who want to maintain
+their own data but do not have the time, money, or proficiency to
+enrich the data themselves.
+Such organizations may have data they would like to disseminate,
+but the data itself is not interesting enough for data consumers.
+Demand from this user group is currently very small.
+However, we expect this demand may rise once data enrichment becomes
+cheap and fully automated.
+
+%For example, a regional museum that seeks to disseminate its collection,
+%or a startup company that wants to provide travel information as a Web
+%service.
+%A museum collection may have data about its collection, but no
+%information about the artists who produced them, the production techniques
+%used, or the cultural and societal context in which these object were
+%created.
+
+\section{Practical Information}
+
+\noindent \textbf{Project context \& Developers}
+
+\noindent DataHives was developed by Pepijn Kroes, Wouter Beek, and
+Stefan Schlobach within the context of the Pragmatic Semantics (PraSem)
+research project.\\
+%The DataHives system operates within the larger LOD effort: to open up and
+%integrate a vast amount of heterogeneous datasources in an efficient way.
+
+\noindent \textbf{Technology used}
+
+\noindent DataHives is build using open and standard-compliant
+technology exclusively.
+The Web based user interface is build in JavaScript and HTML5.
+The communication of agents and data is established by following the
+new WebRTC standard for between-browser communication.
+For data format support the W3C standards for triple representation and
+serialization are used (e.g., N-Triples).
+%Off-the-shelf tools for converting existing (relational) dataset to
+%LD formats exist.
+For calculating the local deductive closure the standards-compliant
+semantics for RDF and RDF Schema is used.\\
+
+\noindent \textbf{System requirements}
+
+\noindent One of the characteristic features of DataHives is its
+low entry level.
+The only system requirement for DataHives is a recent Web browser
+(e.g., Google Chrome 12+, Firefox 22+).
+The configuration of the system consists of having the triple dataset
+available in a file with read access.\\
+
+\noindent \textbf{Duration}
+
+\noindent The duration of the demo is arbitrary.
+The process of data enrichment takes place continuously.
+The agents can be visually traced as they move across the data graph.
+The system has anytime behavior, i.e., there are always some results,
+but the quality of the results becomes better over time.
+
+\end{document}
+

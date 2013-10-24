@@ -26,5 +26,6 @@ load_datahives:-
   ),
 
   % DataHives main module.
-  use_module(dh(dh_test)).
+  use_module(dh(dh_test)),
+  use_module(dh(dh)).
 

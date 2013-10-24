@@ -15,7 +15,7 @@
 */
 
 :- use_module(generics(print_ext)).
-:- use_module(html(html)).
+:- use_module(html(html_table)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(server(web_console)).
 :- use_module(xml(xml_namespace)).
@@ -46,10 +46,11 @@ dh_progs_web([HTML_Table]):-
     ),
     Tuples
   ),
-  list_to_table(
+  html_table(
     [
       caption('Currently running DataHives programs'),
-      header(true)
+      header(true),
+      index(true)
     ],
     [['Alias','Id','Status','CPU time']|Tuples],
     HTML_Table

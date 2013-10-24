@@ -19,17 +19,17 @@
 :- use_module(library(semweb/rdf_db)).
 :- use_module(owl(owl_build)).
 :- use_module(rdf(rdf_dataset)).
+:- use_module(rdf(rdf_mat)).
 :- use_module(rdf(rdf_serial)).
 
 
 
-:- use_module(logic(rdf_axiom)).
 test0:-
   rdf_create_graph(test),
-  materialize(test),
+  materialize(test, rdfs),
   rdf_assert(rdf:a, owl:sameAs, rdf:b, test),
   write('---'), nl,
-  materialize(test).
+  materialize(test, rdfs).
 
 test1:-
   rdf_assert(rdf:n1, rdf:e12, rdf:n2, g1),

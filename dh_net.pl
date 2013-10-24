@@ -35,7 +35,7 @@
 :- use_module(generics(db_ext)).
 :- use_module(generics(list_ext)).
 :- use_module(gv(gv_file)).
-:- use_module(html(html)).
+:- use_module(html(html_table)).
 :- use_module(library(debug)).
 :- use_module(rdf(rdf_dataset)).
 :- use_module(rdf(rdf_graph)).
@@ -112,8 +112,12 @@ connected_hives_web([Table|SVG]):-
     ),
     Rows
   ),
-  list_to_table(
-    [caption('The connections between the hives.'),header(true)],
+  html_table(
+    [
+      caption('The connections between the hives.'),
+      header(true),
+      indexed(true)
+    ],
     [['Hive1','Graph1','Connecting term','Hive2','Graph2']|Rows],
     Table
   ),
