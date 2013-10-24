@@ -29,7 +29,7 @@
 /** <module> DataHives Network
 
 @author Wouter Beek
-@version 2013/09
+@version 2013/09-2013/10
 */
 
 :- use_module(generics(db_ext)).
@@ -50,10 +50,15 @@
 %!   ?HiveName2:atom,
 %!   ?Graph2:atom
 %! ) is nondet.
+
 :- dynamic(connection/5).
+
 %! hive(?Name:atom, ?RDF_Dataset:compound) is nondet.
+
 :- dynamic(hive/2).
+
 %! home_hive(?Hive:compound) is semidet.
+
 :- dynamic(home_hive/1).
 
 :- debug(dh_net).
@@ -67,16 +72,20 @@ connect_hives(Hs):-
   hive_graph(H1, G1),
   hive_graph(H2, G2),
   % Assuming the connectivity relation is symmetric,
-  % we only need to store one direction.
+  % we only need to store connections in one direction.
   once((
     H1 @< H2
   ;
     G1 @< G2
   )),
   debug(dh_net, 'Comparing ~w:~w and ~w:~w.', [H1,G1,H2,G2]),
+
+  % Find a connection.
   rdf_node(G1, T),
   rdf_is_iri(T),
   rdf_node(G2, T),
+
+  % Assert the connection.
   once((
     connection(H1,G1,T,H2,G2)
   ;
@@ -129,19 +138,26 @@ connected_hives_web([Table|SVG]):-
       variant_sha1(node(H2,G2), N2),
       rdf_term_name(T, T_Name)
     ),
-    Edges
+    Es
   ),
   findall(
-    vertex(N, node(H,G), [label(HG)]),
+    vertex(N,node(H,G),[label(HG)]),
     (
       connection(H1, G1, _T, H2, G2),
       ((H = H1, G = G1) ; (H = H2, G = G2)),
       variant_sha1(node(H,G), N),
       format(atom(HG), '~w:~w', [H,G])
     ),
-    Vertices
+    Vs
   ),
-  graph_to_svg_dom([], graph(Vertices,Edges,[]), sfdp, SVG).
+  G_Attrs = [
+    charset('UTF-8'),
+    directedness(forward),
+    fontsize(11),
+    label('Connected hyves'),
+    overlap(false)
+  ],
+  graph_to_svg_dom([], graph(Vs,Es,G_Attrs), sfdp, SVG).
 
 %! create_hive(+HiveName:atom, +RDF_Dataset:compound, -Hive:compound) is det.
 

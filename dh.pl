@@ -6,7 +6,7 @@
   ]
 ).
 
-/** <module> DATAHIVES
+/** <module> DataHives
 
 Bzzzzzzzzz... DataHives!
 
