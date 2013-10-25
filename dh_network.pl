@@ -1,5 +1,5 @@
 :- module(
-  dh_net,
+  dh_network,
   [
     connect_hives/1, % +Hives:list(compound)
     connected/5, % ?HiveName1:atom
@@ -17,7 +17,7 @@
                        % +Graph:atom
                        % -HiveGraphName:atom
     home_hive/1, % ?HomeHive:or([atom,compound])
-    initial_state/1, % -State:compound
+    random_initial_state/1, % -RandomInitialState:compound
     register_home_hive/1, % +Hive:compound
     state_display/2, % +State:compound
                      % -StateName:atom
@@ -37,6 +37,7 @@
 :- use_module(gv(gv_file)).
 :- use_module(html(html_table)).
 :- use_module(library(debug)).
+:- use_module(library(semweb/rdf_db)).
 :- use_module(rdf(rdf_dataset)).
 :- use_module(rdf(rdf_graph)).
 :- use_module(rdf(rdf_name)).
@@ -61,25 +62,32 @@
 
 :- dynamic(home_hive/1).
 
-:- debug(dh_net).
+:- debug(dh_network).
 
 
 
-%! connect_hives(+Hives:list(compound)) is det.
+%! connect_graphs(
+%!   +Hive1:atom,
+%!   +Graph1:atom,
+%!   +Hive2:atom,
+%!   +Graph2:atom
+%! ) is det.
 
-connect_hives(Hs):-
-  member(H1, H2, Hs),
-  hive_graph(H1, G1),
-  hive_graph(H2, G2),
-  % Assuming the connectivity relation is symmetric,
-  % we only need to store connections in one direction.
-  once((
-    H1 @< H2
+connect_graphs(H1, G1, H2, G2):-
+  % Use the number of triples as a proxy for the number of RDF nodes.
+  rdf_statistics(triples_by_graph(G1,N1)),
+  rdf_statistics(triples_by_graph(G2,N2)),
+
+  % Read the smaller graph first (optimizing speed).
+  (
+    N1 =< N2
+  ->
+    connect_graphs_(H1, G1, H2, G2)
   ;
-    G1 @< G2
-  )),
-  debug(dh_net, 'Comparing ~w:~w and ~w:~w.', [H1,G1,H2,G2]),
+    connect_graphs_(H1, G2, H2, G1)
+  ).
 
+connect_graphs_(H1, G1, H2, G2):-
   % Find a connection.
   rdf_node(G1, T),
   rdf_is_iri(T),
@@ -92,10 +100,33 @@ connect_hives(Hs):-
     assert(connection(H1,G1,T,H2,G2)),
     flag(conn, C, C+1)
   )),
+  % Enumerate by failure.
   fail.
-connect_hives(_Hs):-
+connect_graphs_(_H1, _G1, _H2, _G2).
+
+%! connect_hives(+Hives:list(compound)) is det.
+
+connect_hives(Hs):-
+  forall(
+    (
+      member(H1, H2, Hs),
+      hive_graph(H1, G1),
+      hive_graph(H2, G2),
+      % Assuming the connectivity relation is symmetric,
+      % we only need to store connections in one direction.
+      once((
+        H1 @< H2
+      ;
+        G1 @< G2
+      ))
+    ),
+    (
+      debug(dh_network, 'Comparing ~w:~w and ~w:~w.', [H1,G1,H2,G2]),
+      connect_graphs(H1, G1, H2, G2)
+    )
+  ),
   flag(conn, C, 0),
-  debug(dh_net, 'Added ~w connections.', [C]).
+  debug(dh_network, 'Added ~w connections.', [C]).
 
 %! connected(
 %!   ?HiveName1:atom,
@@ -121,9 +152,10 @@ connected_hives_web([HTML_Table|SVG]):-
     ),
     Rows
   ),
+  Caption = 'The connections between the hives.',
   html_table(
     [
-      caption('The connections between the hives.'),
+      caption(Caption),
       header(true),
       indexed(true)
     ],
@@ -154,7 +186,7 @@ connected_hives_web([HTML_Table|SVG]):-
     charset('UTF-8'),
     directedness(forward),
     fontsize(11),
-    label('Connected hyves'),
+    label(Caption),
     overlap(false)
   ],
   graph_to_svg_dom([], graph(Vs,Es,G_Attrs), sfdp, SVG).
@@ -175,9 +207,9 @@ hive_graph(N, G):-
 hive_graph_name(H, G, N):-
   format(atom(N), '~w/~w', [H,G]).
 
-%! initial_state(-InitialState:compound) is det.
+%! random_initial_state(-RandomInitialState:compound) is det.
 
-initial_state(state(H,DG,rdf(S,P,O))):-
+random_initial_state(state(H,DG,rdf(S,P,O))):-
   home_hive(H),
   hive(H, DS),
   rdf_default_graph(DS, DG),
@@ -195,9 +227,9 @@ register_home_hive(N):-
 %! state_display(+State:compound, -StateName:atom) is det.
 
 state_display(state(H,G,T), N):-
-  rdf_term_name(T, T_Name),
+  with_output_to(atom(TName), rdf_triple_name([], T)),
   hive_graph_name(H, G, HG_Name),
-  format(atom(N), '[~w/~w]', [HG_Name,T_Name]).
+  format(atom(N), '[~w:~w]', [HG_Name,TName]).
 
 %! state_identity(+State1:compound, +State2:compound) is semidet.
 

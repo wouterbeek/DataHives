@@ -1,10 +1,4 @@
-:- module(
-  dh,
-  [
-    start_dh/2 % +HomeHive:atom
-               % +Hives:list(compound)
-  ]
-).
+:- module(dh, []).
 
 /** <module> DataHives
 
@@ -14,13 +8,9 @@ Bzzzzzzzzz... DataHives!
 @version 2013/08-2013/10
 */
 
-:- use_module(dh(dh_net)).
-:- use_module(dh(dh_samp)).
-:- use_module(generics(meta_ext)).
-:- use_module(library(semweb/rdf_db)).
-:- use_module(rdf(rdf_mat)).
+:- use_module(dh(dh_network)).
+:- use_module(dh(dh_program)).
 :- use_module(rdf(rdf_web)).
-% Loads the development server.
 :- use_module(server(dev_server)).
 % Sends debug statements to the development server.
 :- use_module(server(web_console)).
@@ -31,19 +21,10 @@ Bzzzzzzzzz... DataHives!
 % Set the local stack to 2GB. This requires a 64-bit machine and OS.
 :- set_prolog_stack(local, limit(2*10**9)).
 
-:- register_module(dh_net).
-:- register_module(dh_samp).
+:- register_module(dh_network).
+:- register_module(dh_program).
 :- register_module(rdf_web).
 :- register_module(tms_web).
 
 :- initialization(start_dev_server).
-
-
-
-start_dh(HomeHive, Hives):-
-  register_home_hive(HomeHive),
-  connect_hives(Hives),
-  rdf_create_graph(stash),
-  start_materializer(stash, se, 60),
-  multi(start_sampler(stash, 1), 5).
 
