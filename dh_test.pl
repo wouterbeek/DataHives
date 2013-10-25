@@ -1,13 +1,15 @@
 :- module(
   dh_test,
   [
-    test0/0,
-%    test1/0,
+%    test0/0,
+    test1/0,
     test2/0
   ]
 ).
 
-/** <module> HIVES
+/** <module> DataHives tests
+
+Simple test predicates for running programs in DataHives.
 
 @author Wouter Beek
 @version 2013/09-2013/10
@@ -17,6 +19,7 @@
 :- use_module(dh(dh_network)).
 :- use_module(dh(dh_program)).
 :- use_module(dh(dh_traversal)).
+:- use_module(dh(term_check)).
 :- use_module(dh(triple_count)).
 :- use_module(generics(meta_ext)).
 :- use_module(library(semweb/rdf_db)).
@@ -27,15 +30,8 @@
 
 
 
-test0:-
-  rdf_create_graph(test),
-  materialize(test, rdfs),
-  rdf_assert(rdf:a, owl:sameAs, rdf:b, test),
-  write('---'), nl,
-  materialize(test, rdfs).
-
 /*
-test1:-
+test0:-
   rdf_assert(rdf:n1, rdf:e12, rdf:n2, g1),
   rdf_assert(rdf:n3, rdf:e34, rdf:n4, g2),
   owl_assert_resource_identity(rdf:n2, rdf:n3, g3),
@@ -46,12 +42,34 @@ test1:-
   rdf_assert(rdf:n5, rdf:e54, rdf:n4, g4),
   rdf_assert(rdf:n5, rdf:e56, rdf:n6, g4),
   rdf_create_dataset(g1, [g4-g4], DS2),
-  create_hive(h2, DS2, _H2),
-  
-  ...
+  create_hive(h2, DS2, _H2).
 */
 
+test1:-
+  test12,
+  start_programs(
+    triple_count,
+    5,
+    dh_network:random_initial_state,
+    triple_count:triple_count,
+    dh_traversal:next_triple_random,
+    1,
+    false
+  ).
+
 test2:-
+  test12,
+  start_programs(
+    term_check,
+    8,
+    dh_network:random_initial_state,
+    term_check:term_check,
+    dh_traversal:next_triple_random,
+    0,
+    false
+  ).
+
+test12:-
   absolute_file_name(
     data('places-5'),
     File1,
@@ -74,16 +92,5 @@ test2:-
   connect_hives([h1,h2]),
   
   rdf_create_graph(stash),
-  start_materializer(stash, se, 60),
-  
-  use_module(dh(triple_count)),
-  start_programs(
-    triple_count,
-    5,
-    dh_network:random_initial_state,
-    triple_count:triple_count,
-    dh_traversal:next_triple_random,
-    1,
-    false
-  ).
+  start_materializer(stash, se, 60).
 

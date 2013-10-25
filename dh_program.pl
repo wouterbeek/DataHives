@@ -97,17 +97,14 @@ run_program(FromState, Exec, Move, I, Store):-
   call(Move, FromState, ToState),
   
   % DEB
-  (
-    debugging(dh_samp, false), !
-  ;
-    thread_self(ThreadId),
-    maplist(state_display, [FromState,ToState], [FromStateName,ToStateName]),
-    debug(
-      dh_samp,
-      'Program ~w moved: ~w ----> ~w',
-      [ThreadId,FromStateName,ToStateName]
-    )
-  ),
+  %%thread_self(ThreadId),
+  %%thread_property(ThreadId, alias(ThreadAlias)),
+  %%maplist(state_display, [FromState,ToState], [FromStateName,ToStateName]),
+  %%debug(
+  %%  dh_program,
+  %%  'Program ~w moved: ~w ----> ~w',
+  %%  [ThreadAlias,FromStateName,ToStateName]
+  %%),
   
   sleep(I),
   run_program(ToState, Exec, Move, I, Store).
