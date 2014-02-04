@@ -1,7 +1,6 @@
 :- module(
   dh_program,
   [
-    programs_web/1, % -DOM:list
     start_program/6, % +Name:atom
                      % :InitialState
                      % :Exec
@@ -23,29 +22,29 @@
 Allows programs to be run inside the DataHives architecture.
 
 @author Wouter Beek
-@version 2013/09-2013/10
+@version 2013/09-2013/10, 2014/02
 */
 
 :- use_module(dh(dh_network)).
 :- use_module(html(html_table)).
 :- use_module(library(apply)).
 :- use_module(library(debug)).
+:- use_module(library(http/http_dispatch)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(rdf(rdf_name)).
-:- use_module(server(web_console)).
+:- use_module(server(web_modules)).
 
-:- register_module(dh_program).
+http:location(dh, root(dh), []).
+:- http_handler(dh(program), dh_program, []).
 
-:- meta_predicate(run_program(+,2,2,+,+)).
-:- meta_predicate(start_program(+,1,2,2,+,+)).
-:- meta_predicate(start_programs(+,+,1,2,2,+,+)).
+:- web_module_add('DH Program', dh_program).
 
 :- debug(dh_program).
 
 
 
-programs_web([HTML_Table]):-
+dh_programs(_Request):-
   findall(
     [Alias,Id,Status,CPU_Time],
     (
@@ -61,15 +60,18 @@ programs_web([HTML_Table]):-
     ),
     Rows
   ),
-  html_table(
-    [
-      caption('The programs that are currently running in DataHives.'),
-      header(true),
-      index(true)
-    ],
-    [['Alias','Id','Status','CPU time']|Rows],
-    HTML_Table
+  reply_html_page(
+    app_style,
+    title('DataHives - Program'),
+    html(
+      \html_table(
+        [header(true),index(true)],
+        `Overview of the programs that are currently running in DataHives.`,
+        [['Alias','Id','Status','CPU time']|Rows]
+      )
+    )
   ).
+
 
 %! run_program(
 %!   +FromState:compound,
@@ -89,6 +91,7 @@ programs_web([HTML_Table]):-
 %        the sampling interval in seconds.
 % @param Store The atomic name of the graph that is used to store results.
 
+:- meta_predicate(run_program(+,2,2,+,+)).
 run_program(FromState, Exec, Move, I, Store):-
   FromState = state(_H1,_G1,Triple1),
   
@@ -108,6 +111,7 @@ run_program(FromState, Exec, Move, I, Store):-
   
   sleep(I),
   run_program(ToState, Exec, Move, I, Store).
+
 
 %! send_to_store(
 %!   +Hive:atom,
@@ -136,6 +140,7 @@ send_to_store(State, Store):-
     [ThreadId,Store,StateName]
   ).
 
+
 %! start_program(
 %!   +Name:atom,
 %!   :InitialState,
@@ -145,6 +150,7 @@ send_to_store(State, Store):-
 %!   +HasStore:boolean
 %! ) is det.
 
+:- meta_predicate(start_program(+,1,2,2,+,+)).
 start_program(Name, _IS_Goal, _Exec, _Move, _I, _HasStore):-
   thread_property(_Id, alias(Name)), !,
   debug(
@@ -178,6 +184,7 @@ start_program(Name, IS_Goal, Exec, Move, I, HasStore):-
   state_display(IS, IS_Name),
   debug(dh_samp, 'Program ~w started from state ~w.', [Id,IS_Name]).
 
+
 %! start_programs(
 %!   +BaseName:atom,
 %!   +Copies:positive_integer,
@@ -189,6 +196,7 @@ start_program(Name, IS_Goal, Exec, Move, I, HasStore):-
 %! ) is det.
 % Starts multiple programs of the same type.
 
+:- meta_predicate(start_programs(+,+,1,2,2,+,+)).
 start_programs(Name1, Copies, IS, Exec, Move, I, HasStore):-
   forall(
     between(1, Copies, N),

@@ -3,5 +3,5 @@
 % Indicate to the support modules that we are running in debug mode.
 :- assert(user:debug_project).
 
-:- [load].
+:- [run].
 

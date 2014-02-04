@@ -15,18 +15,17 @@ Simple test predicates for running programs in DataHives.
 @version 2013/09-2013/10
 */
 
-:- use_module(dh(dh)).
 :- use_module(dh(dh_network)).
 :- use_module(dh(dh_program)).
+:- use_module(dh(dh_term_check)).
 :- use_module(dh(dh_traversal)).
-:- use_module(dh(term_check)).
-:- use_module(dh(triple_count)).
+:- use_module(dh(dh_triple_count)).
 :- use_module(generics(meta_ext)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(owl(owl_build)).
 :- use_module(rdf(rdf_dataset)).
-:- use_module(rdf(rdf_mat)).
 :- use_module(rdf(rdf_serial)).
+:- use_module(rdf_reasoning(rdf_mat)).
 
 
 
@@ -51,7 +50,7 @@ test1:-
     triple_count,
     5,
     dh_network:random_initial_state,
-    triple_count:triple_count,
+    dh_triple_count:dh_triple_count,
     dh_traversal:next_triple_random,
     1,
     false
@@ -60,10 +59,10 @@ test1:-
 test2:-
   test12,
   start_programs(
-    term_check,
+    termcheck,
     8,
     dh_network:random_initial_state,
-    term_check:term_check,
+    dh_term_check:dh_term_check,
     dh_traversal:next_triple_random,
     0,
     false
@@ -75,7 +74,7 @@ test12:-
     File1,
     [access(read),file_type(turtle)]
   ),
-  rdf_load2(File1, [format(turtle),graph('places-5')]),
+  rdf_load([mime(text/turtle)], 'places-5', File1),
   rdf_create_dataset('places-5', [], DS1),
   create_hive(h1, DS1, _H1),
 
@@ -84,7 +83,7 @@ test12:-
     File2,
     [access(read),file_type(rdf)]
   ),
-  rdf_load2(File2, [graph(foaf)]),
+  rdf_load([], foaf, File2),
   rdf_create_dataset(foaf, [], DS2),
   create_hive(h2, DS2, _H2),
 

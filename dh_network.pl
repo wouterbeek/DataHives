@@ -7,7 +7,6 @@
                  % ?RDF_Term:iri
                  % ?HiveName2:atom
                  % ?Graph2:atom
-    connected_hives_web/1, % -DOM:list
     create_hive/3, % +Name:atom
                    % +RDF_Dataset:compound
                    % -Hive:compound
@@ -29,20 +28,32 @@
 /** <module> DataHives Network
 
 @author Wouter Beek
-@version 2013/09-2013/10
+@version 2013/09-2013/10, 2014/02
 */
 
+:- use_module(dcg(dcg_generic)).
 :- use_module(generics(db_ext)).
 :- use_module(generics(list_ext)).
 :- use_module(gv(gv_file)).
 :- use_module(html(html_table)).
 :- use_module(library(debug)).
+:- use_module(library(http/html_write)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(rdf(rdf_dataset)).
 :- use_module(rdf(rdf_graph)).
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_random)).
 :- use_module(rdf(rdf_term)).
+:- use_module(rdf_web(rdf_html_table)).
+:- use_module(server(web_modules)).
+:- use_module(xml(xml_dom)).
+
+http:location(dh, root(dh), []).
+:- http_handler(dh(connected_hives), connected_hives, []).
+
+:- web_module_add('DH Network', connected_hives).
 
 %! connection(
 %!   ?HiveName1:atom,
@@ -143,24 +154,11 @@ connected(H1, G1, T, H2, G2):-
 connected(H1, G1, T, H2, G2):-
   connection(H2, G2, T, H1, G1).
 
-connected_hives_web([HTML_Table|SVG]):-
+connected_hives(_Request):-
   findall(
     [H1,G1,T_Name,H2,G2],
-    (
-      connection(H1, G1, T, H2, G2),
-      rdf_term_name(T, T_Name)
-    ),
+    connection(H1, G1, T, H2, G2),
     Rows
-  ),
-  Caption = 'The connections between the hives.',
-  html_table(
-    [
-      caption(Caption),
-      header(true),
-      indexed(true)
-    ],
-    [['Hive1','Graph1','Connecting term','Hive2','Graph2']|Rows],
-    HTML_Table
   ),
   findall(
     edge(N1,N2,[label(T_Name)]),
@@ -168,7 +166,7 @@ connected_hives_web([HTML_Table|SVG]):-
       connection(H1, G1, T, H2, G2),
       variant_sha1(node(H1,G1), N1),
       variant_sha1(node(H2,G2), N2),
-      rdf_term_name(T, T_Name)
+      dcg_with_output_to(atom(T_Name), rdf_term_name(T))
     ),
     Es
   ),
@@ -186,10 +184,25 @@ connected_hives_web([HTML_Table|SVG]):-
     charset('UTF-8'),
     directedness(forward),
     fontsize(11),
-    label(Caption),
+    label('Overview of connected DataHives'),
     overlap(false)
   ],
-  graph_to_svg_dom([], graph(Vs,Es,G_Attrs), sfdp, SVG).
+  graph_to_svg_dom([method(sfdp)], graph(Vs,Es,G_Attrs), SVG),
+  xml_dom_to_atom([], SVG, Atom),
+  reply_html_page(
+    app_style,
+    title('DataHives - Network'),
+    html([
+      \rdf_html_table(
+        _NoGraph,
+        `Overview of the connections between Hives.`,
+        ['Hive1','Graph1','Connecting term','Hive2','Graph2'],
+        Rows
+      ),
+      \[Atom]
+    ])
+  ).
+
 
 %! create_hive(+HiveName:atom, +RDF_Dataset:compound, -Hive:compound) is det.
 
@@ -226,8 +239,8 @@ register_home_hive(N):-
 
 %! state_display(+State:compound, -StateName:atom) is det.
 
-state_display(state(H,G,T), N):-
-  with_output_to(atom(TName), rdf_triple_name([], T)),
+state_display(state(H,G,rdf(S,P,O)), N):-
+  dcg_with_output_to(atom(TName), rdf_triple_name(S, P, O)),
   hive_graph_name(H, G, HG_Name),
   format(atom(N), '[~w:~w]', [HG_Name,TName]).
 

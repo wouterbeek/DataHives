@@ -11,7 +11,7 @@
 Methods for traversing a DataHive.
 
 @author Wouter Beek
-@version 2013/09-2013/10
+@version 2013/09-2013/10, 2014/02
 */
 
 :- use_module(dh(dh_network)).
@@ -32,19 +32,19 @@ Methods for traversing a DataHive.
 % @param ToState A compound term consisting of a hive, graph, and triple.
 
 next_triple(state(H1,G1,rdf(S1,_P1,_O1)),state(H2,G2,rdf(S2,P2,O2))):-
-  rdf2(S2, P2, S1, G2),
+  rdf([], S2, P2, S1, G2),
   connected(H1, G1, S1, H2, G2),
   O2 = S1.
 next_triple(state(H1,G1,rdf(_S1,_P1,O1)),state(H2,G2,rdf(S2,P2,O2))):-
-  rdf2(O1, P2, O2, G2),
+  rdf([], O1, P2, O2, G2),
   connected(H1, G1, O1, H2, G2),
   S2 = O1.
 next_triple(state(H1,G1,rdf(_S1,P1,_O1)), state(H2,G2,rdf(S2,P2,O2))):-
-  rdf2(S2, P2, P1, G2),
+  rdf([], S2, P2, P1, G2),
   connected(H1, G1, P1, H2, G2),
   O2 = P1.
 next_triple(state(H1,G1,rdf(_S1,P1,_O1)), state(H2,G2,rdf(S2,P2,O2))):-
-  rdf2(P1, P2, O2, G2),
+  rdf([], P1, P2, O2, G2),
   connected(H1, G1, P1, H2, G2),
   S2 = P1.
 
