@@ -1,6 +1,8 @@
 :- module(
   dh_test,
   [
+    test/0,
+    test/1, % +IRI:iri
 %    test0/0,
     test1/0,
     test2/0
@@ -12,22 +14,67 @@
 Simple test predicates for running programs in DataHives.
 
 @author Wouter Beek
-@version 2013/09-2013/10
+@version 2013/09-2013/10, 2014/02
 */
 
+:- use_module(dcg(dcg_generic)).
 :- use_module(dh(dh_network)).
 :- use_module(dh(dh_program)).
 :- use_module(dh(dh_term_check)).
 :- use_module(dh(dh_traversal)).
 :- use_module(dh(dh_triple_count)).
+:- use_module(generics(list_ext)).
 :- use_module(generics(meta_ext)).
 :- use_module(library(semweb/rdf_db)).
+:- use_module('LOD'(cache_it)).
+:- use_module('LOD'('LOD_query')).
+:- use_module('SPARQL'('SPARQL_find')).
 :- use_module(owl(owl_build)).
 :- use_module(rdf(rdf_dataset)).
+:- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_serial)).
 :- use_module(rdf_reasoning(rdf_mat)).
 
 
+
+test:-
+  test('http://dbpedia.org/resource/Monkey').
+
+test(IRI1):-
+  'SPARQL_find'(dbpedia, IRI1, IRI2),
+  run('LOD_walk', some_goal, IRI2).
+
+:- meta_predicate(run(3,3,+)).
+run(Travel, Goal, From):-
+  call(Travel, From, _, Propositions),
+  random_member([From,Link,To], Propositions),
+  call(Goal, From, Link, To),
+  run(Travel, Goal, To).
+
+some_goal(From, Link, To):-
+  dcg_with_output_to(user_output, rdf_triple_name(From, Link, To)),
+  nl(user_output),
+  flush_output(user_output).
+
+% SPARQL end point.
+'LOD_walk'(IRI, Triples):-
+  uri_components(Resource, uri_components(_, Domain, _, _, _)),
+  'SPARQL_current_remote_domain'(Remote, Domain), !,
+  phrase(
+    'SPARQL_formulate'(
+      _,
+      _,
+      [],
+      select,
+      true,
+      [p,o],
+      [rdf(iri(Resource), var(p), var(o))],
+      inf,
+      _
+    ),
+    Query
+  ),
+  'SPARQL_query'(Remote, Query, _VarNames, Rows),
 
 /*
 test0:-

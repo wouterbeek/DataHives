@@ -196,6 +196,10 @@ start_program(Name, IS_Goal, Exec, Move, I, HasStore):-
 %!   +HasStore:boolean
 %! ) is det.
 % Starts multiple programs of the same type.
+%
+% @arg BaseName The atomic name of the collection of program runs.
+% @arg Copies The number of programs to execute.
+% @arg InitialState A unary predicate that returns the initial state.
 
 :- meta_predicate(start_programs(+,+,1,2,2,+,+)).
 start_programs(Name1, Copies, IS, Exec, Move, I, HasStore):-

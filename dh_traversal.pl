@@ -15,6 +15,7 @@ Methods for traversing a DataHive.
 */
 
 :- use_module(dh(dh_network)).
+:- use_module(generics(list_ext)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(math(random_ext)).
@@ -60,7 +61,5 @@ next_triple(state(H1,G1,rdf(_S1,P1,_O1)), state(H2,G2,rdf(S2,P2,O2))):-
 
 next_triple_random(FromState, RndToState):-
   findall(ToState, next_triple(FromState, ToState), ToStates),
-  length(ToStates, NumberOfToStates),
-  random_betwixt(1, NumberOfToStates, RndIndex),
-  nth1(RndIndex, ToStates, RndToState).
+  random_member(RndToState, ToStates).
 

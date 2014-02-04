@@ -220,13 +220,19 @@ hive_graph(N, G):-
 hive_graph_name(H, G, N):-
   format(atom(N), '~w/~w', [H,G]).
 
+
 %! random_initial_state(-RandomInitialState:compound) is det.
+% Returns a random initial state for a program to start at.
+%
+% @arg RandomInitialState A compound term of the form
+%      =|state(Hive:atom,DG:?,Triple:compound)|=.
 
 random_initial_state(state(H,DG,rdf(S,P,O))):-
   home_hive(H),
   hive(H, DS),
   rdf_default_graph(DS, DG),
   rdf_random_triple(DG, S, P, O).
+
 
 %! register_home_hive(+Hive:or([atom,compound])) is det.
 
