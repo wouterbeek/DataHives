@@ -17,16 +17,18 @@ A program that runs within the DataHives architecture and that counts triples.
 @version 2013/10, 2014/02
 */
 
+:- use_module(generics(list_ext)).
 :- use_module(html(html_table)).
+:- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(lists)).
 :- use_module(rdf_web(rdf_html_table)).
 :- use_module(server(web_modules)).
 
 http:location(dh, root(dh), []).
-:- http_handler(dh(triple_count), dh_triple_count, []).
+:- http_handler(dh(triple_count), top_triples_web, []).
 
-:- web_module_add('DH TripleCount', dh_triple_count).
+:- web_module_add('DH TripleCount', top_triples_web).
 
 %! triple_count(?Pairs:list(nvpair)) is det.
 
@@ -57,12 +59,11 @@ top_triples_web(Request):-
   top_triples_web(Request, 10).
 
 top_triples_web(_Request, N):-
-  top_triples(L0),
-  length(L1, N),
-  append(L1, _, L0),
+  top_triples(FullList),
+  list_truncate(FullList, N, TruncatedList),
   findall(
     [K,V],
-    member(K-V, L1),
+    member(K-V, TruncatedList),
     Rows
   ),
   reply_html_page(

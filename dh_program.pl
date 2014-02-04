@@ -29,6 +29,7 @@ Allows programs to be run inside the DataHives architecture.
 :- use_module(html(html_table)).
 :- use_module(library(apply)).
 :- use_module(library(debug)).
+:- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
@@ -36,9 +37,9 @@ Allows programs to be run inside the DataHives architecture.
 :- use_module(server(web_modules)).
 
 http:location(dh, root(dh), []).
-:- http_handler(dh(program), dh_program, []).
+:- http_handler(dh(program), dh_programs, []).
 
-:- web_module_add('DH Program', dh_program).
+:- web_module_add('DH Programs', dh_programs).
 
 :- debug(dh_program).
 
