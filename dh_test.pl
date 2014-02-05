@@ -1,9 +1,7 @@
 :- module(
   dh_test,
   [
-    test/0,
-    test/1, % +IRI:iri
-%    test0/0,
+    dh/0,
     test1/0,
     test2/0
   ]
@@ -18,63 +16,88 @@ Simple test predicates for running programs in DataHives.
 */
 
 :- use_module(dcg(dcg_generic)).
+:- use_module(dh(dh)).
 :- use_module(dh(dh_network)).
 :- use_module(dh(dh_program)).
-:- use_module(dh(dh_term_check)).
-:- use_module(dh(dh_traversal)).
-:- use_module(dh(dh_triple_count)).
-:- use_module(generics(list_ext)).
-:- use_module(generics(meta_ext)).
+:- use_module(dh(dh_walk)). % Meta-argument.
 :- use_module(library(semweb/rdf_db)).
-:- use_module('LOD'(cache_it)).
-:- use_module('LOD'('LOD_query')).
-:- use_module('SPARQL'('SPARQL_find')).
-:- use_module(owl(owl_build)).
 :- use_module(rdf(rdf_dataset)).
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_serial)).
 :- use_module(rdf_reasoning(rdf_mat)).
 
+:- dynamic(malformed_uri/1).
+:- dynamic(literal_language/3).
 
 
-test:-
-  test('http://dbpedia.org/resource/Monkey').
 
-test(IRI1):-
-  'SPARQL_find'(dbpedia, IRI1, IRI2),
-  run('LOD_walk', some_goal, IRI2).
+dh:-
+  dh('http://dbpedia.org/resource/Banana').
 
-:- meta_predicate(run(3,3,+)).
-run(Travel, Goal, From):-
-  call(Travel, From, _, Propositions),
-  random_member([From,Link,To], Propositions),
-  call(Goal, From, Link, To),
-  run(Travel, Goal, To).
+dh(URL):-
+  nav_act_com(
+    dh_random_walk,
+    some_action,
+    some_communication, %STUB
+    URL
+  ).
 
-some_goal(From, Link, To):-
-  dcg_with_output_to(user_output, rdf_triple_name(From, Link, To)),
-  nl(user_output),
-  flush_output(user_output).
 
-% SPARQL end point.
-'LOD_walk'(IRI, Triples):-
-  uri_components(Resource, uri_components(_, Domain, _, _, _)),
-  'SPARQL_current_remote_domain'(Remote, Domain), !,
-  phrase(
-    'SPARQL_formulate'(
-      _,
-      _,
-      [],
-      select,
-      true,
-      [p,o],
-      [rdf(iri(Resource), var(p), var(o))],
-      inf,
-      _
-    ),
-    Query
-  ),
-  'SPARQL_query'(Remote, Query, _VarNames, Rows),
+dh_type_check(URL):-
+  nav_act_com(
+    dh_random_walk,
+    type_check,
+    some_communication, %STUB
+    URL
+  ).
+
+type_check(From, Dir, Link, To):-
+  (true, ! ; some_action(From, Dir, Link, To)), %DEB
+  type_check(To).
+
+type_check(To):-
+  rdf_is_bnode(To), !.
+type_check(To):-
+  rdf_is_literal(To), !.
+type_check(To):-
+  uri_components(To, _), !.
+type_check(To):-
+  malformed_uri(To), !.
+type_check(To):-
+  assert(malformed_uri(To)).
+
+
+dh_lit_lang(URL):-
+  nav_act_com(
+    dh_random_walk,
+    lit_lang,
+    some_communication, %STUB
+    URL
+  ).
+
+lit_lang(From, Dir, Link, To):-
+  (true, ! ; some_action(From, Dir, Link, To)), %DEB
+  thread_self(Id),
+  flag(Id, N, N + 1),
+  lit_lang(Id, To).
+
+lit_lang(Id, literal(lang(Lang,_))):- !,
+  increment_literal_language(Id, Lang).
+lit_lang(Id, literal(type(Datatype1,_))):- !,
+  dcg_with_output_to(atom(Datatype2), rdf_term_name(Datatype1)),
+  increment_literal_language(Id, Datatype2).
+lit_lang(Id, literal(_)):- !,
+  increment_literal_language(Id, plain).
+lit_lang(_, _).
+
+
+increment_literal_language(Id, Lang):-
+  retract(literal_language(Id, Lang, N1)),
+  N2 is N1 + 1,
+  assert(literal_language(Id, Lang, N2)).
+increment_literal_language(Id, Lang):-
+  assert(literal_language(Id, Lang, 1)).
+
 
 /*
 test0:-
@@ -136,7 +159,7 @@ test12:-
 
   register_home_hive(h1),
   connect_hives([h1,h2]),
-  
+
   rdf_create_graph(stash),
   start_materializer(stash, se, 60).
 
