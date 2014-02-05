@@ -131,7 +131,8 @@ dh_walk(PossibleSteps, ElectStep, From, Dir, Link, To):-
     [graph(Graph),mime(MIME)],
     File,
     'LOD_local_query_on_loaded_graph'(Resource, Propositions)
-  ).
+  ),
+  rdf_unload_graph(Graph).
 
 
 'LOD_local_query_on_loaded_graph'(Resource, Propositions, Graph):-

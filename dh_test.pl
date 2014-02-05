@@ -1,9 +1,7 @@
 :- module(
   dh_test,
   [
-    dh/0,
-    test1/0,
-    test2/0
+    dh/0
   ]
 ).
 
@@ -52,7 +50,7 @@ dh_type_check(URL):-
   ).
 
 type_check(From, Dir, Link, To):-
-  (true, ! ; some_action(From, Dir, Link, To)), %DEB
+  %some_action(From, Dir, Link, To),
   type_check(To).
 
 type_check(To):-
@@ -76,7 +74,7 @@ dh_lit_lang(URL):-
   ).
 
 lit_lang(From, Dir, Link, To):-
-  (true, ! ; some_action(From, Dir, Link, To)), %DEB
+  some_action(From, Dir, Link, To),
   thread_self(Id),
   flag(Id, N, N + 1),
   lit_lang(Id, To).
@@ -112,7 +110,6 @@ test0:-
   rdf_assert(rdf:n5, rdf:e56, rdf:n6, g4),
   rdf_create_dataset(g1, [g4-g4], DS2),
   create_hive(h2, DS2, _H2).
-*/
 
 test1:-
   test12,
@@ -162,4 +159,5 @@ test12:-
 
   rdf_create_graph(stash),
   start_materializer(stash, se, 60).
+*/
 
