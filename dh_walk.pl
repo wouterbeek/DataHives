@@ -28,13 +28,14 @@
 :- use_module('SPARQL'('SPARQL_build')).
 :- use_module('SPARQL'('SPARQL_db')).
 :- use_module('SPARQL'('SPARQL_ext')).
+:- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(rdf(rdf_meta)).
 :- use_module(rdf(rdf_serial)).
 
 
 
 dh_random_walk(_, From, Dir, Link, To):-
-  dh_walk('LOD_step', random_member, From, Dir, Link, To).
+  dh_walk('LOD_random_step', From, Dir, Link, To).
 
 
 %! dh_walk(
@@ -50,13 +51,13 @@ dh_random_walk(_, From, Dir, Link, To):-
 %
 % Walking in DataHives is bidirectional.
 %
-% The possible steps are enumerated by `PossibleSteps`.
-% The actual step that is returned is then elected by `ElectStep`.
+% We must return a specific step.
+% We used to return all possible steps and make a selection based on those.
+% The latter was inefficient in the case of very connected nodes.
 
-:- meta_predicate(dh_walk(2,2,+,-,-,-)).
-dh_walk(PossibleSteps, ElectStep, From, Dir, Link, To):-
-  call(PossibleSteps, From, Propositions),
-  call(ElectStep, Proposition, Propositions),
+:- meta_predicate(dh_walk(2,+,-,-,-)).
+dh_walk(MakeStep, From, Dir, Link, To):-
+  call(MakeStep, From, Proposition),
 
   % Instantiate the directionality parameter in order to indicate whether
   %  the walk is forward or backward directed.
@@ -77,23 +78,25 @@ dh_walk(PossibleSteps, ElectStep, From, Dir, Link, To):-
 
 
 % 1. Query a registered SPARQL endpoint.
-'LOD_step'(Resource, Propositions):-
-  'SPARQL_step'(Resource, Propositions).
+'LOD_random_step'(Resource, Proposition):-
+  'SPARQL_random_step'(Resource, Proposition).
 
 % 2. Download a LOD description based on the IRI prefix.
-'LOD_step'(Resource, Propositions):-
+'LOD_random_step'(Resource, Proposition):-
   rdf_global_id(Prefix:_, Resource),
   (
     'LOD_location'(Prefix, URL), !
   ;
     URL = Resource
   ),
-  'LOD_local_query'([], URL, Prefix, Resource, Propositions).
+  'LOD_local_query'([], URL, Prefix, Resource, Proposition),
+  rdf_graph_touch(Prefix).
 
 % 3. Based on the entire IRI we can download a LOD description.
-'LOD_step'(Resource, Propositions):-
+'LOD_random_step'(Resource, Proposition):-
   is_of_type(uri, Resource), !,
-  'LOD_local_query'([], Resource, _NoGraph, Resource, Propositions).
+  atomic_list_concat([graph,Resource], '_', Graph),
+  'LOD_local_query'([], Resource, Graph, Resource, Proposition).
 
 
 %! 'LOD_local_query'(
@@ -101,42 +104,36 @@ dh_walk(PossibleSteps, ElectStep, From, Dir, Link, To):-
 %!   +URL:url,
 %!   +Graph:atom,
 %!   +Resource:or([bnode,iri,literal]),
-%!   -Propositions:ordset(list(or([bnode,iri,literal])))
+%!   -Proposition:list(or([bnode,iri,literal]))
 %! ) is det.
 % The options are passed to download_to_file/3 -> http_goal -> http_open/3.
 
-'LOD_local_query'(_, _, Graph, Resource, Propositions):-
+'LOD_local_query'(_, _, Graph, Resource, Proposition):-
   rdf_graph(Graph), !,
-  'LOD_local_query_on_loaded_graph'(Resource, Propositions, Graph).
-'LOD_local_query'(O1, URL, Graph, Resource, Propositions):-
-  catch(download_to_file(O1, URL, File), _, fail),
-  'LOD_local_query_on_file'(File, Graph, Resource, Propositions).
+  'LOD_local_query_on_loaded_graph'(Resource, Proposition, Graph).
+'LOD_local_query'(O1, URL, Graph, Resource, Proposition):-
+  setup_call_cleanup(
+    catch(download_to_file(O1, URL, File), _, fail),
+    'LOD_local_query_on_file'(File, Graph, Resource, Proposition),
+    % Keep the graph loaded, but delete the file.
+    catch(delete_file(File), _, true)
+  ).
 
 
 % Potential RDF! Let's try to load it in a graph.
-'LOD_local_query_on_file'(File, Graph, Resource, Propositions):-
+'LOD_local_query_on_file'(File, Graph, Resource, Proposition):-
   file_mime(File, MIME),
   rdf_mime(MIME), !,
-  'LOD_local_query_on_graph'(File, MIME, Graph, Resource, Propositions).
+  rdf_load([mime(MIME)], Graph, File),
+  'LOD_local_query_on_loaded_graph'(Resource, Proposition, Graph).
+
+% Never fail.
 % There is no joy in this: no RDF.
-'LOD_local_query_on_file'(File, _, _, []):-
-  debug(cache_it, 'No RDF in file ~w.', [File]),
-  delete_file(File).
+'LOD_local_query_on_file'(File, _, _, _):-
+  debug(dh_walk, 'No RDF in file ~w.', [File]).
 
 
-% The graph first needs to be loaded.
-'LOD_local_query_on_graph'(File, MIME, Graph, Resource, Propositions):-
-  % If graph is nonvar, it is kept.
-  % If graph is var, it is erased.
-  rdf_setup_call_cleanup(
-    [graph(Graph),mime(MIME)],
-    File,
-    'LOD_local_query_on_loaded_graph'(Resource, Propositions)
-  ),
-  rdf_unload_graph(Graph).
-
-
-'LOD_local_query_on_loaded_graph'(Resource, Propositions, Graph):-
+'LOD_local_query_on_loaded_graph'(Resource, Proposition, Graph):-
   setoff(
     [Resource,P,O],
     rdf(Resource, P, O, Graph),
@@ -147,51 +144,74 @@ dh_walk(PossibleSteps, ElectStep, From, Dir, Link, To):-
     rdf(S, P, Resource, Graph),
     Propositions2
   ),
-  ord_union(Propositions1, Propositions2, Propositions).
+  ord_union(Propositions1, Propositions2, Propositions),
+  random_member(Proposition, Propositions).
 
 
-'SPARQL_step'(Resource, Propositions):-
+%! 'SPARQL_random_step'(
+%!   +Resource:iri,
+%!   -Proposition:list(or([bnode,iri,literal]))
+%! ) is det.
+% Notice that resources that appear in both the subject and object position
+%  of a triple -- see example [1] -- have a higher chance of being chosen.
+%
+% ~~~{.rdf}
+% <rdfs:Class, rdf:type, rdfs:Class>
+% ~~~
+
+'SPARQL_random_step'(Resource, Proposition):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
   'SPARQL_current_remote_domain'(Remote, Domain), !,
-
+  
   % Direction: forward.
-  phrase(
-    'SPARQL_formulate'(
-      _,
-      _,
-      [],
-      select,
-      true,
-      [p,o],
-      [rdf(iri(Resource),var(p),var(o))],
-      inf,
-      _
-    ),
-    Query1
-  ),
-  'SPARQL_query'(Remote, Query1, _VarNames1, Rows1),
-  maplist(prefixed_row(Resource), Rows1, Propositions1),
+  phrase('SPARQL_count'(_, _, [], o, [iri(Resource),var(p),var(o)]), Query1),
+  'SPARQL_query'(Remote, Query1, _, [row(literal(type(_,Count1)))]),
 
   % Direction: backward.
-  phrase(
-    'SPARQL_formulate'(
-      _,
-      _,
-      [],
-      select,
-      true,
-      [s,p],
-      [rdf(var(s),var(p),iri(Resource))],
-      inf,
-      _
+  phrase('SPARQL_count'(_, _, [], s, [var(s),var(p),iri(Resource)]), Query2),
+  'SPARQL_query'(Remote, Query2, _, [row(literal(type(_,Count2)))]),
+  
+  Count is Count1 + Count2,
+  random_between(1, Count, N),
+  
+  (
+    N =< Count1
+  ->
+    phrase(
+      'SPARQL_formulate'(
+        _,
+        _,
+        [],
+        select,
+        true,
+        [p,o],
+        [iri(Resource),var(p),var(o)],
+        1,
+        N,
+        _
+      ),
+      Query3
     ),
-    Query2
-  ),
-  'SPARQL_query'(Remote, Query2, _VarNames2, Rows2),
-  maplist(postfixed_row(Resource), Rows2, Propositions2),
-
-  ord_union(Propositions1, Propositions2, Propositions).
-
-prefixed_row(S, row(P,O), [S,P,O]).
-postfixed_row(O, row(S,P), [S,P,O]).
+    'SPARQL_query'(Remote, Query3, _, [row(P,O)]),
+    Proposition = [Resource,P,O]
+  ;
+    M is N - Count1,
+    phrase(
+      'SPARQL_formulate'(
+        _,
+        _,
+        [],
+        select,
+        true,
+        [s,p],
+        [var(s),var(p),iri(Resource)],
+        1,
+        M,
+        _
+      ),
+      Query3
+    ),
+    'SPARQL_query'(Remote, Query3, _, [row(S,P)]),
+    Proposition = [S,P,Resource]
+  ).
 

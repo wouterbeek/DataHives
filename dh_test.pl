@@ -31,6 +31,7 @@ Simple test predicates for running programs in DataHives.
 default_url('http://dbpedia.org/resource/Banana').
 
 :- debug(dh).
+:- debug(dh_walk).
 
 
 
