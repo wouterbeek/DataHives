@@ -119,7 +119,7 @@ dh_walk(PossibleSteps, ElectStep, From, Dir, Link, To):-
   rdf_mime(MIME), !,
   'LOD_local_query_on_graph'(File, MIME, Graph, Resource, Propositions).
 % There is no joy in this: no RDF.
-'LOD_local_query_on_file'(File, _, _, [], []):-
+'LOD_local_query_on_file'(File, _, _, []):-
   debug(cache_it, 'No RDF in file ~w.', [File]),
   delete_file(File).
 

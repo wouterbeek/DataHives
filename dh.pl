@@ -62,7 +62,7 @@ init_agent(Nav, Act, Com, Init):-
 % The same is true for any term that does not dereference,
 %  such as non-dereferencing URLs.
 
-:- dynamic(backtrack/5).
+:- thread_local(backtrack/5).
 :- meta_predicate(nav_act_com(+,5,5,5,+)).
 nav_act_com(Alias, Nav, Act, Com, InitFrom):-
   % Initialize the backtrack option.
@@ -111,6 +111,7 @@ some_action(_, From, Dir, Link, To):-
   dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
   dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
   debug(dh, '~w\t~w', [Arrow,Triple]).
+  %format(user_output, '~w\t~w\n', [Arrow,Triple]).
 
 dir_trans(backward, left).
 dir_trans(forward, right).

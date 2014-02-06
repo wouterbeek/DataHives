@@ -26,6 +26,7 @@ Simple test predicates for running programs in DataHives.
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_serial)).
 :- use_module(rdf_reasoning(rdf_mat)).
+:- use_module(server(web_threads)). % Load the Web-interface for threads.
 
 default_url('http://dbpedia.org/resource/Banana').
 
