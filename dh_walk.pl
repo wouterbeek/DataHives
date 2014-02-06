@@ -162,13 +162,19 @@ dh_walk(MakeStep, From, Dir, Link, To):-
 'SPARQL_random_step'(Resource, Proposition):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
   'SPARQL_current_remote_domain'(Remote, Domain), !,
-  
+  gtrace,
   % Direction: forward.
-  phrase('SPARQL_count'(_, _, [], o, [iri(Resource),var(p),var(o)]), Query1),
+  phrase(
+    'SPARQL_count'(_, _, [], o, [rdf(iri(Resource),var(p),var(o))]),
+    Query1
+  ),
   'SPARQL_query'(Remote, Query1, _, [row(literal(type(_,Count1)))]),
 
   % Direction: backward.
-  phrase('SPARQL_count'(_, _, [], s, [var(s),var(p),iri(Resource)]), Query2),
+  phrase(
+    'SPARQL_count'(_, _, [], s, [rdf(var(s),var(p),iri(Resource))]),
+    Query2
+  ),
   'SPARQL_query'(Remote, Query2, _, [row(literal(type(_,Count2)))]),
   
   Count is Count1 + Count2,
@@ -185,7 +191,7 @@ dh_walk(MakeStep, From, Dir, Link, To):-
         select,
         true,
         [p,o],
-        [iri(Resource),var(p),var(o)],
+        [rdf(iri(Resource),var(p),var(o))],
         1,
         N,
         _
@@ -204,7 +210,7 @@ dh_walk(MakeStep, From, Dir, Link, To):-
         select,
         true,
         [s,p],
-        [var(s),var(p),iri(Resource)],
+        [rdf(var(s),var(p),iri(Resource))],
         1,
         M,
         _
