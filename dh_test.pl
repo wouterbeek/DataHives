@@ -1,7 +1,9 @@
 :- module(
   dh_test,
   [
-    dh/0
+    dh_test/1, % ?URL
+    dh_type_check/1, % ?URL
+    dh_lit_lang/1 % ?URL
   ]
 ).
 
@@ -18,41 +20,49 @@ Simple test predicates for running programs in DataHives.
 :- use_module(dh(dh_network)).
 :- use_module(dh(dh_program)).
 :- use_module(dh(dh_walk)). % Meta-argument.
+:- use_module(generics(meta_ext)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(rdf(rdf_dataset)).
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_serial)).
 :- use_module(rdf_reasoning(rdf_mat)).
 
-:- dynamic(malformed_uri/1).
-:- dynamic(literal_language/3).
+default_url('http://dbpedia.org/resource/Banana').
+
+:- debug(dh).
 
 
 
-dh:-
-  dh('http://dbpedia.org/resource/Banana').
+% Use case 0
 
-dh(URL):-
-  nav_act_com(
+dh_test(URL1):-
+  default_url(URL0),
+  default(URL1, URL0, URL2),
+  init_agent(
     dh_random_walk,
     some_action,
     some_communication, %STUB
-    URL
+    URL2
   ).
 
 
-dh_type_check(URL):-
-  nav_act_com(
+
+% Use case 1: verify the well-formedness of IRIs
+
+dh_type_check(URL1):-
+  default_url(URL0),
+  default(URL1, URL0, URL2),
+  init_agent(
     dh_random_walk,
     type_check,
     some_communication, %STUB
-    URL
+    URL2
   ).
 
-type_check(From, Dir, Link, To):-
-  %some_action(From, Dir, Link, To),
+type_check(_, _, _, _, To):-
   type_check(To).
 
+:- dynamic(malformed_uri/1).
 type_check(To):-
   rdf_is_bnode(To), !.
 type_check(To):-
@@ -65,36 +75,40 @@ type_check(To):-
   assert(malformed_uri(To)).
 
 
-dh_lit_lang(URL):-
-  nav_act_com(
+
+% Use case 2: count languages and datatypes used in literals.
+
+dh_lit_lang(URL1):-
+  default_url(URL0),
+  default(URL1, URL0, URL2),
+  init_agent(
     dh_random_walk,
     lit_lang,
     some_communication, %STUB
-    URL
+    URL2
   ).
 
-lit_lang(From, Dir, Link, To):-
-  some_action(From, Dir, Link, To),
-  thread_self(Id),
-  flag(Id, N, N + 1),
-  lit_lang(Id, To).
+lit_lang(Alias, _, _, _, To):-
+  flag(Alias, N, N + 1),
+  lit_lang(Alias, To).
 
-lit_lang(Id, literal(lang(Lang,_))):- !,
-  increment_literal_language(Id, Lang).
-lit_lang(Id, literal(type(Datatype1,_))):- !,
+:- dynamic(literal_language/3).
+lit_lang(Alias, literal(lang(Lang,_))):- !,
+  increment_literal_language(Alias, Lang).
+lit_lang(Alias, literal(type(Datatype1,_))):- !,
   dcg_with_output_to(atom(Datatype2), rdf_term_name(Datatype1)),
-  increment_literal_language(Id, Datatype2).
-lit_lang(Id, literal(_)):- !,
-  increment_literal_language(Id, plain).
+  increment_literal_language(Alias, Datatype2).
+lit_lang(Alias, literal(_)):- !,
+  increment_literal_language(Alias, plain).
 lit_lang(_, _).
 
-
-increment_literal_language(Id, Lang):-
-  retract(literal_language(Id, Lang, N1)),
+increment_literal_language(Alias, Lang):-
+  retract(literal_language(Alias, Lang, N1)),
   N2 is N1 + 1,
-  assert(literal_language(Id, Lang, N2)).
-increment_literal_language(Id, Lang):-
-  assert(literal_language(Id, Lang, 1)).
+  assert(literal_language(Alias, Lang, N2)).
+increment_literal_language(Alias, Lang):-
+  assert(literal_language(Alias, Lang, 1)).
+
 
 
 /*

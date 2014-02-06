@@ -1,7 +1,8 @@
 :- module(
   dh_walk,
   [
-    dh_random_walk/4 % +From:or([bnode,iri,literal])
+    dh_random_walk/5 % +Alias:atom
+                     % +From:or([bnode,iri,literal])
                      % -Direction:oneof([backward,forward])
                      % -Link:iri
                      % -To:or([bnode,iri,literal])
@@ -32,7 +33,7 @@
 
 
 
-dh_random_walk(From, Dir, Link, To):-
+dh_random_walk(_, From, Dir, Link, To):-
   dh_walk('LOD_step', random_member, From, Dir, Link, To).
 
 

@@ -1,15 +1,21 @@
 :- module(
   dh,
   [
-    nav_act_com/4, % :Navigate
-                   % :Act
-                   % :Communicate
-                   % +InitialResource:iri
-    some_action/4, % +From:or([bnode,iri,literal])
+    init_agent/4, % :Navigate
+                  % :Act
+                  % :Communicate
+                  % +InitialResource:iri
+
+% DEFAULT ACTIONS
+    some_action/5, % +Alias:atom
+                   % +From:or([bnode,iri,literal])
                    % -Direction:oneof([backward,forward])
                    % -Link:iri
                    % -To:or([bnode,iri,literal])
-    some_communication/4 % +From:or([bnode,iri,literal])
+
+% DEFAUL COMMUNICATIONS
+    some_communication/5 % +Alias:atom
+                         % +From:or([bnode,iri,literal])
                          % -Direction:oneof([backward,forward])
                          % -Link:iri
                          % -To:or([bnode,iri,literal])
@@ -26,11 +32,24 @@ Bzzzzz... DataHives!
 
 :- use_module(dcg(dcg_content)). % Meta-argument.
 :- use_module(dcg(dcg_generic)).
+:- use_module(library(debug)).
 :- use_module(rdf(rdf_name)). % Meta-argument.
 
 
+:- meta_predicate(init_agent(5,5,5,+)).
+init_agent(Nav, Act, Com, Init):-
+  flag(agent, Id, Id + 1),
+  format(atom(Alias), 'agent_~d', [Id]),
+  thread_create(nav_act_com(Alias, Nav, Act, Com, Init), _, [alias(Alias)]).
 
-% nav_act_com(:Navigate, :Act, :Communicate, +InitialResource:iri) .
+
+%! nav_act_com(
+%!   +Alias:atom,
+%!   :Navigate,
+%!   :Act,
+%!   :Communicate,
+%!   +InitialResource:iri
+%! ) .
 % Implementation of the navigate-act-communicate cycle.
 %
 % When the walker visits a blank node or a literal,
@@ -42,53 +61,63 @@ Bzzzzz... DataHives!
 %  was visited.
 % The same is true for any term that does not dereference,
 %  such as non-dereferencing URLs.
-%
-% @tbd How to properly traverse nodes that are literals?
-% @tbd How to properly traverse nodes that are blank nodes?
 
-:- meta_predicate(nav_act_com(4,4,4,+)).
-nav_act_com(Nav, Act, Com, InitFrom):-
-  nav_act_com(
-    Nav,
-    Act,
-    Com,
-    [[InitFrom,'http://www.w3.org/2002/07/owl#sameAs',InitFrom]],
-    InitFrom
-  ).
+:- dynamic(backtrack/5).
+:- meta_predicate(nav_act_com(+,5,5,5,+)).
+nav_act_com(Alias, Nav, Act, Com, InitFrom):-
+  % Initialize the backtrack option.
+  assert(
+    backtrack(
+      Alias,
+      InitFrom,
+      forward,
+      'http://www.w3.org/2002/07/owl#sameAs',
+      InitFrom
+    )
+  ),
 
-:- meta_predicate(nav_act_com(5,4,4,+,+)).
-nav_act_com(Nav, Act, Com, [H|_], From):-
+  repeat,
+
   % Navigate.
+  backtrack(Alias, _, _, _, From),
   (
-    call(Nav, From, Dir, Link, To), !
+    call(Nav, Alias, From, Dir, Link, To)
+  ->
+    retract(backtrack(Alias, _, _, _, _)),
+    assert(backtrack(Alias, From, Dir, Link, To))
   ;
-    H = [To,Dir0,Link,From],
-    dir_inv(Dir0, Dir)
+    retract(backtrack(Alias, To, Dir0, Link, From)),
+    dir_inv(Dir0, Dir),
+    assert(backtrack(Alias, From, Dir, Link, To))
   ),
 
   % Act.
-  call(Act, From, Dir, Link, To),
+  call(Act, Alias, From, Dir, Link, To),
 
   % Communicate.
-  call(Com, From, Dir, Link, To),
+  call(Com, Alias, From, Dir, Link, To),
 
-  % Recurse.
-  nav_act_com(Nav, Act, Com, [[From,Dir,Link,To]], To).
-
-
-some_action(From, Dir, Link, To):-
-  dir_trans(Dir, Orient),
-  dcg_with_output_to(user_output, arrow([head(Orient)], 4)),
-  tab(user_output, 1),
-  dcg_with_output_to(user_output, rdf_triple_name(From, Link, To)),
-  nl(user_output),
-  flush_output(user_output).
+  fail.
 
 dir_inv(backward, forward).
 dir_inv(forward, backward).
 
+
+
+% DEFAULT ACTIONS %
+
+some_action(_, From, Dir, Link, To):-
+  dir_trans(Dir, Orient),
+  dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
+  dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
+  debug(dh, '~w\t~w', [Arrow,Triple]).
+
 dir_trans(backward, left).
 dir_trans(forward, right).
 
-some_communication(_, _, _, _).
+
+
+% DEFAULT COMMUNICATIONS %
+
+some_communication(_, _, _, _, _).
 
