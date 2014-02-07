@@ -77,6 +77,13 @@ dh_walk(MakeStep, From, Dir, Link, To):-
     Dir = backward
   ).
 
+% 0. Blank nodes and literals always fail.
+'LOD_random_step'(Resource, _):-
+  rdf_is_bnode(Resource), !,
+  fail.
+'LOD_random_step'(Resource, _):-
+  rdf_is_literal(Resource), !,
+  fail.
 
 % 1. Query a registered SPARQL endpoint.
 'LOD_random_step'(Resource, Proposition):-
@@ -90,8 +97,7 @@ dh_walk(MakeStep, From, Dir, Link, To):-
   ;
     URL = Resource
   ),
-  'LOD_local_query'([], URL, Prefix, Resource, Proposition),
-  rdf_graph_touch(Prefix).
+  'LOD_local_query'([], URL, Prefix, Resource, Proposition).
 
 % 3. Based on the entire IRI we can download a LOD description.
 'LOD_random_step'(Resource, Proposition):-
@@ -111,7 +117,7 @@ dh_walk(MakeStep, From, Dir, Link, To):-
 
 'LOD_local_query'(_, _, Graph, Resource, Proposition):-
   rdf_graph(Graph), !,
-  'LOD_local_query_on_loaded_graph'(Resource, Proposition, Graph).
+  'LOD_local_query_on_loaded_graph'(Graph, Resource, Proposition).
 'LOD_local_query'(O1, URL, Graph, Resource, Proposition):-
   setup_call_cleanup(
     catch(download_to_file(O1, URL, File), _, fail),
@@ -126,29 +132,87 @@ dh_walk(MakeStep, From, Dir, Link, To):-
   file_mime(File, MIME),
   rdf_mime(MIME), !,
   rdf_load([mime(MIME)], Graph, File),
-  'LOD_local_query_on_loaded_graph'(Resource, Proposition, Graph).
-
-% Never fail.
+  'LOD_local_query_on_loaded_graph'(Graph, Resource, Proposition).
 % There is no joy in this: no RDF.
 'LOD_local_query_on_file'(File, _, _, _):-
-  debug(dh_walk, 'No RDF in file ~w.', [File]).
+  debug(dh_walk, 'No RDF in file ~w.', [File]),
+  fail.
 
 
-'LOD_local_query_on_loaded_graph'(Resource, Proposition, Graph):-
+'LOD_local_query_on_loaded_graph'(Graph, Resource, Proposition):-
   setoff(
     [Resource,P,O],
-    rdf(Resource, P, O, Graph),
+    rdf(Resource, P, O),
     Propositions1
   ),
   setoff(
     [S,P,Resource],
-    rdf(S, P, Resource, Graph),
+    rdf(S, P, Resource),
     Propositions2
   ),
   ord_union(Propositions1, Propositions2, Propositions),
-  random_member(Proposition, Propositions).
+  random_member(Proposition, Propositions),
+  
+  Proposition = [S,P,O],
+  forall(
+    rdf(S, P, O, Graph),
+    rdf_graph_touch(Graph)
+  ).
 
 
+'SPARQL_random_step'(Resource, Proposition):-
+  atomic_list_concat([graph,Resource], '_', Graph),
+  'SPARQL_random_step'(Graph, Resource, Proposition).
+
+'SPARQL_random_step'(Graph, Resource, Proposition):-
+  rdf_graph(Graph), !,
+  'LOD_local_query_on_loaded_graph'(Graph, Resource, Proposition).
+'SPARQL_random_step'(Graph, Resource, Proposition):-
+  phrase(
+    'SPARQL_formulate'(
+      _,
+      _,
+      [],
+      select,
+      true,
+      [p,o],
+      [rdf(iri(Resource),var(p),var(o))],
+      inf,
+      _,
+      _
+    ),
+    Query1
+  ),
+  'SPARQL_query'(Remote, Query1, _, Rows1),
+  maplist(assert_proposition_prefix(Graph, Resource), Rows1),
+
+  phrase(
+    'SPARQL_formulate'(
+      _,
+      _,
+      [],
+      select,
+      true,
+      [s,p],
+      [rdf(var(s),var(p),iri(Resource))],
+      inf,
+      _,
+      _
+    ),
+    Query2
+  ),
+  'SPARQL_query'(Remote, Query2, _, Rows2),
+  maplist(assert_proposition_postfix(Graph, Resource), Rows2),
+
+  'SPARQL_random_step'(Graph, Resource, Proposition).
+
+assert_proposition_prefix(G, S, row(P,O)):-
+  rdf_assert(S, P, O, G).
+assert_proposition_postfix(G, O, row(S,P)):-
+  rdf_assert(S, P, O, G).
+
+
+/*
 %! 'SPARQL_random_step'(
 %!   +Resource:iri,
 %!   -Proposition:list(or([bnode,iri,literal]))
@@ -163,7 +227,7 @@ dh_walk(MakeStep, From, Dir, Link, To):-
 'SPARQL_random_step'(Resource, Proposition):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
   'SPARQL_current_remote_domain'(Remote, Domain), !,
-  
+
   % Direction: forward.
   phrase(
     'SPARQL_count'(_, _, [], o, [rdf(iri(Resource),var(p),var(o))]),
@@ -179,10 +243,10 @@ dh_walk(MakeStep, From, Dir, Link, To):-
   ),
   'SPARQL_query'(Remote, Query2, _, [row(literal(type(D2,Lit2)))]),
   rdf_datatype(D2, Lit2, Count2),
-  
+
   Count is Count1 + Count2,
   random_between(1, Count, N),
-  
+
   (
     N =< Count1
   ->
@@ -223,4 +287,5 @@ dh_walk(MakeStep, From, Dir, Link, To):-
     'SPARQL_query'(Remote, Query3, _, [row(S,P)]),
     Proposition = [S,P,Resource]
   ).
+*/
 
