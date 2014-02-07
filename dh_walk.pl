@@ -28,6 +28,7 @@
 :- use_module('SPARQL'('SPARQL_build')).
 :- use_module('SPARQL'('SPARQL_db')).
 :- use_module('SPARQL'('SPARQL_ext')).
+:- use_module(rdf(rdf_datatype)).
 :- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(rdf(rdf_meta)).
 :- use_module(rdf(rdf_serial)).
@@ -162,20 +163,22 @@ dh_walk(MakeStep, From, Dir, Link, To):-
 'SPARQL_random_step'(Resource, Proposition):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
   'SPARQL_current_remote_domain'(Remote, Domain), !,
-  gtrace,
+  
   % Direction: forward.
   phrase(
     'SPARQL_count'(_, _, [], o, [rdf(iri(Resource),var(p),var(o))]),
     Query1
   ),
-  'SPARQL_query'(Remote, Query1, _, [row(literal(type(_,Count1)))]),
+  'SPARQL_query'(Remote, Query1, _, [row(literal(type(D1,Lit1)))]),
+  rdf_datatype(D1, Lit1, Count1),
 
   % Direction: backward.
   phrase(
     'SPARQL_count'(_, _, [], s, [rdf(var(s),var(p),iri(Resource))]),
     Query2
   ),
-  'SPARQL_query'(Remote, Query2, _, [row(literal(type(_,Count2)))]),
+  'SPARQL_query'(Remote, Query2, _, [row(literal(type(D2,Lit2)))]),
+  rdf_datatype(D2, Lit2, Count2),
   
   Count is Count1 + Count2,
   random_between(1, Count, N),
