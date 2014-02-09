@@ -111,9 +111,8 @@ lit_tag(_, _, _, To):-
 
 lit_tag(literal(lang(Lang,_))):- !,
   increment_literal_language(Lang).
-lit_tag(literal(type(Datatype1,_))):- !,
-  dcg_with_output_to(atom(Datatype2), rdf_term_name(Datatype1)),
-  increment_literal_language(Datatype2).
+lit_tag(literal(type(Datatype,_))):- !,
+  increment_literal_language(Datatype).
 lit_tag(literal(_)):- !,
   increment_literal_language(plain).
 lit_tag(_, _).
