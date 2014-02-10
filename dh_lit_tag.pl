@@ -13,6 +13,7 @@ Count languages and datatypes used in literals.
 @version 2014/02
 */
 
+:- use_module(dbpedia(dbpedia)).
 :- use_module(dcg(dcg_generic)).
 :- use_module(dh(dh)).
 :- use_module(dh(dh_walk)).
@@ -27,7 +28,7 @@ Count languages and datatypes used in literals.
 :- use_module(server(web_modules)).
 
 http:location(dh, root(dh), []).
-:- http_handler(dh(lit_tag), dh_lit_tag, []).
+:- http_handler(dh(literal_tag), dh_lit_tag, []).
 
 :- web_module_add('DH LitTag', dh_lit_tag).
 
@@ -39,17 +40,17 @@ default_url('http://dbpedia.org/resource/Banana').
 
 dh_lit_tag(_Request):-
   setoff(
-    Lang,
-    literal_tag(_, Lang, _),
-    Langs
+    Tag,
+    literal_tag(_, Tag, _),
+    Tags
   ),
   findall(
-    Sum-Lang,
+    Sum-Tag,
     (
-      member(Lang, Langs),
+      member(Tag, Tags),
       findall(
         N,
-        literal_tag(_, Lang, N),
+        literal_tag(_, Tag, N),
         Ns
       ),
       sum_list(Ns, Sum)
@@ -58,30 +59,27 @@ dh_lit_tag(_Request):-
   ),
   keysort(Pairs1, Pairs2),
   reverse(Pairs2, Pairs3),
-  pairs_values(Pairs3, OrderedLangs),
+  pairs_values(Pairs3, OrderedTags),
+  setoff(
+    Agent,
+    literal_tag(Agent, _, _),
+    Agents
+  ),
   findall(
-    [Lang,Sum|Ns],
+    [Tag,Sum|Ns],
     (
-      member(Lang, OrderedLangs),
-      member(Sum-Lang, Pairs1),
+      member(Tag, OrderedTags),
       findall(
         N,
-        literal_tag(_, Lang, N),
+        (
+          member(Agent, Agents),
+          once((literal_tag(Agent, Tag, N) ; N = 0))
+        ),
         Ns
-      )
+      ),
+      sum_list(Ns, Sum)
     ),
     Rows
-  ),
-  (
-    once(member(ArbitraryLang, OrderedLangs))
-  ->
-    findall(
-      Alias,
-      literal_tag(Alias, ArbitraryLang, _),
-      Aliases
-    )
-  ;
-    Aliases = []
   ),
   reply_html_page(
     app_style,
@@ -90,51 +88,50 @@ dh_lit_tag(_Request):-
       [header_column(true),header_row(true)],
       `Overview of language tags.`,
       rdf_html_term,
-      [['LangTag','Sum'|Aliases]|Rows]
+      [['LangTag','Sum'|Agents]|Rows]
     )
   ).
-
 
 dh_lit_tag_crawler(URL1):-
   default_url(URL0),
   default(URL1, URL0, URL2),
   init_agent(
     dh_random_walk,
-    lit_tag,
+    literal_tag,
     some_communication, %STUB
     URL2
   ).
 
 
-lit_tag(_, _, _, To):-
-  lit_tag(To).
+literal_tag(_, _, _, To):-
+  literal_tag(To).
 
-lit_tag(literal(lang(Lang,_))):- !,
-  increment_literal_language(Lang).
-lit_tag(literal(type(Datatype,_))):- !,
-  increment_literal_language(Datatype).
-lit_tag(literal(_)):- !,
-  increment_literal_language(plain).
-lit_tag(_, _).
+literal_tag(literal(lang(Lang,_))):- !,
+  increment_literal_tag(Lang).
+literal_tag(literal(type(Datatype,_))):- !,
+  increment_literal_tag(Datatype).
+literal_tag(literal(_)):- !,
+  increment_literal_tag(plain).
+literal_tag(_).
 
-increment_literal_language(Lang):-
+increment_literal_tag(Tag):-
   thread_self(Alias),
-  increment_literal_language_per_thread(Alias, Lang).
+  increment_literal_language_per_thread(Alias, Tag).
 
-increment_literal_language_per_thread(Alias, Lang):-
+increment_literal_language_per_thread(Alias, Tag):-
   % @tbd Why does this not work?
   with_mutex(
     dh_test,
     (
-      retract(literal_tag(Alias, Lang, N1)),
+      retract(literal_tag(Alias, Tag, N1)),
       N2 is N1 + 1,
-      assert(literal_tag(Alias, Lang, N2))
+      assert(literal_tag(Alias, Tag, N2))
     )
   ), !.
-increment_literal_language_per_thread(Alias, Lang):-
+increment_literal_language_per_thread(Alias, Tag):-
   % @tbd Why does this not work?
   with_mutex(
     dh_test,
-    assert(literal_tag(Alias, Lang, 1))
+    assert(literal_tag(Alias, Tag, 1))
   ).
 

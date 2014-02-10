@@ -30,6 +30,7 @@ Bzzzzz... DataHives!
 
 :- use_module(dcg(dcg_content)). % Meta-argument.
 :- use_module(dcg(dcg_generic)).
+:- use_module(dh(dh_lit_tag)). % Load demo.
 :- use_module(library(debug)).
 :- use_module(rdf(rdf_name)). % Meta-argument.
 
@@ -68,7 +69,7 @@ nav_act_com(Nav, Act, Com, InitFrom):-
   ),
 
   repeat,
-  
+
   % Navigate.
   backtrack(_, _, _, From),
   (

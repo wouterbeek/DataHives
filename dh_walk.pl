@@ -160,13 +160,16 @@ dh_walk(MakeStep, From, Dir, Link, To):-
 
 
 'SPARQL_random_step'(Resource, Proposition):-
+  uri_components(Resource, uri_components(_, Domain, _, _, _)),
+  'SPARQL_current_remote_domain'(Remote, Domain), !,
+  
   atomic_list_concat([graph,Resource], '_', Graph),
-  'SPARQL_random_step'(Graph, Resource, Proposition).
+  'SPARQL_random_step'(Remote, Graph, Resource, Proposition).
 
-'SPARQL_random_step'(Graph, Resource, Proposition):-
+'SPARQL_random_step'(_, Graph, Resource, Proposition):-
   rdf_graph(Graph), !,
   'LOD_local_query_on_loaded_graph'(Graph, Resource, Proposition).
-'SPARQL_random_step'(Graph, Resource, Proposition):-
+'SPARQL_random_step'(Remote, Graph, Resource, Proposition):-
   phrase(
     'SPARQL_formulate'(
       _,
@@ -203,7 +206,7 @@ dh_walk(MakeStep, From, Dir, Link, To):-
   'SPARQL_query'(Remote, Query2, _, Rows2),
   maplist(assert_proposition_postfix(Graph, Resource), Rows2),
 
-  'SPARQL_random_step'(Graph, Resource, Proposition).
+  'SPARQL_random_step'(Remote, Graph, Resource, Proposition).
 
 assert_proposition_prefix(G, S, row(P,O)):-
   rdf_assert(S, P, O, G).
