@@ -103,7 +103,6 @@ some_action(From, Dir, Link, To):-
   dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
   dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
   debug(dh, '~w\t~w', [Arrow,Triple]).
-  %format(user_output, '~w\t~w\n', [Arrow,Triple]).
 
 dir_trans(backward, left).
 dir_trans(forward, right).
