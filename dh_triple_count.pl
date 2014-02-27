@@ -71,10 +71,9 @@ top_triples_web(_Request, N):-
     title('DataHives - TripleCount'),
     html(
       \rdf_html_table(
-        _NoGraph,
-        `The top locations until now.`,
-        ['Count','Triple'],
-        Rows
+        [],
+        atom('The top locations until now.'),
+        [['Count','Triple']|Rows]
       )
     )
   ).

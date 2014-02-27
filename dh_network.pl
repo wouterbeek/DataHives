@@ -194,10 +194,9 @@ connected_hives(_Request):-
     title('DataHives - Network'),
     html([
       \rdf_html_table(
-        _NoGraph,
-        `Overview of the connections between Hives.`,
-        ['Hive1','Graph1','Connecting term','Hive2','Graph2'],
-        Rows
+        [],
+        atom('Overview of the connections between Hives.'),
+        [['Hive1','Graph1','Connecting term','Hive2','Graph2']|Rows]
       ),
       \[Atom]
     ])

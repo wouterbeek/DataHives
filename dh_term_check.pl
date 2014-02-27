@@ -57,10 +57,9 @@ suspicious_terms_web(_Request):-
     title('DataHives - Term check'),
     html(
       \rdf_html_table(
-        _,
-        `A list suspicious RDF terms that were encountered.`,
-        ['RDF term'],
-        Terms
+        [],
+        atom('A list suspicious RDF terms that were encountered.'),
+        [['RDF term']|Terms]
       )
     )
   ).
