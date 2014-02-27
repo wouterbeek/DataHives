@@ -67,7 +67,7 @@ dh_programs(_Request):-
     html(
       \html_table(
         [header_row(true),index(true)],
-        `Overview of the programs that are currently running in DataHives.`,
+        atom('Overview of the programs that are currently running in DataHives.'),
         [['Alias','Id','Status','CPU time']|Rows]
       )
     )

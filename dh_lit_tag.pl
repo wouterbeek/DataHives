@@ -86,7 +86,7 @@ dh_lit_tag(_Request):-
     title('DataHives - Language tags'),
     \html_table(
       [header_column(true),header_row(true)],
-      `Overview of language tags.`,
+      atom('Overview of language tags.'),
       rdf_html_term,
       [['LangTag','Sum'|Agents]|Rows]
     )
