@@ -58,7 +58,7 @@ suspicious_terms_web(_Request):-
     html(
       \rdf_html_table(
         [],
-        atom('A list suspicious RDF terms that were encountered.'),
+        html('A list suspicious RDF terms that were encountered.'),
         [['RDF term']|Terms]
       )
     )

@@ -72,7 +72,7 @@ top_triples_web(_Request, N):-
     html(
       \rdf_html_table(
         [],
-        atom('The top locations until now.'),
+        html('The top locations until now.'),
         [['Count','Triple']|Rows]
       )
     )

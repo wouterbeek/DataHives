@@ -195,7 +195,7 @@ connected_hives(_Request):-
     html([
       \rdf_html_table(
         [],
-        atom('Overview of the connections between Hives.'),
+        html('Overview of the connections between Hives.'),
         [['Hive1','Graph1','Connecting term','Hive2','Graph2']|Rows]
       ),
       \[Atom]
