@@ -34,6 +34,8 @@ http:location(dh, root(dh), []).
 
 :- dynamic(literal_tag/3).
 
+:- debug(dh).
+
 default_url('http://dbpedia.org/resource/Banana').
 
 
@@ -98,7 +100,7 @@ dh_lit_tag_crawler(URL1):-
   init_agent(
     dh_random_walk,
     literal_tag,
-    some_communication, %STUB
+    some_action, %STUB
     URL2
   ).
 
