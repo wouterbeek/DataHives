@@ -12,5 +12,6 @@ load_dh:-
   
   % DataHives
   assert(user:file_search_path(dh, ThisDir)),
+  use_module(dh(dh_lit_tag)),
   use_module(dh(dh_test)).
 

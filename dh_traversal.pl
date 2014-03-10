@@ -18,7 +18,6 @@ Methods for traversing a DataHive.
 :- use_module(generics(list_ext)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
-:- use_module(math(random_ext)).
 :- use_module(rdf(rdf_read)).
 
 :- rdf_meta(next_triple(t,t)).
