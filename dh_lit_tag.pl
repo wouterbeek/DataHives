@@ -24,7 +24,7 @@ Count languages and datatypes used in literals.
 :- use_module(library(lists)).
 :- use_module(library(pairs)).
 :- use_module(rdf(rdf_name)).
-:- use_module(rdf_web(rdf_html_term)).
+:- use_module(rdf_web(rdf_term_html)).
 :- use_module(server(web_modules)).
 
 http:location(dh, root(dh), []).
@@ -89,7 +89,7 @@ dh_lit_tag(_Request):-
     \html_table(
       [header_column(true),header_row(true)],
       html('Overview of language tags.'),
-      rdf_html_term,
+      rdf_term_html,
       [['LangTag','Sum'|Agents]|Rows]
     )
   ).
