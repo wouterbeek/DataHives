@@ -235,7 +235,7 @@ assert_proposition_postfix(G, O, row(S,P)):-
     Query1
   ),
   'SPARQL_query'(Remote, Query1, _, [row(literal(type(D1,Lit1)))]),
-  rdf_lexical_map(D1, Lit1, Count1),
+  rdf_lexical_map(Lit1, D1, _, Count1),
 
   % Direction: backward.
   phrase(
@@ -243,7 +243,7 @@ assert_proposition_postfix(G, O, row(S,P)):-
     Query2
   ),
   'SPARQL_query'(Remote, Query2, _, [row(literal(type(D2,Lit2)))]),
-  rdf_lexical_map(D2, Lit2, Count2),
+  rdf_lexical_map(Lit2, D2, _, Count2),
 
   Count is Count1 + Count2,
   random_between(1, Count, N),
