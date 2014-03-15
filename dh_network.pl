@@ -45,7 +45,7 @@
 :- use_module(rdf(rdf_graph)).
 :- use_module(rdf(rdf_name)).
 :- use_module(rdf(rdf_random)).
-:- use_module(rdf(rdf_term)).
+:- use_module(rdf_term(rdf_term)).
 :- use_module(rdf_web(rdf_html_table)).
 :- use_module(server(web_modules)).
 :- use_module(xml(xml_dom)).

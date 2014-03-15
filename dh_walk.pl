@@ -27,7 +27,6 @@
 :- use_module('SPARQL'('SPARQL_build')).
 :- use_module('SPARQL'('SPARQL_db')).
 :- use_module('SPARQL'('SPARQL_ext')).
-:- use_module(rdf(rdf_datatype)).
 :- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(rdf(rdf_meta)).
 :- use_module(rdf(rdf_serial)).
