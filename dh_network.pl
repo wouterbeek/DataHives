@@ -100,9 +100,9 @@ connect_graphs(H1, G1, H2, G2):-
 
 connect_graphs_(H1, G1, H2, G2):-
   % Find a connection.
-  rdf_node(G1, T),
+  rdf_node(T, G1),
   rdf_iri(T),
-  rdf_node(G2, T),
+  rdf_node(T, G2),
 
   % Assert the connection.
   once((
@@ -262,6 +262,6 @@ state_identity(state(H1,G1,T1), state(H2,G2,T2)):-
 %! ) is semidet.
 
 valid_initial_state(G, T):-
-  rdf_node(G, T),
+  rdf_node(T, G),
   rdf_iri(T).
 
