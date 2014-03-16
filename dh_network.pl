@@ -101,7 +101,7 @@ connect_graphs(H1, G1, H2, G2):-
 connect_graphs_(H1, G1, H2, G2):-
   % Find a connection.
   rdf_node(G1, T),
-  rdf_is_iri(T),
+  rdf_iri(T),
   rdf_node(G2, T),
 
   % Assert the connection.
@@ -263,5 +263,5 @@ state_identity(state(H1,G1,T1), state(H2,G2,T2)):-
 
 valid_initial_state(G, T):-
   rdf_node(G, T),
-  rdf_is_iri(T).
+  rdf_iri(T).
 
