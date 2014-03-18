@@ -187,8 +187,7 @@ connected_hives(_Request):-
     label('Overview of connected DataHives'),
     overlap(false)
   ],
-  graph_to_svg_dom([method(sfdp)], graph(Vs,Es,G_Attrs), SVG),
-  xml_dom_to_atom([], SVG, Atom),
+  graph_to_svg_dom([method(sfdp)], graph(Vs,Es,G_Attrs), SvgDom),
   reply_html_page(
     app_style,
     title('DataHives - Network'),
@@ -198,7 +197,7 @@ connected_hives(_Request):-
         html('Overview of the connections between Hives.'),
         [['Hive1','Graph1','Connecting term','Hive2','Graph2']|Rows]
       ),
-      \[Atom]
+      \xml_dom_as_atom(SvgDom)
     ])
   ).
 
