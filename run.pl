@@ -1,3 +1,5 @@
+#!/home/wbeek/bin/swipl
+
 % The run file for the DataHives project.
 
 :- initialization(run_dh).
@@ -22,7 +24,7 @@ load_pgc(Project):-
   load_or_debug(pgc).
 
 load_or_debug(Project):-
-  predicate_property(user:debug_project, visible), !,
+  predicate_property(user:debug_mode, visible), !,
   Spec =.. [Project,debug],
   ensure_loaded(Spec).
 load_or_debug(Project):-

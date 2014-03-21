@@ -90,7 +90,7 @@ dh_lit_tag(_Request):-
       [header_column(true),header_row(true)],
       html('Overview of language tags.'),
       rdf_term_html,
-      [['LangTag','Sum'|Agents]|Rows]
+      [['Language tag','Sum'|Agents]|Rows]
     )
   ).
 
