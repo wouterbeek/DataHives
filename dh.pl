@@ -34,8 +34,12 @@ Bzzzzz... DataHives!
 :- use_module(library(debug)).
 :- use_module(rdf(rdf_name)). % Meta-argument.
 
-
 :- meta_predicate(init_agent(4,4,4,+)).
+:- thread_local(backtrack/4).
+:- meta_predicate(nav_act_com(4,4,4,+)).
+
+
+
 init_agent(Nav, Act, Com, Init):-
   flag(agent, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
@@ -55,8 +59,6 @@ init_agent(Nav, Act, Com, Init):-
 % The same is true for any term that does not dereference,
 %  such as non-dereferencing URLs.
 
-:- thread_local(backtrack/4).
-:- meta_predicate(nav_act_com(4,4,4,+)).
 nav_act_com(Nav, Act, Com, InitFrom):-
   % Initialize the backtrack option.
   assert(
