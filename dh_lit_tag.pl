@@ -10,7 +10,7 @@
 Count languages and datatypes used in literals.
 
 @author Wouter Beek
-@version 2014/02
+@version 2014/02-2014/03
 */
 
 :- use_module(dbpedia(dbpedia)).
@@ -19,6 +19,7 @@ Count languages and datatypes used in literals.
 :- use_module(dh(dh_walk)).
 :- use_module(generics(meta_ext)).
 :- use_module(html(html_table)).
+:- use_module(library(aggregate)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(lists)).
@@ -41,8 +42,8 @@ default_url('http://dbpedia.org/resource/Banana').
 
 
 dh_lit_tag(_Request):-
-  setoff(
-    Tag,
+  aggregate_all(
+    set(Tag),
     literal_tag(_, Tag, _),
     Tags
   ),
@@ -62,8 +63,8 @@ dh_lit_tag(_Request):-
   keysort(Pairs1, Pairs2),
   reverse(Pairs2, Pairs3),
   pairs_values(Pairs3, OrderedTags),
-  setoff(
-    Agent,
+  aggregate_all(
+    set(Agent),
     literal_tag(Agent, _, _),
     Agents
   ),

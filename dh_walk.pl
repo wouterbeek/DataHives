@@ -11,12 +11,13 @@
 /** <module> DataHives walking
 
 @author Wouter Beek
-@version 2014/02
+@version 2014/02-2014/03
 */
 
 :- use_module(generics(list_ext)). % Meta-argument.
 :- use_module(generics(meta_ext)).
 :- use_module(generics(uri_ext)).
+:- use_module(library(aggregate)).
 :- use_module(library(apply)).
 :- use_module(library(debug)).
 :- use_module(library(ordsets)).
@@ -138,13 +139,13 @@ lod_local_query_on_file(File, _, _, _):-
 
 
 lod_local_query_on_loaded_graph(Graph, Resource, Proposition):-
-  setoff(
-    [Resource,P,O],
+  aggregate_all(
+    set([Resource,P,O]),
     rdf(Resource, P, O),
     Propositions1
   ),
-  setoff(
-    [S,P,Resource],
+  aggregate_all(
+    set([S,P,Resource]),
     rdf(S, P, Resource),
     Propositions2
   ),
