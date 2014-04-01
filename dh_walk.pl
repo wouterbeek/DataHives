@@ -31,7 +31,7 @@
 :- use_module(sparql(sparql_ext)).
 :- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(rdf(rdf_meta)).
-:- use_module(rdf(rdf_serial)).
+:- use_module(rdf_file(rdf_serial)).
 
 
 
