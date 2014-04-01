@@ -95,14 +95,14 @@ dh_lit_tag(_Request):-
     )
   ).
 
-dh_lit_tag_crawler(URL1):-
-  default_url(URL0),
-  default(URL1, URL0, URL2),
+dh_lit_tag_crawler(Url):-
+  default_url(DefaultUrl),
+  default(DefaultUrl, Url),
   init_agent(
     dh_random_walk,
     literal_tag,
     some_action, %STUB
-    URL2
+    Url
   ).
 
 

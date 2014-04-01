@@ -21,13 +21,13 @@ default_url('http://dbpedia.org/resource/Banana').
 
 
 
-dh_test(URL1):-
-  default_url(URL0),
-  default(URL1, URL0, URL2),
+dh_test(Url):-
+  default_url(DefaultUrl),
+  default(DefaultUrl, Url),
   init_agent(
     dh_random_walk,
     some_action,
     some_communication, %STUB
-    URL2
+    Url
   ).
 

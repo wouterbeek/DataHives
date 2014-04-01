@@ -17,6 +17,7 @@
 :- use_module(generics(list_ext)). % Meta-argument.
 :- use_module(generics(meta_ext)).
 :- use_module(generics(uri_ext)).
+:- use_module(http(http_download)).
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
 :- use_module(library(debug)).
