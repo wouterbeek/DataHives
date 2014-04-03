@@ -53,7 +53,7 @@
 http:location(dh, root(dh), []).
 :- http_handler(dh(connected_hives), connected_hives, []).
 
-:- web_module_add('DH Network', connected_hives).
+user:web_module('DH Network', connected_hives).
 
 %! connection(
 %!   ?HiveName1:atom,

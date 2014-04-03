@@ -39,7 +39,7 @@ Allows programs to be run inside the DataHives architecture.
 http:location(dh, root(dh), []).
 :- http_handler(dh(program), dh_programs, []).
 
-:- web_module_add('DH Programs', dh_programs).
+user:web_module('DH Programs', dh_programs).
 
 :- debug(dh_program).
 

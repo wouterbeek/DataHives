@@ -26,7 +26,7 @@ Program that checks RDF terms and that runs on the DataHives architecture.
 http:location(dh, root(dh), []).
 :- http_handler(dh(termcheck), suspicious_terms_web, []).
 
-:- web_module_add('DH TermCheck', suspicious_terms_web).
+user:web_module('DH TermCheck', suspicious_terms_web).
 
 %! suspicious_term(?RDF_Term:or([bnode,literal,iri])) is nondet.
 

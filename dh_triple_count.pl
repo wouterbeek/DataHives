@@ -28,7 +28,7 @@ A program that runs within the DataHives architecture and that counts triples.
 http:location(dh, root(dh), []).
 :- http_handler(dh(triple_count), top_triples_web, []).
 
-:- web_module_add('DH TripleCount', top_triples_web).
+user:web_module('DH TripleCount', top_triples_web).
 
 %! triple_count(?Pairs:list(nvpair)) is det.
 
