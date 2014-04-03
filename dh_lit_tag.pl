@@ -84,12 +84,11 @@ dh_lit_tag(_Request):-
     ),
     Rows
   ),
-  http_location_by_id(dh(literal_tag), Location),
   reply_html_page(
     app_style,
     title('DataHives - Language tags'),
     \rdf_html_table(
-      [header_column(true),header_row(true),location(Location)],
+      [header_column(true),header_row(true),location(dh_literal_tag)],
       html('Overview of language tags.'),
       [['Language tag','Sum'|Agents]|Rows]
     )

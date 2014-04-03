@@ -66,13 +66,12 @@ top_triples_web(_Request, N):-
     member(K-V, TruncatedList),
     Rows
   ),
-  http_location_by_id(rdf(tabular), Location),
   reply_html_page(
     app_style,
     title('DataHives - TripleCount'),
     html(
       \rdf_html_table(
-        [location(Location)],
+        [header_row(true),indexed(true)],
         html('The top locations until now.'),
         [['Count','Triple']|Rows]
       )

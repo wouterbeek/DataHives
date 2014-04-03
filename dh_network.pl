@@ -188,13 +188,12 @@ connected_hives(_Request):-
     overlap(false)
   ],
   graph_to_svg_dom([method(sfdp)], graph(Vs,Es,G_Attrs), SvgDom),
-  http_location_by_id(dh(connected_hives), Location),
   reply_html_page(
     app_style,
     title('DataHives - Network'),
     html([
       \rdf_html_table(
-        [location(Location)],
+        [header_row(true),indexed(true),location(dh_connected_hives)],
         html('Overview of the connections between Hives.'),
         [['Hive1','Graph1','Connecting term','Hive2','Graph2']|Rows]
       ),

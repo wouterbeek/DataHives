@@ -52,13 +52,12 @@ suspicious_terms(Terms):-
 
 suspicious_terms_web(_Request):-
   suspicious_terms(Terms),
-  http_location_by_id(dh(termcheck), Location),
   reply_html_page(
     app_style,
     title('DataHives - Term check'),
     html(
       \rdf_html_table(
-        [location(Location)],
+        [header_row(true),indexed(true),location(dh_termcheck)],
         html('A list suspicious RDF terms that were encountered.'),
         [['RDF term']|Terms]
       )
