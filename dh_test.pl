@@ -19,8 +19,6 @@ Simple test predicates for running programs in DataHives.
 
 default_url('http://dbpedia.org/resource/Banana').
 
-
-
 dh_test(Url):-
   default_url(DefaultUrl),
   default(DefaultUrl, Url),

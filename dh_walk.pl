@@ -11,7 +11,7 @@
 /** <module> DataHives walking
 
 @author Wouter Beek
-@version 2014/02-2014/03
+@version 2014/02-2014/04
 */
 
 :- use_module(generics(list_ext)). % Meta-argument.
@@ -31,6 +31,7 @@
 :- use_module(sparql(sparql_ext)).
 :- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(rdf(rdf_meta)).
+:- use_module(rdf_file(rdf_file)).
 :- use_module(rdf_file(rdf_serial)).
 
 
