@@ -7,13 +7,13 @@
 run_dh:-
   source_file(run_dh, ThisFile),
   file_directory_name(ThisFile, ThisDir),
+  assert(user:file_search_path(dh, ThisDir)),
   assert(user:file_search_path(project, ThisDir)),
   
   % PGC
   load_plc(project),
   
   % DataHives load file.
-gtrace,
   load_or_debug(project).
 
 load_plc(_Project):-
