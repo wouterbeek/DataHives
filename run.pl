@@ -10,7 +10,7 @@ run_dh:-
   assert(user:file_search_path(project, ThisDir)),
   
   % PGC
-  load_pgc(project),
+  load_plc(project),
   
   % DataHives load file.
 gtrace,
