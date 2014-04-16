@@ -5,7 +5,6 @@
 :- initialization(run_dh).
 
 run_dh:-
-  % Entry point.
   source_file(run_dh, ThisFile),
   file_directory_name(ThisFile, ThisDir),
   assert(user:file_search_path(project, ThisDir)),
@@ -16,10 +15,10 @@ run_dh:-
   % DataHives load file.
   ensure_loaded(load).
 
-load_pgc(_Project):-
+load_plc(_Project):-
   user:file_search_path(plc, _Spec), !.
-load_pgc(Project):-
-  Spec =.. [Project,'PGC'],
+load_plc(Project):-
+  Spec =.. [Project,'Prolog-Library-Collection'],
   assert(user:file_search_path(plc, Spec)),
   load_or_debug(plc).
 
