@@ -13,7 +13,8 @@ run_dh:-
   load_pgc(project),
   
   % DataHives load file.
-  ensure_loaded(load).
+gtrace,
+  load_or_debug(project).
 
 load_plc(_Project):-
   user:file_search_path(plc, _Spec), !.
