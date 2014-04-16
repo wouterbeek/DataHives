@@ -9,18 +9,31 @@
        [prerequisites](http://www.swi-prolog.org/build/LinuxDistro.html).
   2. Git clone this project:
     ~~~
-    git clone https://github.com/wouterbeek/DataHives.git
+    $ git clone https://github.com/wouterbeek/DataHives.git
     ~~~
   3. Install the project's Git submodules:
     ~~~
-    cd DataHives
-    git submodule init
-    git submodule update
+    $ cd DataHives
+    $ git submodule init
+    $ git submodule update
     ~~~
 
-## Use
+## Startup
+
+DataHives is started in the following way:
 
 ~~~
-./run
+$ ./run --debug
 ~~~
+
+The debug flag opens up a monitor of agent activity.
+
+## Add an agent
+
+~~~
+?- dh_test(_).
+~~~
+
+This creates a single agent that randomly traverses the LOD cloud
+using forward links.
 
