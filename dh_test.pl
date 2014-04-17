@@ -18,11 +18,10 @@ Simple test predicates for running programs in DataHives.
 
 :- use_module(dh(dh)).
 :- use_module(dh(dh_walk)). % Meta-argument.
-:- use_module(generics(meta_ext)).
 
 :- dynamic(start_url/2).
 
-%start_url('http://dbpedia.org/resource/Banana').
+start_url('http://dbpedia.org/resource/Banana').
 start_url('http://rdf.freebase.com/ns/m.08pbxl').
 
 

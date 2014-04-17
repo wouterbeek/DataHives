@@ -145,18 +145,26 @@ assert_resource_graph_by_prefix(Resource):-
 assert_resource_graph_by_prefix(_).
 
 
-assert_resource_graph_by_url(Resource):-
-  assert_resource_graph_from_url(Resource, Resource), !.
+assert_resource_graph_by_url(Iri):-
+  uri_iri(Uri, Iri),
+  assert_resource_graph_from_url(Iri, Uri), !.
 assert_resource_graph_by_url(_).
 
 
-assert_resource_graph_from_url(Resource, Url):-
+assert_resource_graph_from_url(Resource, Uri):-
   thread_self(Id),
   atomic_list_concat([Resource,Id], '_', ResourceThread),
-  setup_call_cleanup(
-    rdf_load([], ResourceThread, Url),
+  setup_call_catcher_cleanup(
+    rdf_load([], ResourceThread, Uri),
     rdf_copy(ResourceThread, Resource, _, _, Resource),
-    rdf_unload_graph(ResourceThread)
+    Exception,
+    (
+      var(Exception)
+    ->
+      rdf_unload_graph(ResourceThread)
+    ;
+      print_message(error, Exception)
+    )
   ).
 
 
