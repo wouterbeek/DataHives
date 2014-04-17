@@ -15,6 +15,7 @@
 */
 
 :- use_module(library(aggregate)).
+:- use_module(library(check_installation)). % Private predicate.
 :- use_module(library(lists)).
 :- use_module(library(random)).
 :- use_module(library(semweb/rdf_db)).
@@ -86,9 +87,26 @@ lod_random_step(Resource, Proposition):-
 lod_step(Goal, Resource, Proposition):-
   % First we assert all triples that describe a resource (depth 1)
   % in a graph by that name.
-  assert_resource_graph(Resource),
+  check_installation:run_collect_messages(
+    dh_walk:assert_resource_graph(Resource),
+    Status,
+    Messages
+  ),
+  print_status(Status),
+  maplist(print_message, Messages),
   % Then we pick on of those triples according to some method.
   select_triple(Goal, Resource, Proposition).
+%lod_step(Goal, Resource, Proposition):-
+%  gtrace, %DEB
+%  lod_step(Goal, Resource, Proposition).
+
+print_message(message(Term,Kind,_)):-
+  print_message(Kind, Term).
+
+print_status(false).
+print_status(true).
+print_status(exception(Error)):-
+  print_message(error, Error).
 
 
 % RDF blank node.
@@ -159,11 +177,11 @@ assert_resource_graph_from_url(Resource, Uri):-
     rdf_copy(ResourceThread, Resource, _, _, Resource),
     Exception,
     (
-      var(Exception)
+      Exception = exception(Error)
     ->
-      rdf_unload_graph(ResourceThread)
+      print_message(error, Error)
     ;
-      print_message(error, Exception)
+      rdf_unload_graph(ResourceThread)
     )
   ).
 

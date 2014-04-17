@@ -5,7 +5,11 @@
                   % :Act
                   % :Communicate
                   % +InitialResource:iri
-
+% GRAPH PROPERTIES
+    edge_count/4, % ?Subject:or([bnode,iri])
+                  % ?Predicate:iri
+                  % ?Object:or([bnode,iri,literal])
+                  % ?Count:positive_integer
 % DEFAULT ACTIONS
     some_action/4, % +From:or([bnode,iri,literal])
                    % -Direction:oneof([backward,forward])
@@ -34,8 +38,11 @@ Bzzzzz... DataHives!
 :- use_module(library(debug)).
 :- use_module(rdf(rdf_name)). % Meta-argument.
 
-:- meta_predicate(init_agent(4,4,4,+)).
 :- thread_local(backtrack/4).
+
+:- dynamic(edge_count/4).
+
+:- meta_predicate(init_agent(4,4,4,+)).
 :- meta_predicate(nav_act_com(4,4,4,+)).
 
 
@@ -84,6 +91,7 @@ nav_act_com(Nav, Act, Com, InitFrom):-
     dir_inv(Dir0, Dir),
     assert(backtrack(From, Dir, Link, To))
   ),
+  with_mutex(edge_count, tick_edge_count(From, Dir, Link, To)),
 
   % Act.
   call(Act, From, Dir, Link, To),
@@ -95,6 +103,16 @@ nav_act_com(Nav, Act, Com, InitFrom):-
 
 dir_inv(backward, forward).
 dir_inv(forward, backward).
+
+
+tick_edge_count(From, backward, Link, To):- !,
+  tick_edge_count(To, forward, Link, From).
+tick_edge_count(From, forward, Link, To):-
+  retract(edge_count(From, Link, To, Count1)), !,
+  Count2 is Count1 + 1,
+  assert(edge_count(From, Link, To, Count2)).
+tick_edge_count(From, forward, Link, To):-
+  assert(edge_count(From, Link, To, 1)).
 
 
 
