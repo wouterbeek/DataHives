@@ -10,4 +10,5 @@
 
 % DataHives example run.
 :- use_module(dh(dh_test)).
+:- use_module(dh(dh_graph)).
 
