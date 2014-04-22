@@ -173,7 +173,7 @@ assert_resource_graph_from_url(Resource, Uri):-
   thread_self(Id),
   atomic_list_concat([Resource,Id], '_', ResourceThread),
   setup_call_catcher_cleanup(
-    rdf_load([], ResourceThread, Uri),
+    rdf_load_any([graph(ResourceThread)], Uri),
     rdf_copy(ResourceThread, Resource, _, _, Resource),
     Exception,
     (
@@ -181,7 +181,7 @@ assert_resource_graph_from_url(Resource, Uri):-
     ->
       print_message(error, Error)
     ;
-      rdf_unload_graph(ResourceThread)
+      rdf_unload_graph_debug(ResourceThread)
     )
   ).
 
