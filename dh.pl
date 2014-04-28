@@ -10,17 +10,6 @@
                   % ?Predicate:iri
                   % ?Object:or([bnode,iri,literal])
                   % ?Count:positive_integer
-% DEFAULT ACTIONS
-    some_action/4, % +From:or([bnode,iri,literal])
-                   % -Direction:oneof([backward,forward])
-                   % -Link:iri
-                   % -To:or([bnode,iri,literal])
-
-% DEFAUL COMMUNICATIONS
-    some_communication/4 % +From:or([bnode,iri,literal])
-                         % -Direction:oneof([backward,forward])
-                         % -Link:iri
-                         % -To:or([bnode,iri,literal])
   ]
 ).
 
@@ -113,23 +102,4 @@ tick_edge_count(From, forward, Link, To):-
   assert(edge_count(From, Link, To, Count2)).
 tick_edge_count(From, forward, Link, To):-
   assert(edge_count(From, Link, To, 1)).
-
-
-
-% DEFAULT ACTIONS %
-
-some_action(From, Dir, Link, To):-
-  dir_trans(Dir, Orient),
-  dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
-  dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
-  debug(dh, '~w\t~w', [Arrow,Triple]).
-
-dir_trans(backward, left).
-dir_trans(forward, right).
-
-
-
-% DEFAULT COMMUNICATIONS %
-
-some_communication(_, _, _, _).
 

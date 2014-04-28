@@ -1,5 +1,5 @@
 :- module(
-  dh_walk,
+  dh_navigation,
   [
     dh_random_walk/4 % +From:or([bnode,iri,literal])
                      % -Direction:oneof([backward,forward])
@@ -8,38 +8,59 @@
   ]
 ).
 
-/** <module> DataHives walking
+/** <module> DataHives navigation
+
+Navigation predicates for agents in DataHives.
 
 @author Wouter Beek
+@tbd Generic solution for writing status and messages to log file,
+     pl_log:run_collect_messages/2.
 @version 2014/02-2014/04
 */
 
 :- use_module(library(aggregate)).
-:- use_module(library(check_installation)). % Private predicate.
+:- use_module(library(apply)).
 :- use_module(library(lists)).
 :- use_module(library(random)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(uri)).
 
-:- use_module(lod(lod_location)).
-:- use_module(sparql(sparql_build)).
-:- use_module(sparql(sparql_db)).
-:- use_module(sparql(sparql_ext)).
+:- use_module(pl(pl_log)).
 :- use_module(rdf(rdf_build)).
 :- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(rdf_file(rdf_serial)).
+:- use_module(sparql(sparql_build)).
+:- use_module(sparql(sparql_ext)).
 
-:- meta_predicate(dh_walk(2,+,-,-,-)).
+:- meta_predicate(dh_navigate(2,+,-,-,-)).
 :- meta_predicate(lod_step(2,+,-)).
 :- meta_predicate(select_triple(2,+,-)).
 
 
 
+% NAVIGATION STRATEGIES %
+
+%! dh_random_walk(
+%!   +From:or([bnode,iri,literal]),
+%!   +Direction:oneof([backward,forward]),
+%!   -Link:iri,
+%!   -To:or([bnode,iri,literal])
+%! ) is det.
+
 dh_random_walk(From, Dir, Link, To):-
-  dh_walk(lod_random_step, From, Dir, Link, To).
+  dh_navigate(lod_random_step, From, Dir, Link, To).
 
 
-%! dh_walk(
+%! lod_random_step(+Resource, -Proposition:list) is det.
+
+lod_random_step(Resource, Proposition):-
+  lod_step(random_member, Resource, Proposition).
+
+
+
+% GENERIC NAVIGATION PREDICATE %
+
+%! dh_navigate(
 %!   :PossibleSteps,
 %!   :ElectStep,
 %!   +From:or([bnode,iri,literal]),
@@ -56,39 +77,38 @@ dh_random_walk(From, Dir, Link, To):-
 % We used to return all possible steps and make a selection based on those.
 % The latter was inefficient in the case of very connected nodes.
 
-dh_walk(MakeStep, From, Dir, Link, To):-
+dh_navigate(MakeStep, From, Direction, Link, To):-
   call(MakeStep, From, Proposition),
 
   % Instantiate the directionality parameter in order to indicate whether
-  %  the walk is forward or backward directed.
+  % the walk is forward or backward directed.
   %
   % Notice that we prefer forward motion in case both directions
-  %  are possible.
+  % are possible.
   % As a result of this it is impossible to walk *backwards* from
-  %  =|rdfs:Class|= to itself, via =|rdf:type|=.
+  % =|rdfs:Class|= to itself, via =|rdf:type|=.
   (
     Proposition = [From,Link,To]
   ->
-    Dir = forward
+    Direction = forward
   ;
     Proposition = [To,Link,From]
   ->
-    Dir = backward
+    Direction = backward
   ).
 
 
-%! lod_random_step(+Resource, -Proposition:list) is det.
-
-lod_random_step(Resource, Proposition):-
-  lod_step(random_member, Resource, Proposition).
-
-%! lod_step(:Goal, +Resource, -Proposition:list) is det.
+%! lod_step(
+%!   :Goal,
+%!   +Resource:or([bnode,iri,literal]),
+%!   -Proposition:list(or([bnode,iri,literal]))
+%! ) is det.
 
 lod_step(Goal, Resource, Proposition):-
   % First we assert all triples that describe a resource (depth 1)
   % in a graph by that name.
-  check_installation:run_collect_messages(
-    dh_walk:assert_resource_graph(Resource),
+  run_collect_messages(
+    assert_resource_graph(Resource),
     Status,
     Messages
   ),

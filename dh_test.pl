@@ -35,8 +35,8 @@ dh_test(Url):-
   random_member(Url, StartUrls),
   init_agent(
     dh_random_walk,
-    some_action,
-    some_communication, %STUB
+    default_action,
+    default_communication, %STUB
     Url
   ).
 

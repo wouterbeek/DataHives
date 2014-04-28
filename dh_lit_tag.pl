@@ -100,7 +100,7 @@ dh_lit_tag_crawler(Url):-
   init_agent(
     dh_random_walk,
     literal_tag,
-    some_action, %STUB
+    default_action, %STUB
     Url
   ).
 
