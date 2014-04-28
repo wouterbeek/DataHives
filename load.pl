@@ -6,7 +6,8 @@ user:project('DataHives', 'Agent simulation platform for PraSem.').
 :- initialization(load_dh).
 
 load_dh:-
-  set_file_search_path.
+  set_file_search_path,
+  ensure_loaded(dh(index)).
 
 set_file_search_path:-
   user:file_search_path(dh, _).

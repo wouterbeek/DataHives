@@ -1,4 +1,4 @@
-:- module(dh_graph, []).
+:- module(dh_web_graph, []).
 
 /** <module> DataHives graph
 
@@ -14,16 +14,16 @@
 :- use_module(rdf_web(rdf_html_table)).
 :- use_module(server(web_modules)).
 
-:- use_module(dh(dh)).
+:- use_module(dh_core(dh_communication)).
 
-http:location(dh, root(dh), []).
-:- http_handler(dh(graph), dh_graph_web, []).
+http:location(dh_web, root(dh), []).
+:- http_handler(dh_web(graph), dh_web_graph, []).
 
-user:web_module('DH Graph', dh_graph_web).
+user:web_module('DH Graph', dh_web_graph).
 
 
 
-dh_graph_web(_):-
+dh_web_graph(_Request):-
   findall(
     Count-[S,P,O],
     edge_count(S, P, O, Count),

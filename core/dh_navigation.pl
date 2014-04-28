@@ -13,23 +13,22 @@
 Navigation predicates for agents in DataHives.
 
 @author Wouter Beek
-@tbd Generic solution for writing status and messages to log file,
-     pl_log:run_collect_messages/2.
 @version 2014/02-2014/04
 */
 
 :- use_module(library(aggregate)).
-:- use_module(library(apply)).
 :- use_module(library(lists)).
 :- use_module(library(random)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(uri)).
 
+:- use_module(lod(lod_location)).
 :- use_module(pl(pl_log)).
 :- use_module(rdf(rdf_build)).
 :- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(rdf_file(rdf_serial)).
 :- use_module(sparql(sparql_build)).
+:- use_module(sparql(sparql_db)).
 :- use_module(sparql(sparql_ext)).
 
 :- meta_predicate(dh_navigate(2,+,-,-,-)).
@@ -105,28 +104,15 @@ dh_navigate(MakeStep, From, Direction, Link, To):-
 %! ) is det.
 
 lod_step(Goal, Resource, Proposition):-
+  absolute_file_name(data(dh), File, [access(write),file_type(logging)]),
   % First we assert all triples that describe a resource (depth 1)
   % in a graph by that name.
   run_collect_messages(
     assert_resource_graph(Resource),
-    Status,
-    Messages
+    File
   ),
-  print_status(Status),
-  maplist(print_message, Messages),
   % Then we pick on of those triples according to some method.
   select_triple(Goal, Resource, Proposition).
-%lod_step(Goal, Resource, Proposition):-
-%  gtrace, %DEB
-%  lod_step(Goal, Resource, Proposition).
-
-print_message(message(Term,Kind,_)):-
-  print_message(Kind, Term).
-
-print_status(false).
-print_status(true).
-print_status(exception(Error)):-
-  print_message(error, Error).
 
 
 % RDF blank node.
@@ -148,6 +134,9 @@ assert_resource_graph(Resource):-
   % IRI: based on the entire IRI we can download a LOD description,
   % i.e. a "dereference".
   assert_resource_graph_by_url(Resource).
+
+
+%! assert_resource_graph_by_sparql_query(+Resource:iri) is det.
 
 assert_resource_graph_by_sparql_query(Resource):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
@@ -176,24 +165,29 @@ assert_resource_graph_by_sparql_query(Resource):-
 assert_resource_graph_by_sparql_query(_).
 
 
+%! assert_resource_graph_by_prefix(+Resource:iri) is det.
+
 assert_resource_graph_by_prefix(Resource):-
   rdf_global_id(Prefix:_, Resource),
   lod_location(Prefix, Url), !,
-  assert_resource_graph_from_url(Resource, Url).
+  assert_resource_graph_by_url(Resource, Url).
 assert_resource_graph_by_prefix(_).
 
 
+%! assert_resource_graph_by_url(+Iri:iri) is det.
+
 assert_resource_graph_by_url(Iri):-
-  uri_iri(Uri, Iri),
-  assert_resource_graph_from_url(Iri, Uri), !.
+  uri_iri(Url, Iri),
+  assert_resource_graph_by_url(Iri, Url), !.
 assert_resource_graph_by_url(_).
 
+%! assert_resource_graph_by_url(+Resource:iri, +Url:url) is det.
 
-assert_resource_graph_from_url(Resource, Uri):-
+assert_resource_graph_by_url(Resource, Url):-
   thread_self(Id),
   atomic_list_concat([Resource,Id], '_', ResourceThread),
   setup_call_catcher_cleanup(
-    rdf_load_any([], Uri, [_-ResourceThread]),
+    rdf_load_any([], Url, [_-ResourceThread]),
     rdf_copy(ResourceThread, Resource, _, _, Resource),
     Exception,
     (
@@ -206,7 +200,11 @@ assert_resource_graph_from_url(Resource, Uri):-
   ).
 
 
-%! select_triple(Goal, Resource, Proposition) is det.
+%! select_triple(
+%!   :Goal,
+%!   +Resource:or([bnode,iri,literal]),
+%!   -Proposition:list(or([bnode,iri,literal]))
+%! ) is det.
 % Selects a single triple with the given resource in the subject position.
 %
 % The strategy for selecting the triple is given by a binary predicate

@@ -1,7 +1,7 @@
 :- module(
   dh_test,
   [
-    dh_test/1 % ?URL
+    dh_test/1 % ?Url:url
   ]
 ).
 
@@ -16,8 +16,10 @@ Simple test predicates for running programs in DataHives.
 :- use_module(library(aggregate)).
 :- use_module(library(random)).
 
-:- use_module(dh(dh)).
-:- use_module(dh(dh_walk)). % Meta-argument.
+:- use_module(dh_core(dh_agent)).
+:- use_module(dh_core(dh_action)).
+:- use_module(dh_core(dh_communication)).
+:- use_module(dh_core(dh_navigation)).
 
 :- dynamic(start_url/2).
 
@@ -33,10 +35,10 @@ dh_test(Url):-
     StartUrls
   ),
   random_member(Url, StartUrls),
-  init_agent(
+  create_agent(
     dh_random_walk,
     default_action,
-    default_communication, %STUB
+    edge_count,
     Url
   ).
 

@@ -1,10 +1,10 @@
 :- module(
   dh_action,
   [
-    default_action/4, % +From:or([bnode,iri,literal])
-                      % -Direction:oneof([backward,forward])
-                      % -Link:iri
-                      % -To:or([bnode,iri,literal])
+    default_action/4 % +From:or([bnode,iri,literal])
+                     % -Direction:oneof([backward,forward])
+                     % -Link:iri
+                     % -To:or([bnode,iri,literal])
   ]
 ).
 
@@ -17,6 +17,10 @@ Action predicates for agents in DataHives.
 */
 
 :- use_module(library(debug)).
+
+:- use_module(dcg(dcg_content)).
+:- use_module(dcg(dcg_generic)).
+:- use_module(rdf(rdf_name)).
 
 
 

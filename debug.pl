@@ -8,7 +8,10 @@
 :- use_module(library(swi_ide)).
 :- prolog_ide(thread_monitor).
 
+% DataHives debug tools.
+:- use_module(dh_web(dh_web_agent)).
+:- use_module(dh_web(dh_web_graph)).
+
 % DataHives example run.
-:- use_module(dh(dh_test)).
-:- use_module(dh(dh_graph)).
+:- use_module(dh_test(dh_test)).
 
