@@ -32,7 +32,7 @@ default_communication(_, _, _, _).
 
 
 update_edge_count(From, backward, Link, To):- !,
-  edge_count(To, forward, Link, From).
+  update_edge_count(To, forward, Link, From).
 update_edge_count(From, forward, Link, To):-
   with_mutex(
     edge_count,

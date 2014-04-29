@@ -102,9 +102,7 @@ dh_web_graph(_Request):-
     app_style,
     title('DataHives - Graph'),
     html([
-      h2('Graph'),
       \dh_web_graph_graph(MaxCount),
-      h2('Table'),
       \dh_web_graph_table(Pairs3)
     ])
   ).

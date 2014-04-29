@@ -125,21 +125,33 @@ assert_resource_graph(Resource):-
 assert_resource_graph(Resource):-
   rdf_graph(Resource), !,
   rdf_graph_touch(Resource).
-% IRI: no in cache yet. Here we go...
+% IRI: not in cache yet. Here we go...
 assert_resource_graph(Resource):-
 gtrace,
   % SPARQL query.
-  assert_resource_graph_by_sparql_query(Resource),
+  ignore(catch(assert_resource_graph_by_sparql_query(Resource, Cached1), _, true)),
   % IRI: download a LOD description based on the IRI prefix.
-  assert_resource_graph_by_prefix(Resource),
+  ignore(catch(assert_resource_graph_by_prefix(Resource, Cached2), _, true)),
   % IRI: based on the entire IRI we can download a LOD description,
   % i.e. a "dereference".
-  assert_resource_graph_by_url(Resource).
+  ignore(catch(assert_resource_graph_by_url(Resource, Cached3), _, true)),
+  % DEB
+  report_on_caching(Cached1, Cached2, Cached3).
+
+report_on_caching(C1, C2, C3):-
+  format(user_output, 'CACHING: ', []),
+  (C1 == true -> format(user_output, ' SPARQL', []) ; true),
+  (C2 == true -> format(user_output, ' PREFIX', []) ; true),
+  (C3 == true -> format(user_output, ' DEREF',  []) ; true),
+  format(user_output, '~n', []).
 
 
-%! assert_resource_graph_by_sparql_query(+Resource:iri) is det.
+%! assert_resource_graph_by_sparql_query(
+%!   +Resource:iri,
+%!   -Cached:boolean
+%! ) is det.
 
-assert_resource_graph_by_sparql_query(Resource):-
+assert_resource_graph_by_sparql_query(Resource, true):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
   sparql_current_remote_domain(Remote, Domain), !,
   % Find predicate-object pairs.
@@ -159,32 +171,33 @@ assert_resource_graph_by_sparql_query(Resource):-
     Query
   ),
   sparql_query(Remote, Query, _, Rows),
+  (Rows == [] -> gtrace ; true), %DEB
   forall(
     member(row(P,O), Rows),
     rdf_assert(Resource, P, O, Resource)
   ).
-assert_resource_graph_by_sparql_query(_).
+assert_resource_graph_by_sparql_query(_, false).
 
 
-%! assert_resource_graph_by_prefix(+Resource:iri) is det.
+%! assert_resource_graph_by_prefix(+Resource:iri, -Cached:boolean) is det.
 
-assert_resource_graph_by_prefix(Resource):-
+assert_resource_graph_by_prefix(Resource, true):-
   rdf_global_id(Prefix:_, Resource),
   lod_location(Prefix, Url), !,
-  assert_resource_graph_by_url(Resource, Url).
-assert_resource_graph_by_prefix(_).
+  assert_resource_graph_by_url_1(Resource, Url).
+assert_resource_graph_by_prefix(_, false).
 
 
-%! assert_resource_graph_by_url(+Iri:iri) is det.
+%! assert_resource_graph_by_url(+Iri:iri, -Cached:boolean) is det.
 
-assert_resource_graph_by_url(Iri):-
+assert_resource_graph_by_url(Iri, true):-
   uri_iri(Url, Iri),
-  assert_resource_graph_by_url(Iri, Url), !.
-assert_resource_graph_by_url(_).
+  assert_resource_graph_by_url_1(Iri, Url), !.
+assert_resource_graph_by_url(_, false).
 
-%! assert_resource_graph_by_url(+Resource:iri, +Url:url) is det.
+%! assert_resource_graph_by_url_1(+Resource:iri, +Url:url) is det.
 
-assert_resource_graph_by_url(Resource, Url):-
+assert_resource_graph_by_url_1(Resource, Url):-
   thread_self(Id),
   atomic_list_concat([Resource,Id], '_', ResourceThread),
   setup_call_catcher_cleanup(
@@ -198,7 +211,8 @@ assert_resource_graph_by_url(Resource, Url):-
     ;
       rdf_unload_graph_debug(ResourceThread)
     )
-  ).
+  ),
+  (rdf_graph(Url) -> true ; gtrace). %DEB
 
 
 %! select_triple(

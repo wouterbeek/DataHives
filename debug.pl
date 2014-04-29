@@ -5,8 +5,8 @@
 :- debug(dh).
 
 % Thread monitor.
-:- use_module(library(swi_ide)).
-:- prolog_ide(thread_monitor).
+%%%%:- use_module(library(swi_ide)).
+%%%%:- prolog_ide(thread_monitor).
 
 % DataHives debug tools.
 :- use_module(dh_web(dh_web_agent)).
