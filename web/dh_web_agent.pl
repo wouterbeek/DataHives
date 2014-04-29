@@ -15,9 +15,9 @@ Web-based interface to agents in DataHives.
 :- use_module(server(web_modules)).
 
 http:location(dh_web, root(dh), []).
-:- http_handler(dh_web(agents), dh_web_agents, []).
+:- http_handler(dh_web(agent), dh_web_agent, []).
 
-user:web_module('DH Agents', dh_web_agents).
+user:web_module('DH Agent', dh_web_agent).
 
 
 

@@ -127,6 +127,7 @@ assert_resource_graph(Resource):-
   rdf_graph_touch(Resource).
 % IRI: no in cache yet. Here we go...
 assert_resource_graph(Resource):-
+gtrace,
   % SPARQL query.
   assert_resource_graph_by_sparql_query(Resource),
   % IRI: download a LOD description based on the IRI prefix.

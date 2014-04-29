@@ -38,7 +38,7 @@ dh_test(Url):-
   create_agent(
     dh_random_walk,
     default_action,
-    edge_count,
+    update_edge_count,
     Url
   ).
 

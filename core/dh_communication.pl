@@ -5,10 +5,14 @@
                              % -Direction:oneof([backward,forward])
                              % -Link:iri
                              % -To:or([bnode,iri,literal])
-    edge_count/4 % ?Subject:or([bnode,iri])
-                 % ?Predicate:iri
-                 % ?Object:or([bnode,iri,literal])
-                 % ?Count:positive_integer
+    edge_count/4, % ?Subject:or([bnode,iri])
+                  % ?Predicate:iri
+                  % ?Object:or([bnode,iri,literal])
+                  % ?Count:positive_integer
+    update_edge_count/4 % +From:or([bnode,iri,literal])
+                        % +Direction:oneof([backward,forward])
+                        % +Link:iri
+                        % +To:or([bnode,iri,literal])
   ]
 ).
 
@@ -27,20 +31,19 @@ Communication predicates for agents in DataHives.
 default_communication(_, _, _, _).
 
 
-edge_count(From, backward, Link, To):- !,
+update_edge_count(From, backward, Link, To):- !,
   edge_count(To, forward, Link, From).
-edge_count(From, forward, Link, To):-
+update_edge_count(From, forward, Link, To):-
   with_mutex(
     edge_count,
-    (
-      (
-        retract(edge_count(From, Link, To, Count1))
-      ->
-        Count2 is Count1 + 1,
-        assert(edge_count(From, Link, To, Count2))
-      ;
-        assert(edge_count(From, Link, To, 1))
-      )
-    )
+    update_edge_count(From, Link, To)
   ).
+
+
+update_edge_count(From, Link, To):-
+  retract(edge_count(From, Link, To, Count1)), !,
+  Count2 is Count1 + 1,
+  assert(edge_count(From, Link, To, Count2)).
+update_edge_count(From, Link, To):-
+  assert(edge_count(From, Link, To, 1)).
 
