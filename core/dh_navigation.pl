@@ -1,6 +1,9 @@
 :- module(
   dh_navigation,
   [
+    dh_current_location/2, % +ThreadId:atom
+                           % -CurrentLocation:or([bnode,iri,literal])
+    dh_navigation_init/1, % +InitialLocation:or([bnode,iri,literal])
     dh_random_walk/4 % +From:or([bnode,iri,literal])
                      % -Direction:oneof([backward,forward])
                      % -Link:iri
@@ -31,9 +34,29 @@ Navigation predicates for agents in DataHives.
 :- use_module(sparql(sparql_db)).
 :- use_module(sparql(sparql_ext)).
 
+%! backtrack(
+%!   ?From:or([bnode,iri,literal]),
+%!   ?Direction:oneof([backward,forward]),
+%!   ?Link:iri,
+%!   ?To:or([bnode,iri,literal])
+%! ) is det.
+
+:- thread_local(backtrack/4).
+
 :- meta_predicate(dh_navigate(2,+,-,-,-)).
+:- meta_predicate(dh_step(2,+,-,-,-)).
 :- meta_predicate(lod_step(2,+,-)).
 :- meta_predicate(select_triple(2,+,-)).
+
+
+
+%! dh_current_location(
+%!   +ThreadId:atom,
+%!   -CurrentLocation:or([bnode,iri,literal])
+%! ) is det.
+
+dh_current_location(ThreadId, CurrentLocation):-
+  thread_signal(ThreadId, backtrack(_,_,_,CurrentLocation)).
 
 
 
@@ -41,7 +64,7 @@ Navigation predicates for agents in DataHives.
 
 %! dh_random_walk(
 %!   +From:or([bnode,iri,literal]),
-%!   +Direction:oneof([backward,forward]),
+%!   -Direction:oneof([backward,forward]),
 %!   -Link:iri,
 %!   -To:or([bnode,iri,literal])
 %! ) is det.
@@ -59,9 +82,19 @@ lod_random_step(Resource, Proposition):-
 
 % GENERIC NAVIGATION PREDICATE %
 
+dh_navigation_init(InitFrom):-
+  assert(
+    backtrack(
+      InitFrom,
+      forward,
+      'http://www.w3.org/2002/07/owl#sameAs',
+      InitFrom
+    )
+  ).
+
+
 %! dh_navigate(
-%!   :PossibleSteps,
-%!   :ElectStep,
+%!   :Navigation,
 %!   +From:or([bnode,iri,literal]),
 %!   -Direction:oneof([backward,forward]),
 %!   -Link:iri,
@@ -76,8 +109,33 @@ lod_random_step(Resource, Proposition):-
 % We used to return all possible steps and make a selection based on those.
 % The latter was inefficient in the case of very connected nodes.
 
-dh_navigate(MakeStep, From, Direction, Link, To):-
-  call(MakeStep, From, Proposition),
+dh_navigate(Nav, From, Dir, Link, To):-
+  backtrack(_, _, _, From),
+  (
+    dh_step(Nav, From, Dir, Link, To)
+  ->
+    retract(backtrack(_, _, _, _)),
+    assert(backtrack(From, Dir, Link, To))
+  ;
+    retract(backtrack(To, Dir0, Link, From)),
+    dir_inv(Dir0, Dir),
+    assert(backtrack(From, Dir, Link, To))
+  ).
+
+dir_inv(backward, forward).
+dir_inv(forward, backward).
+
+
+%! dh_step(
+%!   :Navigation,
+%!   +From:or([bnode,iri,literal]),
+%!   -Direction:oneof([backward,forward]),
+%!   -Link:iri,
+%!   -To:or([bnode,iri,literal])
+%! ) is det.
+
+dh_step(Nav, From, Direction, Link, To):-
+  call(Nav, From, Proposition),
 
   % Instantiate the directionality parameter in order to indicate whether
   % the walk is forward or backward directed.
@@ -127,7 +185,6 @@ assert_resource_graph(Resource):-
   rdf_graph_touch(Resource).
 % IRI: not in cache yet. Here we go...
 assert_resource_graph(Resource):-
-gtrace,
   % SPARQL query.
   ignore(catch(assert_resource_graph_by_sparql_query(Resource, Cached1), _, true)),
   % IRI: download a LOD description based on the IRI prefix.
@@ -154,6 +211,7 @@ report_on_caching(C1, C2, C3):-
 assert_resource_graph_by_sparql_query(Resource, true):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
   sparql_current_remote_domain(Remote, Domain), !,
+  
   % Find predicate-object pairs.
   phrase(
     sparql_formulate(
@@ -168,12 +226,36 @@ assert_resource_graph_by_sparql_query(Resource, true):-
       _,
       _
     ),
-    Query
+    Query1
   ),
-  sparql_query(Remote, Query, _, Rows),
-  (Rows == [] -> gtrace ; true), %DEB
+  sparql_query(Remote, Query1, _, Rows1),
+  
+  % Find subject-predicate pairs.
+  phrase(
+    sparql_formulate(
+      _,
+      _,
+      [],
+      select,
+      true,
+      [s,p],
+      [rdf(var(s),var(p),iri(Resource))],
+      inf,
+      _,
+      _
+    ),
+    Query2
+  ),
+  sparql_query(Remote, Query2, _, Rows2),
+  
+  (Rows1 == [], Rows2 == [] -> gtrace ; true), %DEB
+  
   forall(
-    member(row(P,O), Rows),
+    (
+      member(row(P,O), Rows1)
+    ;
+      member(row(P,O), Rows2)
+    ),
     rdf_assert(Resource, P, O, Resource)
   ).
 assert_resource_graph_by_sparql_query(_, false).

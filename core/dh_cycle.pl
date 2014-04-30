@@ -16,9 +16,9 @@ The navigate-act-communicate cycle for agents in DataHives.
 @version 2014/04
 */
 
-:- meta_predicate(dh_cycle(4,4,4,+)).
+:- use_module(dh_core(dh_navigation)).
 
-:- thread_local(backtrack/4).
+:- meta_predicate(dh_cycle(4,4,4,+)).
 
 
 
@@ -36,30 +36,15 @@ The navigate-act-communicate cycle for agents in DataHives.
 %  such as non-dereferencing URLs.
 
 dh_cycle(Nav, Act, Com, InitFrom):-
-  % Initialize the backtrack option.
-  assert(
-    backtrack(
-      InitFrom,
-      forward,
-      'http://www.w3.org/2002/07/owl#sameAs',
-      InitFrom
-    )
-  ),
+  % Initialize the backtrack fact in the navigation module.
+  dh_navigation_init(InitFrom),
 
   repeat,
 
+  pause_after_x_steps(1000),
+
   % Navigate.
-  backtrack(_, _, _, From),
-  (
-    call(Nav, From, Dir, Link, To)
-  ->
-    retract(backtrack(_, _, _, _)),
-    assert(backtrack(From, Dir, Link, To))
-  ;
-    retract(backtrack(To, Dir0, Link, From)),
-    dir_inv(Dir0, Dir),
-    assert(backtrack(From, Dir, Link, To))
-  ),
+  call(Nav, From, Dir, Link, To),
 
   % Act.
   call(Act, From, Dir, Link, To),
@@ -69,6 +54,23 @@ dh_cycle(Nav, Act, Com, InitFrom):-
 
   fail.
 
-dir_inv(backward, forward).
-dir_inv(forward, backward).
+pause_after_x_steps(X):-
+  flag(steps, Y, Y + 1),
+  (
+    0 =:= Y mod X
+  ->
+    gtrace,
+    print_message(informational, steps_taken(Y))
+  ;
+    true
+  ).
+
+
+
+% MESSAGES
+
+:- multifile(prolog:message).
+
+prolog:message(steps_taken(X)) -->
+  [X,' steps have been taken.',nl].
 
