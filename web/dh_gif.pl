@@ -112,13 +112,16 @@ edge_term(MaxCount, Vs, E, edge(FromId,ToId,Attrs)):-
 
 % VERTEX TERMS
 
+vertex_label(V, Label):-
+  dcg_with_output_to(atom(Label), rdf_term_name([literal_ellipsis(50)], V)).
+
 vertex_peripheries(_, 1).
 
 vertex_shape(_, ellipse).
 
 vertex_term(Vs, V, vertex(Id,V,Attrs)):-
   nth0chk(Id, Vs, V),
-  dcg_with_output_to(atom(Label), rdf_term_name(V)),
+  vertex_label(V, Label),
   vertex_shape(V, Shape),
   Attrs = [label(Label),shape(Shape)].
 
