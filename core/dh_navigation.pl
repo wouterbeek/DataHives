@@ -34,6 +34,8 @@ Navigation predicates for agents in DataHives.
 :- use_module(sparql(sparql_db)).
 :- use_module(sparql(sparql_ext)).
 
+:- dynamic(no_dereference/1).
+
 %! backtrack(
 %!   ?From:or([bnode,iri,literal]),
 %!   ?Direction:oneof([backward,forward]),
@@ -169,7 +171,7 @@ lod_step(Goal, Resource, Proposition):-
     assert_resource_graph(Resource),
     File
   ),
-  % Then we pick on of those triples according to some method.
+  % Then we pick one of those triples according to some method.
   select_triple(Goal, Resource, Proposition).
 
 
@@ -185,22 +187,34 @@ assert_resource_graph(Resource):-
   rdf_graph_touch(Resource).
 % IRI: not in cache yet. Here we go...
 assert_resource_graph(Resource):-
+  no_dereference(Resource), !.
+assert_resource_graph(Resource):-
   % SPARQL query.
   ignore(catch(assert_resource_graph_by_sparql_query(Resource, Cached1), _, true)),
+  
   % IRI: download a LOD description based on the IRI prefix.
   ignore(catch(assert_resource_graph_by_prefix(Resource, Cached2), _, true)),
+  
   % IRI: based on the entire IRI we can download a LOD description,
   % i.e. a "dereference".
   ignore(catch(assert_resource_graph_by_url(Resource, Cached3), _, true)),
+  
   % DEB
-  report_on_caching(Cached1, Cached2, Cached3).
+  report_on_caching(Resource, Cached1, Cached2, Cached3),
+  
+  % Can I dereference this resource?
+  register_dereferenceability(C1, C2, C3, Resource).
 
-report_on_caching(C1, C2, C3):-
-  format(user_output, 'CACHING: ', []),
+report_on_caching(Resource, C1, C2, C3):-
+  format(user_output, 'CACHING ~w: ', [Resource]),
   (C1 == true -> format(user_output, ' SPARQL', []) ; true),
   (C2 == true -> format(user_output, ' PREFIX', []) ; true),
   (C3 == true -> format(user_output, ' DEREF',  []) ; true),
   format(user_output, '~n', []).
+
+register_dereferenceability(false, false, false, Resource):- !.
+  assert(no_dereference(Resource))
+register_dereferenceability(_, _, _, _).
 
 
 %! assert_resource_graph_by_sparql_query(

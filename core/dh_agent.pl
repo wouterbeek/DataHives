@@ -4,11 +4,11 @@
     create_agent/4, % :Navigate
                     % :Act
                     % :Communicate
-                    % +InitialLocation:iri
+                    % +InitialLocation:or([atom,iri])
     create_agents/5 % :Navigate
                     % :Act
                     % :Communicate
-                    % +InitialLocation:iri
+                    % +InitialLocation:or([atom,iri])
                     % +NumberOfAgents:positive_integer
   ]
 ).
@@ -21,7 +21,13 @@ Create and kill agents in DataHives.
 @version 2014/02, 2014/04
 */
 
-:-  use_module(dh_core(dh_cycle)).
+:- use_module(library(aggregate)).
+:- use_module(library(random)).
+:- use_module(library(semweb/rdf_db)).
+
+:- use_module(rdf_term(rdf_term)).
+
+:- use_module(dh_core(dh_cycle)).
 
 :- meta_predicate(create_agent(4,4,4,+)).
 :- meta_predicate(create_agents(4,4,4,+,+)).
@@ -30,11 +36,26 @@ Create and kill agents in DataHives.
 
 %! create_agent(:Navigate, :Act, :Communicate, +InitialLocation:url) .
 
-create_agent(Nav, Act, Com, Init):-
+% Initialize by graph.
+create_agent(Nav, Act, Com, Graph):-
+  rdf_graph(Graph), !,
+  
+  % Take a random term out of the given graph.
+  aggregate_all(
+    set(Term),
+    rdf_term(Term, Graph),
+    Terms
+  ),
+  random_member(Term, Terms),
+  
+  % Initialize the agent with the found term.
+  create_agent(Nav, Act, Com, Term).
+% Initialize by term.
+create_agent(Nav, Act, Com, Term):-
   flag(agent, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
   thread_create(
-    dh_cycle(Nav, Act, Com, Init),
+    dh_cycle(Nav, Act, Com, Term),
     _,
     [alias(Alias)]
   ).
