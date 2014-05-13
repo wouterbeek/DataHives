@@ -24,12 +24,7 @@ Simple test predicates for running programs in DataHives.
 :- use_module(dh_core(dh_action)).
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_core(dh_navigation)).
-
-:- dynamic(start_url/2).
-
-start_url('http://dbpedia.org/resource/Banana').
-start_url('http://rdf.freebase.com/ns/m.08pbxl').
-
+:- use_module(dh_test(dh_init)).
 
 
 dh_test:-

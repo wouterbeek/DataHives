@@ -191,17 +191,17 @@ assert_resource_graph(Resource):-
 assert_resource_graph(Resource):-
   % SPARQL query.
   ignore(catch(assert_resource_graph_by_sparql_query(Resource, Cached1), _, true)),
-  
+
   % IRI: download a LOD description based on the IRI prefix.
   ignore(catch(assert_resource_graph_by_prefix(Resource, Cached2), _, true)),
-  
+
   % IRI: based on the entire IRI we can download a LOD description,
   % i.e. a "dereference".
   ignore(catch(assert_resource_graph_by_url(Resource, Cached3), _, true)),
-  
+
   % DEB
   report_on_caching(Resource, Cached1, Cached2, Cached3),
-  
+
   % Can I dereference this resource?
   register_dereferenceability(Cached1, Cached2, Cached3, Resource).
 
@@ -223,9 +223,16 @@ register_dereferenceability(_, _, _, _).
 %! ) is det.
 
 assert_resource_graph_by_sparql_query(Resource, true):-
-  uri_components(Resource, uri_components(_, Domain, _, _, _)),
-  sparql_current_remote_domain(Remote, Domain), !,
-  
+  uri_components(Resource, uri_components(_, Domain1, _, _, _)),
+  (
+    Domain1 == 'dbpedia.org'
+  ->
+    Domain2 = 'live.dbpedia.org'
+  ;
+    true
+  ),
+  sparql_current_remote_domain(Remote, Domain2), !,
+
   % Find predicate-object pairs.
   phrase(
     sparql_formulate(
@@ -243,7 +250,7 @@ assert_resource_graph_by_sparql_query(Resource, true):-
     Query1
   ),
   sparql_query(Remote, Query1, _, Rows1),
-  
+
   % Find subject-predicate pairs.
   phrase(
     sparql_formulate(
@@ -261,9 +268,9 @@ assert_resource_graph_by_sparql_query(Resource, true):-
     Query2
   ),
   sparql_query(Remote, Query2, _, Rows2),
-  
-  (Rows1 == [], Rows2 == [] -> gtrace ; true), %DEB
-  
+
+  (Rows1 == [], Rows2 == [] -> true ; true), %DEB
+
   forall(
     (
       member(row(P,O), Rows1)
