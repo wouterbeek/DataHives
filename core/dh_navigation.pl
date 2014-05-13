@@ -203,17 +203,17 @@ assert_resource_graph(Resource):-
   report_on_caching(Resource, Cached1, Cached2, Cached3),
   
   % Can I dereference this resource?
-  register_dereferenceability(C1, C2, C3, Resource).
+  register_dereferenceability(Cached1, Cached2, Cached3, Resource).
 
-report_on_caching(Resource, C1, C2, C3):-
+report_on_caching(Resource, Cached1, Cached2, Cached3):-
   format(user_output, 'CACHING ~w: ', [Resource]),
-  (C1 == true -> format(user_output, ' SPARQL', []) ; true),
-  (C2 == true -> format(user_output, ' PREFIX', []) ; true),
-  (C3 == true -> format(user_output, ' DEREF',  []) ; true),
+  (Cached1 == true -> format(user_output, ' SPARQL', []) ; true),
+  (Cached2 == true -> format(user_output, ' PREFIX', []) ; true),
+  (Cached3 == true -> format(user_output, ' DEREF',  []) ; true),
   format(user_output, '~n', []).
 
-register_dereferenceability(false, false, false, Resource):- !.
-  assert(no_dereference(Resource))
+register_dereferenceability(false, false, false, Resource):- !,
+  assert(no_dereference(Resource)).
 register_dereferenceability(_, _, _, _).
 
 
