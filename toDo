@@ -4,7 +4,7 @@
 
 Nav :
   - Pick a random link
-  + Pick a link based on weighted random
+  @ Pick a link based on weighted random
     + Discards to high pheromon nodes (cf Template)
     + Discards hubs ?
     + Find a way to discard irelevant nodes (heuristic)

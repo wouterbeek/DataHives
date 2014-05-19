@@ -1,8 +1,11 @@
 :- module(
   dh_test,
   [
-    dh_test/0,
-    dh_test/1 % ?Url:url
+      dh_test/0,
+      dh_test/1, % ?Url:url
+      dh_supervised_test/0,
+      dh_supervised_test/1 % ?Url:url
+
   ]
 ).
 
@@ -42,7 +45,6 @@ dh_test:-
     G
   ).
 
-
 dh_test(Url):-
   aggregate_all(
     set(StartUrl),
@@ -56,4 +58,40 @@ dh_test(Url):-
     update_edge_count,
     Url
   ).
+
+
+
+dh_supervised_test:-
+  assert_visum(G),
+  rdf_graph_exclude_from_gc(G),
+  create_agent(
+    dh_supervised_walk,
+    supervised_action,
+    update_edge_count,
+    G
+  ).
+
+dh_supervised_test(Url):-
+  aggregate_all(
+    set(StartUrl),
+    start_url(StartUrl),
+    StartUrls
+  ),
+  random_member(Url, StartUrls),
+  create_agent(
+    dh_supervised_walk,
+    supervised_action,
+    update_edge_count,
+    Url
+  ).
+
+
+
+
+
+
+
+
+
+
 

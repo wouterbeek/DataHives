@@ -102,12 +102,9 @@ lod_supervised_step(Resource, Proposition):-
 
 %!	dh_supervised_walk(
 %!	  -X
-%!	  +[H|T]:list
-%!	) .
-%!	Return the last element of the list past as argument
-
-dh_supervised_member(X,[]):-
-	false.
+%!	  +List:list
+%!	) is det.
+%	Return the last element of the list past as argument
 
 dh_supervised_member(X,[Y]):-
 	X = Y .

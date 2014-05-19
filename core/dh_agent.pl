@@ -39,7 +39,7 @@ Create and kill agents in DataHives.
 % Initialize by graph.
 create_agent(Nav, Act, Com, Graph):-
   rdf_graph(Graph), !,
-  
+
   % Take a random term out of the given graph.
   aggregate_all(
     set(Term),
@@ -47,7 +47,7 @@ create_agent(Nav, Act, Com, Graph):-
     Terms
   ),
   random_member(Term, Terms),
-  
+
   % Initialize the agent with the found term.
   create_agent(Nav, Act, Com, Term).
 % Initialize by term.
