@@ -4,7 +4,11 @@
     dh_current_location/2, % +ThreadId:atom
                            % -CurrentLocation:or([bnode,iri,literal])
     dh_navigation_init/1, % +InitialLocation:or([bnode,iri,literal])
-    dh_random_walk/4 % +From:or([bnode,iri,literal])
+    dh_random_walk/4, % +From:or([bnode,iri,literal])
+                     % -Direction:oneof([backward,forward])
+                     % -Link:iri
+                     % -To:or([bnode,iri,literal])
+    dh_supervised_walk/4 % +From:or([bnode,iri,literal])
                      % -Direction:oneof([backward,forward])
                      % -Link:iri
                      % -To:or([bnode,iri,literal])
@@ -80,6 +84,36 @@ dh_random_walk(From, Dir, Link, To):-
 lod_random_step(Resource, Proposition):-
   lod_step(random_member, Resource, Proposition).
 
+
+%! dh_supervised_walk(
+%!   +From:or([bnode,iri,literal]),
+%!   -Direction:oneof([backward,forward]),
+%!   -Link:iri,
+%!   -To:or([bnode,iri,literal])
+%! ) is det.
+
+dh_supervised_walk(From, Dir, Link, To):-
+  dh_navigate(lod_supervised_step, From, Dir, Link, To).
+
+%! lod_random_step(+Resource, -Proposition:list) is det.
+
+lod_supervised_step(Resource, Proposition):-
+  lod_step(dh_supervised_member, Resource, Proposition).
+
+%!	dh_supervised_walk(
+%!	  -X
+%!	  +[H|T]:list
+%!	) .
+%!	Return the last element of the list past as argument
+
+dh_supervised_member(X,[]):-
+	false.
+
+dh_supervised_member(X,[Y]):-
+	X = Y .
+
+dh_supervised_member(X,[H|T]):-
+	dh_supervised_member(X,T).
 
 
 % GENERIC NAVIGATION PREDICATE %
@@ -191,17 +225,17 @@ assert_resource_graph(Resource):-
 assert_resource_graph(Resource):-
   % SPARQL query.
   ignore(catch(assert_resource_graph_by_sparql_query(Resource, Cached1), _, true)),
-  
+
   % IRI: download a LOD description based on the IRI prefix.
   ignore(catch(assert_resource_graph_by_prefix(Resource, Cached2), _, true)),
-  
+
   % IRI: based on the entire IRI we can download a LOD description,
   % i.e. a "dereference".
   ignore(catch(assert_resource_graph_by_url(Resource, Cached3), _, true)),
-  
+
   % DEB
   report_on_caching(Resource, Cached1, Cached2, Cached3),
-  
+
   % Can I dereference this resource?
   register_dereferenceability(Cached1, Cached2, Cached3, Resource).
 
@@ -225,7 +259,7 @@ register_dereferenceability(_, _, _, _).
 assert_resource_graph_by_sparql_query(Resource, true):-
   uri_components(Resource, uri_components(_, Domain, _, _, _)),
   sparql_current_remote_domain(Remote, Domain), !,
-  
+
   % Find predicate-object pairs.
   phrase(
     sparql_formulate(
@@ -243,7 +277,7 @@ assert_resource_graph_by_sparql_query(Resource, true):-
     Query1
   ),
   sparql_query(Remote, Query1, _, Rows1),
-  
+
   % Find subject-predicate pairs.
   phrase(
     sparql_formulate(
@@ -261,9 +295,9 @@ assert_resource_graph_by_sparql_query(Resource, true):-
     Query2
   ),
   sparql_query(Remote, Query2, _, Rows2),
-  
+
   (Rows1 == [], Rows2 == [] -> gtrace ; true), %DEB
-  
+
   forall(
     (
       member(row(P,O), Rows1)
