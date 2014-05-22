@@ -8,10 +8,11 @@
                      % -Direction:oneof([backward,forward])
                      % -Link:iri
                      % -To:or([bnode,iri,literal])
-    dh_supervised_walk/4 % +From:or([bnode,iri,literal])
+    dh_supervised_walk/4, % +From:or([bnode,iri,literal])
                      % -Direction:oneof([backward,forward])
                      % -Link:iri
                      % -To:or([bnode,iri,literal])
+    dh_edge_value/4  %
   ]
 ).
 
@@ -101,17 +102,48 @@ lod_supervised_step(Resource, Proposition):-
   lod_step(dh_supervised_member, Resource, Proposition).
 
 %!	dh_supervised_walk(
-%!	  -X
-%!	  +List:list
+%!	  -Proposition
+%!	  +Propositions:list
 %!	) is det.
-%	Return the last element of the list past as argument
+%	Return a random /  weighted element.
 
-dh_supervised_member(X,[Y]):-
-	X = Y .
+dh_supervised_member(Proposition,[Proposition]):-
+	Proposition.
 
-dh_supervised_member(X,[H|T]):-
-	dh_supervised_member(X,T).
+dh_supervised_member(Proposition,Propositions):-
+	dh_total_rand(Count,Propositions),
+	random(0,Count,Choice),
+	dh_supervised_member(Choice,Proposition,Propositions).
 
+dh_supervised_member(Choice1,Proposition,[[S,P,O]|T]):-
+	dh_edge_value(S,P,O,Count1),
+	Choice2 = Choice1 - Count1,
+	Choice2 < 0 -> Proposition = [S,P,O], !;
+	dh_supervised_member(Choice2,Proposition,T).
+
+%!	dh_total_rand(
+%!	  -Count
+%!	  +Propositions:list
+%!	) is det.
+%	Return the sum of the value of the edges of the propositions of
+%	the list
+
+dh_total_rand(Count,[[S,P,O]|T]):-
+	dh_edge_value(S,P,O,Count1),
+	Count = Count2 + Count1 + 1,
+	dh_total_rand(Count2,T).
+
+%!	dh_edge_value(
+%!	  +S
+%!	  +P
+%!	  +O
+%!	  -Count
+%!	) is det.
+%	Return the value of the edge define by S P O
+
+dh_edge_value(S, P, O, Count):-
+	edge_count(S, P, O, Count), !; % cut to not do the next predicate
+	Count = 0.
 
 % GENERIC NAVIGATION PREDICATE %
 
