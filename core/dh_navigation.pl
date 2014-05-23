@@ -16,7 +16,7 @@
 Navigation predicates for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/02-2014/04
+@version 2014/02-2014/05
 */
 
 :- use_module(library(aggregate)).
@@ -27,12 +27,13 @@ Navigation predicates for agents in DataHives.
 
 :- use_module(lod(lod_location)).
 :- use_module(pl(pl_log)).
-:- use_module(rdf(rdf_build)).
-:- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
-:- use_module(rdf_file(rdf_serial)).
 :- use_module(sparql(sparql_build)).
 :- use_module(sparql(sparql_db)).
 :- use_module(sparql(sparql_ext)).
+
+:- use_module(plRdf(rdf_build)).
+:- use_module(plRdf(rdf_gc_graph)). % Run graph garbage collection.
+:- use_module(plRdf_ser(rdf_serial)).
 
 :- dynamic(no_dereference/1).
 

@@ -31,24 +31,29 @@
 @version 2013/09-2013/10, 2014/02
 */
 
-:- use_module(dcg(dcg_generic)).
-:- use_module(generics(db_ext)).
-:- use_module(generics(list_ext)).
-:- use_module(gv(gv_file)).
-:- use_module(html(html_table)).
 :- use_module(library(debug)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
-:- use_module(rdf(rdf_dataset)).
-:- use_module(rdf(rdf_graph)).
-:- use_module(rdf(rdf_name)).
-:- use_module(rdf(rdf_random)).
-:- use_module(rdf_term(rdf_term)).
-:- use_module(rdf_web(rdf_html_table)).
-:- use_module(server(web_modules)).
+
+:- use_module(dcg(dcg_generic)).
+:- use_module(generics(db_ext)).
+:- use_module(generics(list_ext)).
+:- use_module(gv(gv_file)).
 :- use_module(xml(xml_dom)).
+
+:- use_module(plHtml(html_table)).
+
+:- use_module(plServer(web_modules)).
+
+:- use_module(plRdf(rdf_dataset)).
+:- use_module(plRdf(rdf_graph)).
+:- use_module(plRdf(rdf_name)).
+:- use_module(plRdf(rdf_random)).
+:- use_module(plRdf_term(rdf_term)).
+
+:- use_module(plRdfDev(rdf_html_table)).
 
 http:location(dh, root(dh), []).
 :- http_handler(dh(connected_hives), connected_hives, []).

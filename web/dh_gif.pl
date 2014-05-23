@@ -19,7 +19,8 @@ using the Graph Interchange Format.
 
 :- use_module(dcg(dcg_generic)).
 :- use_module(generics(list_ext)).
-:- use_module(rdf(rdf_name)). % Meta-DCG.
+
+:- use_module(plRdf(rdf_name)). % Meta-DCG.
 
 :- use_module(dh_core(dh_communication)).
 

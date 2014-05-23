@@ -14,14 +14,17 @@ Program that checks RDF terms and that runs on the DataHives architecture.
 @version 2013/10, 2014/02
 */
 
-:- use_module(html(html_table)).
 :- use_module(library(apply)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(uri)).
-:- use_module(rdf_web(rdf_html_table)).
-:- use_module(server(web_modules)).
+
+:- use_module(plHtml(html_table)).
+
+:- use_module(plServer(web_modules)).
+
+:- use_module(plRdfDev(rdf_html_table)).
 
 http:location(dh, root(dh), []).
 :- http_handler(dh(termcheck), suspicious_terms_web, []).

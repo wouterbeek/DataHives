@@ -17,8 +17,8 @@ Simple test predicates for running programs in DataHives.
 :- use_module(library(aggregate)).
 :- use_module(library(random)).
 
-:- use_module(rdf(rdf_gc_graph)).
-:- use_module(rdf(tests/rdf_script)).
+:- use_module(plRdf(rdf_gc_graph)).
+:- use_module(plRdf(rdf_script)).
 
 :- use_module(dh_core(dh_agent)).
 :- use_module(dh_core(dh_action)).

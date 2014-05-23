@@ -1,5 +1,7 @@
 % Debug file for the DataHives project.
 
+:- [load].
+
 % Debug flag.
 :- use_module(library(debug)).
 :- debug(dh).

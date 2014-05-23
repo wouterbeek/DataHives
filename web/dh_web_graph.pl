@@ -11,11 +11,13 @@
 
 :- use_module(generics(list_ext)).
 :- use_module(gv(gv_file)).
-:- use_module(pl_web(html_pl_term)).
-:- use_module(rdf_web(rdf_html_table)).
-:- use_module(server(app_ui)). % HTML style.
-:- use_module(server(web_modules)). % Web module registration.
 :- use_module(xml(xml_dom)).
+
+:- use_module(plServer(app_ui)). % HTML style.
+:- use_module(plServer(web_modules)). % Web module registration.
+
+:- use_module(plRdfDev(html_pl_term)).
+:- use_module(plRdfDev(rdf_html_table)).
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_web(dh_gif)).
