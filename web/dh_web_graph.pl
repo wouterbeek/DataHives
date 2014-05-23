@@ -13,11 +13,12 @@
 :- use_module(gv(gv_file)).
 :- use_module(xml(xml_dom)).
 
-:- use_module(plServer(app_ui)). % HTML style.
+:- use_module(plServer(app_server)).
 :- use_module(plServer(web_modules)). % Web module registration.
 
-:- use_module(plRdfDev(html_pl_term)).
-:- use_module(plRdfDev(rdf_html_table)).
+:- use_module(plHtml(html_pl_term)).
+
+:- use_module(plRdfDev_wui(rdf_html_table)).
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_web(dh_gif)).
@@ -70,7 +71,7 @@ dh_web_graph_table(Pairs1) -->
       [header_row(true)],
       html([
         'Ranking of the ',
-        \html_pl_term(MaximumNumberOfRows),
+        \html_pl_term(_, MaximumNumberOfRows),
         ' most visited edges.'
       ]),
       [['Count','Subject','Predicate','Object']|Rows]
