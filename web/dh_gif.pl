@@ -11,11 +11,12 @@ Produces descriptions of graphs in DataHives
 using the Graph Interchange Format.
 
 @author Wouter Beek
-@version 2014/04
+@version 2014/04-2014/05
 */
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
+:- use_module(library(ordsets)).
 
 :- use_module(dcg(dcg_generic)).
 :- use_module(generics(list_ext)).
@@ -53,15 +54,11 @@ dh_graph(Gif):-
 
 dh_graph(MaxCount, Gif):-
   aggregate_all(
-    set(V),
-    dh_vertex(V),
-    Vs
-  ),
-  aggregate_all(
     set(E),
     dh_edge(E),
     Es
   ),
+  edges_to_vertices(Es, Vs),
   dh_graph(MaxCount, Vs, Es, Gif).
 
 %! dh_graph(
@@ -83,6 +80,13 @@ dh_vertex(V):-
   edge_count(V, _, _, _).
 dh_vertex(V):-
   edge_count(_, _, V, _).
+
+
+edges_to_vertices([], []):- !.
+edges_to_vertices([S-_-O|T], S3):-
+  edges_to_vertices(T, S1),
+  ord_add_element(S1, S, S2),
+  ord_add_element(S2, O, S3).
 
 
 

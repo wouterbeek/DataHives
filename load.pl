@@ -2,6 +2,11 @@
 
 :- use_module(library(ansi_term)).
 
+:- multifile(user:prolog/3).
+:- dynamic(user:prolog/3).
+
+user:project('DataHives', 'Where agents travel across the Semantic Web', dh).
+
 :- initialization(load_dh).
 
 load_dh:-
@@ -9,6 +14,7 @@ load_dh:-
   source_file(load_dh, ThisFile),
   file_directory_name(ThisFile, ThisDir),
   assert(user:file_search_path(dh, ThisDir)),
+  assert(user:file_search_path(project, ThisDir)),
   
   % Data subdirectory.
   directory_file_path(ThisDir, data, DataDir),

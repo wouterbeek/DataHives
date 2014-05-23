@@ -21,14 +21,34 @@
 Communication predicates for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/02, 2014/04
+@version 2014/02, 2014/04-2014/05
 */
 
-:- dynamic(edge_count/4).
+:- dynamic(edge_count0/4).
 
 
 
 default_communication(_, _, _, _).
+
+
+%! edge_count(
+%!   +Subject:or([bnode,iri]),
+%!   +Predicate:iri,
+%!   +Object:or([bnode,iri,literal]),
+%!   ?Count:positive_integer
+%! ) is semidet.
+%! edge_count(
+%!   ?Subject:or([bnode,iri]),
+%!   ?Predicate:iri,
+%!   ?Object:or([bnode,iri,literal]),
+%!   ?Count:positive_integer
+%! ) is nondet.
+
+edge_count(S, P, O, Count):-
+  maplist(nonvar, [S,P,O]), !,
+  edge_count0(S, P, O, Count), !.
+edge_count(S, P, O, Count):-
+  edge_count0(S, P, O, Count).
 
 
 update_edge_count(From, backward, Link, To):- !,
@@ -41,9 +61,9 @@ update_edge_count(From, forward, Link, To):-
 
 
 update_edge_count(From, Link, To):-
-  retract(edge_count(From, Link, To, Count1)), !,
+  retract(edge_count0(From, Link, To, Count1)), !,
   Count2 is Count1 + 1,
-  assert(edge_count(From, Link, To, Count2)).
+  assert(edge_count0(From, Link, To, Count2)).
 update_edge_count(From, Link, To):-
-  assert(edge_count(From, Link, To, 1)).
+  assert(edge_count0(From, Link, To, 1)).
 

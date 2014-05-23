@@ -41,7 +41,7 @@ dh_cycle(Nav, Act, Com, InitFrom):-
 
   repeat,
 
-  pause_after_x_steps(1000),
+  pause_after_n_steps(100),
 
   % Navigate.
   call(Nav, From, Dir, Link, To),
@@ -54,9 +54,10 @@ dh_cycle(Nav, Act, Com, InitFrom):-
 
   fail.
 
-pause_after_x_steps(X):-
+pause_after_n_steps(X):-
   flag(steps, Y, Y + 1),
   (
+    Y > 0,
     0 =:= Y mod X
   ->
     gtrace,

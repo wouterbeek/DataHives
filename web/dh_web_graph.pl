@@ -19,11 +19,16 @@
 :- use_module(plHtml(html_pl_term)).
 
 :- use_module(plRdfDev_wui(rdf_html_table)).
+:- use_module(plRdfDev_wui(rdf_tabular)).
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_web(dh_gif)).
 
+:- multifile(http:location/3).
+:- dynamic(http:location/3).
+
 http:location(dh_web, root(dh), []).
+
 :- http_handler(dh_web(graph), dh_web_graph, []).
 
 user:web_module('DH Graph', dh_web_graph).
@@ -50,6 +55,7 @@ dh_web_graph(_Request):-
 
 dh_web_graph_graph -->
   {
+gtrace,
     dh_graph(Gif),
     graph_to_svg_dom([method(dot)], Gif, SvgDom)
   },

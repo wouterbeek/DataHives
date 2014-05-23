@@ -25,6 +25,7 @@ Navigation predicates for agents in DataHives.
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(uri)).
 
+:- use_module(generics(db_ext)).
 :- use_module(lod(lod_location)).
 :- use_module(pl(pl_log)).
 :- use_module(sparql(sparql_build)).
@@ -34,6 +35,8 @@ Navigation predicates for agents in DataHives.
 :- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_gc_graph)). % Run graph garbage collection.
 :- use_module(plRdf_ser(rdf_serial)).
+
+:- db_add_novel(user:prolog_file_type(log, logging)).
 
 :- dynamic(no_dereference/1).
 
