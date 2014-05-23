@@ -38,6 +38,8 @@ Navigation predicates for agents in DataHives.
 :- use_module(sparql(sparql_build)).
 :- use_module(sparql(sparql_db)).
 :- use_module(sparql(sparql_ext)).
+:- use_module(dh_core(dh_communication)).
+
 
 :- dynamic(no_dereference/1).
 
