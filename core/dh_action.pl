@@ -24,7 +24,8 @@ Action predicates for agents in DataHives.
 
 :- use_module(dcg(dcg_content)).
 :- use_module(dcg(dcg_generic)).
-:- use_module(rdf(rdf_name)).
+
+:- use_module(plRdf(rdf_name)).
 
 
 default_action(From, Dir, Link, To):-

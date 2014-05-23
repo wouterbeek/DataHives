@@ -44,7 +44,6 @@ dh_cycle(Nav, Act, Com, InitFrom):-
   pause_after_x_steps(1000),
 
   % Navigate.
-gtrace,
   call(Nav, From, Dir, Link, To),
 
   % Act.

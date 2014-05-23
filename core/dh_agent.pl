@@ -25,7 +25,7 @@ Create and kill agents in DataHives.
 :- use_module(library(random)).
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(rdf_term(rdf_term)).
+:- use_module(plRdf_term(rdf_term)).
 
 :- use_module(dh_core(dh_cycle)).
 

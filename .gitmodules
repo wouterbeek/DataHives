@@ -1,3 +1,18 @@
 [submodule "Prolog-Library-Collection"]
 	path = Prolog-Library-Collection
 	url = https://github.com/wouterbeek/Prolog-Library-Collection.git
+[submodule "plHtml"]
+	path = plHtml
+	url = https://github.com/wouterbeek/plHtml.git
+[submodule "plRdf"]
+	path = plRdf
+	url = https://github.com/wouterbeek/plRdf.git
+[submodule "plRdf-Dev"]
+	path = plRdf-Dev
+	url = https://github.com/wouterbeek/plRdf-Dev.git
+[submodule "plDev"]
+	path = plDev
+	url = https://github.com/wouterbeek/plDev.git
+[submodule "plServer"]
+	path = plServer
+	url = https://github.com/wouterbeek/plServer.git

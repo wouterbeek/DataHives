@@ -11,8 +11,9 @@ Web-based interface to agents in DataHives.
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 
-:- use_module(html(html_table)).
-:- use_module(server(web_modules)).
+:- use_module(plHtml(html_table)).
+
+:- use_module(plServer(web_modules)).
 
 http:location(dh_web, root(dh), []).
 :- http_handler(dh_web(agent), dh_web_agent, []).

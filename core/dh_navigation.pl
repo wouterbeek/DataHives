@@ -21,7 +21,7 @@
 Navigation predicates for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/02-2014/04
+@version 2014/02-2014/05
 */
 
 :- use_module(library(aggregate)).
@@ -32,14 +32,15 @@ Navigation predicates for agents in DataHives.
 
 :- use_module(lod(lod_location)).
 :- use_module(pl(pl_log)).
-:- use_module(rdf(rdf_build)).
-:- use_module(rdf(rdf_gc_graph)). % Run graph garbage collection.
-:- use_module(rdf_file(rdf_serial)).
 :- use_module(sparql(sparql_build)).
 :- use_module(sparql(sparql_db)).
 :- use_module(sparql(sparql_ext)).
 :- use_module(dh_core(dh_communication)).
 
+
+:- use_module(plRdf(rdf_build)).
+:- use_module(plRdf(rdf_gc_graph)). % Run graph garbage collection.
+:- use_module(plRdf_ser(rdf_serial)).
 
 :- dynamic(no_dereference/1).
 
@@ -288,8 +289,15 @@ register_dereferenceability(_, _, _, _).
 %! ) is det.
 
 assert_resource_graph_by_sparql_query(Resource, true):-
-  uri_components(Resource, uri_components(_, Domain, _, _, _)),
-  sparql_current_remote_domain(Remote, Domain), !,
+  uri_components(Resource, uri_components(_, Domain1, _, _, _)),
+  (
+    Domain1 == 'dbpedia.org'
+  ->
+    Domain2 = 'live.dbpedia.org'
+  ;
+    true
+  ),
+  sparql_current_remote_domain(Remote, Domain2), !,
 
   % Find predicate-object pairs.
   phrase(
@@ -327,7 +335,7 @@ assert_resource_graph_by_sparql_query(Resource, true):-
   ),
   sparql_query(Remote, Query2, _, Rows2),
 
-  (Rows1 == [], Rows2 == [] -> gtrace ; true), %DEB
+  (Rows1 == [], Rows2 == [] -> true ; true), %DEB
 
   forall(
     (
