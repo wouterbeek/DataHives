@@ -4,10 +4,15 @@
     dh_current_location/2, % +ThreadId:atom
                            % -CurrentLocation:or([bnode,iri,literal])
     dh_navigation_init/1, % +InitialLocation:or([bnode,iri,literal])
-    dh_random_walk/4 % +From:or([bnode,iri,literal])
+    dh_random_walk/4, % +From:or([bnode,iri,literal])
                      % -Direction:oneof([backward,forward])
                      % -Link:iri
                      % -To:or([bnode,iri,literal])
+    dh_supervised_walk/4, % +From:or([bnode,iri,literal])
+                     % -Direction:oneof([backward,forward])
+                     % -Link:iri
+                     % -To:or([bnode,iri,literal])
+    dh_edge_value/4  %
   ]
 ).
 
@@ -31,6 +36,8 @@ Navigation predicates for agents in DataHives.
 :- use_module(sparql(sparql_build)).
 :- use_module(sparql(sparql_db)).
 :- use_module(sparql(sparql_ext)).
+:- use_module(dh_core(dh_communication)).
+
 
 :- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_gc_graph)). % Run graph garbage collection.
@@ -85,6 +92,64 @@ lod_random_step(Resource, Proposition):-
   lod_step(random_member, Resource, Proposition).
 
 
+%! dh_supervised_walk(
+%!   +From:or([bnode,iri,literal]),
+%!   -Direction:oneof([backward,forward]),
+%!   -Link:iri,
+%!   -To:or([bnode,iri,literal])
+%! ) is det.
+
+dh_supervised_walk(From, Dir, Link, To):-
+  dh_navigate(lod_supervised_step, From, Dir, Link, To).
+
+%! lod_random_step(+Resource, -Proposition:list) is det.
+
+lod_supervised_step(Resource, Proposition):-
+  lod_step(dh_supervised_member, Resource, Proposition).
+
+%!	dh_supervised_walk(
+%!	  -Proposition
+%!	  +Propositions:list
+%!	) is det.
+%	Return a random /  weighted element.
+
+dh_supervised_member(Proposition,[Proposition]):-
+	Proposition.
+
+dh_supervised_member(Proposition,Propositions):-
+	dh_total_rand(Count,Propositions),
+	random(0,Count,Choice),
+	dh_supervised_member(Choice,Proposition,Propositions).
+
+dh_supervised_member(Choice1,Proposition,[[S,P,O]|T]):-
+	dh_edge_value(S,P,O,Count1),
+	Choice2 = Choice1 - Count1,
+	Choice2 < 0 -> Proposition = [S,P,O], !;
+	dh_supervised_member(Choice2,Proposition,T).
+
+%!	dh_total_rand(
+%!	  -Count
+%!	  +Propositions:list
+%!	) is det.
+%	Return the sum of the value of the edges of the propositions of
+%	the list
+
+dh_total_rand(Count,[[S,P,O]|T]):-
+	dh_edge_value(S,P,O,Count1),
+	Count = Count2 + Count1 + 1,
+	dh_total_rand(Count2,T).
+
+%!	dh_edge_value(
+%!	  +S
+%!	  +P
+%!	  +O
+%!	  -Count
+%!	) is det.
+%	Return the value of the edge define by S P O
+
+dh_edge_value(S, P, O, Count):-
+	edge_count(S, P, O, Count), !; % cut to not do the next predicate
+	Count = 0.
 
 % GENERIC NAVIGATION PREDICATE %
 

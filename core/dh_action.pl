@@ -1,8 +1,12 @@
 :- module(
   dh_action,
   [
-    default_action/4 % +From:or([bnode,iri,literal])
+    default_action/4, % +From:or([bnode,iri,literal])
                      % -Direction:oneof([backward,forward])
+                     % -Link:iri
+                     % -To:or([bnode,iri,literal])
+    supervised_action/4  % +From:or([bnode,iri,literal])
+		     % -Direction:oneof([backward,forward])
                      % -Link:iri
                      % -To:or([bnode,iri,literal])
   ]
@@ -24,7 +28,6 @@ Action predicates for agents in DataHives.
 :- use_module(plRdf(rdf_name)).
 
 
-
 default_action(From, Dir, Link, To):-
   dir_trans(Dir, Orient),
   dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
@@ -33,4 +36,14 @@ default_action(From, Dir, Link, To):-
 
 dir_trans(backward, left).
 dir_trans(forward, right).
+
+supervised_action(From, Dir, Link, To):-
+  dir_trans(Dir, Orient),
+  dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
+  dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
+  debug(dh, '~w\t~w', [Arrow,Triple]).
+
+
+
+
 
