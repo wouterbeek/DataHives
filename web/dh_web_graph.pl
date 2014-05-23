@@ -55,7 +55,6 @@ dh_web_graph(_Request):-
 
 dh_web_graph_graph -->
   {
-gtrace,
     dh_graph(Gif),
     graph_to_svg_dom([method(dot)], Gif, SvgDom)
   },
