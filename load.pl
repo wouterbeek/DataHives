@@ -34,7 +34,10 @@ load_dh:-
   
   % Load the Web-based development environment.
   use_module(plDev(plDev)),
+  use_module(dh_web(dh_web_agent)),
+  use_module(dh_web(dh_web_graph)),
   
+  % Load some tests.
   use_module(dh_test(dh_test)).
 
 

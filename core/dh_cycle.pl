@@ -13,8 +13,10 @@
 The navigate-act-communicate cycle for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/04
+@version 2014/04-2014/05
 */
+
+:- use_module(generics(meta_ext)).
 
 :- use_module(dh_core(dh_navigation)).
 
@@ -41,7 +43,7 @@ dh_cycle(Nav, Act, Com, InitFrom):-
 
   repeat,
 
-  pause_after_n_steps(100),
+  after_n_steps(100, dh_steps_message),
 
   % Navigate.
   call(Nav, From, Dir, Link, To),
@@ -54,24 +56,15 @@ dh_cycle(Nav, Act, Com, InitFrom):-
 
   fail.
 
-pause_after_n_steps(X):-
-  flag(steps, Y, Y + 1),
-  (
-    Y > 0,
-    0 =:= Y mod X
-  ->
-    gtrace,
-    print_message(informational, steps_taken(Y))
-  ;
-    true
-  ).
-
 
 
 % MESSAGES
 
+dh_steps_message(Steps):-
+  print_message(informational, steps_taken(Steps)).
+
 :- multifile(prolog:message).
 
-prolog:message(steps_taken(X)) -->
-  [X,' steps have been taken.',nl].
+prolog:message(steps_taken(Steps)) -->
+  [Steps,' steps have been taken.',nl].
 

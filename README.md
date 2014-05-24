@@ -18,8 +18,7 @@ Running agent simulations on the Web of Data / the Linked Open Data cloud.
   3. Install the project's Git submodules:
     ~~~
     $ cd DataHives
-    $ git submodule init
-    $ git submodule update
+    $ git submodule update --init
     ~~~
 
 ### Startup
@@ -27,19 +26,25 @@ Running agent simulations on the Web of Data / the Linked Open Data cloud.
 DataHives is started in the following way:
 
 ~~~
-$ ./run --debug
+$ swipl load.pl
 ~~~
-
-The debug flag opens up a monitor of agent activity.
 
 ### Add an agent
 
+The following creates a single agent that randomly traverses the LOD cloud
+using forward links.
+
 ~~~
-?- dh_test(_).
+?- dh_test(X).
+X = <URL-AT-WHICH-THE-AGENT-STARTED>
 ~~~
 
-This creates a single agent that randomly traverses the LOD cloud
-using forward links.
+This can be repeated to add more agents.
+The following adds multiple (e.g., 100) agents at once:
+
+~~~{.pl}
+?- forall(between(1, 100, _), dh_test(_)).
+~~~
 
 ## Navigate-Act-Communicate
 

@@ -14,11 +14,12 @@
 Simple test predicates for running programs in DataHives.
 
 @author Wouter Beek
-@version 2013/09-2013/10, 2014/02, 2014/04
+@version 2013/09-2013/10, 2014/02, 2014/04-2014/05
 */
 
 :- use_module(library(aggregate)).
 :- use_module(library(random)).
+:- use_module(library(www_browser)).
 
 :- use_module(plRdf(rdf_gc_graph)).
 :- use_module(plRdf(rdf_script)).
@@ -28,6 +29,10 @@ Simple test predicates for running programs in DataHives.
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_core(dh_navigation)).
 :- use_module(dh_test(dh_init)).
+
+:- dynamic(dh_test:www_open).
+:- initialization(assert(dh_test:www_open(false))).
+
 
 
 dh_test:-
@@ -52,8 +57,15 @@ dh_test(Url):-
     default_action,
     update_edge_count,
     Url
-  ).
+  ),
+  www_open.
 
+www_open:-
+  dh_test:www_open(true), !.
+www_open:-
+  retract(dh_test:www_open(false)), !,
+  assert(dh_test:www_open(true)),
+  www_open_url('http://localhost:3040/dh/graph').
 
 
 dh_supervised_test:-

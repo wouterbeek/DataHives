@@ -45,7 +45,10 @@ dh_web_graph(_Request):-
   reverse(Pairs2, Pairs3),
   reply_html_page(
     app_style,
-    title('DataHives - Graph'),
+    html([
+      meta([content(1),'http-equiv'(refresh)], []),
+      title('DataHives - Graph')
+    ]),
     html([
       \dh_web_graph_graph,
       \dh_web_graph_table(Pairs3)
