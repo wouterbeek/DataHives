@@ -40,7 +40,7 @@ from the characterization of a stepping paradigm is that:
 :- use_module(sparql(sparql_ext)).
 
 :- use_module(plRdf(rdf_build)).
-:- use_module(plRdf(rdf_gc_graph)). % Run graph garbage collection.
+:- use_module(plRdf(rdf_gc)). % Run graph garbage collection.
 :- use_module(plRdf_ser(rdf_serial)).
 
 :- dynamic(no_dereference/1).

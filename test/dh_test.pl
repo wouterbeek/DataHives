@@ -5,7 +5,6 @@
       dh_test/1, % ?Url:url
       dh_supervised_test/0,
       dh_supervised_test/1 % ?Url:url
-
   ]
 ).
 
@@ -21,7 +20,7 @@ Simple test predicates for running programs in DataHives.
 :- use_module(library(random)).
 :- use_module(library(www_browser)).
 
-:- use_module(plRdf(rdf_gc_graph)).
+:- use_module(plRdf(rdf_gc)).
 :- use_module(plRdf(rdf_script)).
 
 :- use_module(dh_core(dh_agent)).

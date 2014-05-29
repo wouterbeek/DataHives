@@ -18,8 +18,8 @@
 
 :- use_module(plHtml(html_pl_term)).
 
-:- use_module(plRdfDev_wui(rdf_html_table)).
-:- use_module(plRdfDev_wui(rdf_tabular)).
+:- use_module(plTabular(rdf_html_table)).
+:- use_module(plTabular(rdf_tabular)).
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_web(dh_gif)).
