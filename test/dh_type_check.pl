@@ -18,8 +18,7 @@ Verify the well-formedness of IRIs.
 
 :- use_module(generic(meta_ext)).
 
-:- use_module(dh(dh)).
-:- use_module(dh(dh_walk)). % Meta-argument.
+:- use_module(dh_core(dh_lod_walk_random)).
 
 default_url('http://dbpedia.org/resource/Banana').
 
@@ -29,7 +28,7 @@ dh_type_check(Url):-
   default_url(DefaultUrl),
   default(DefaultUrl, Url),
   init_agent(
-    dh_random_walk,
+    dh_lod_walk_random,
     type_check,
     default_communication, %STUB
     Url

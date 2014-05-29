@@ -27,6 +27,8 @@ Simple test predicates for running programs in DataHives.
 :- use_module(dh_core(dh_agent)).
 :- use_module(dh_core(dh_action)).
 :- use_module(dh_core(dh_communication)).
+:- use_module(dh_core(dh_lod_walk_random)).
+:- use_module(dh_core(dh_lod_walk_supervised)).
 :- use_module(dh_core(dh_navigation)).
 :- use_module(dh_test(dh_init)).
 
@@ -39,7 +41,7 @@ dh_test:-
   assert_visum(G),
   rdf_graph_exclude_from_gc(G),
   create_agent(
-    dh_random_walk,
+    dh_lod_walk_random,
     default_action,
     update_edge_count,
     G
@@ -53,7 +55,7 @@ dh_test(Url):-
   ),
   random_member(Url, StartUrls),
   create_agent(
-    dh_random_walk,
+    dh_lod_walk_random,
     default_action,
     update_edge_count,
     Url
@@ -72,7 +74,7 @@ dh_supervised_test:-
   assert_visum(G),
   rdf_graph_exclude_from_gc(G),
   create_agent(
-    dh_supervised_walk,
+    dh_lod_walk_supervised,
     supervised_action,
     update_edge_count,
     G
@@ -86,19 +88,9 @@ dh_supervised_test(Url):-
   ),
   random_member(Url, StartUrls),
   create_agent(
-    dh_supervised_walk,
+    dh_lod_walk_supervised,
     supervised_action,
     update_edge_count,
     Url
   ).
-
-
-
-
-
-
-
-
-
-
 
