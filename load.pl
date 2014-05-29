@@ -15,7 +15,9 @@ user:project('DataHives', 'Where agents travel across the Semantic Web', dh).
 ]).
 
 % Load the Web-based development environment and some tests.
-:- use_module(plDev(plDev)).
+:- use_module(plServer(plServer)).
+:- use_module(plServer(app_server)).
+:- start_app_server([]).
 :- use_module(dh_web(dh_web_agent)).
 :- use_module(dh_web(dh_web_graph)).
 :- use_module(dh_test(dh_test)).

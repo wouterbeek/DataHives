@@ -31,6 +31,7 @@ load_project(ChildProjects):-
   source_file(load_project(_), ThisFile),
   file_directory_name(ThisFile, ThisDir),
   assert(user:file_search_path(ParentFsp, ThisDir)),
+  assert(user:file_search_path(project, ThisDir)),
 
   % Set the data subdirectory.
   set_data_subdirectory(ThisDir),
