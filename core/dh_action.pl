@@ -30,7 +30,7 @@ Action predicates for agents in DataHives.
 
 default_action(From, Dir, Link, To):-
   dir_trans(Dir, Orient),
-  dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
+  dcg_with_output_to(atom(Arrow), arrow(Orient, 4)),
   dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
   debug(dh, '~w\t~w', [Arrow,Triple]).
 
@@ -39,7 +39,7 @@ dir_trans(forward, right).
 
 supervised_action(From, Dir, Link, To):-
   dir_trans(Dir, Orient),
-  dcg_with_output_to(atom(Arrow), arrow([head(Orient)], 4)),
+  dcg_with_output_to(atom(Arrow), arrow(Orient, 4)),
   dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
   debug(dh, '~w\t~w', [Arrow,Triple]).
 
