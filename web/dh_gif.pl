@@ -71,7 +71,7 @@ dh_graph(MaxCount, Gif):-
 dh_graph(MaxCount, Vs, Es, graph(V_Terms,E_Terms,Attrs)):-
   maplist(vertex_term(Vs), Vs, V_Terms),
   maplist(edge_term(MaxCount, Vs), Es, E_Terms),
-  Attrs = [dir(forward)].
+  Attrs = [directed=true].
 
 
 %! dh_vertex(-Vertex:or([bnode,iri,literal])) is nondet.
@@ -99,7 +99,7 @@ edge_name(_-P-_, Label):-
 
 edge_penwidth(MaxCount, S-P-O, Penwidth):-
   edge_count(S, P, O, Count),
-  Penwidth is ceiling(Count / MaxCount * 10).
+  Penwidth is Count / MaxCount * 10.
 
 edge_style(_, solid).
 
@@ -111,7 +111,7 @@ edge_term(MaxCount, Vs, E, edge(FromId,ToId,Attrs)):-
   edge_name(E, Label),
   edge_penwidth(MaxCount, E, Penwidth),
   edge_style(E, Style),
-  Attrs = [arrowhead(ArrowHead),label(Label),penwidth(Penwidth),style(Style)].
+  Attrs = [arrowhead=ArrowHead,label=Label,penwidth=Penwidth,style=Style].
 
 
 
@@ -128,5 +128,5 @@ vertex_term(Vs, V, vertex(Id,V,Attrs)):-
   nth0chk(Id, Vs, V),
   vertex_label(V, Label),
   vertex_shape(V, Shape),
-  Attrs = [label(Label),shape(Shape)].
+  Attrs = [label=Label,shape=Shape].
 
