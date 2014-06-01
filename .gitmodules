@@ -16,3 +16,6 @@
 [submodule "plTabular"]
 	path = plTabular
 	url = https://github.com/wouterbeek/plTabular.git
+[submodule "plGraphViz"]
+	path = plGraphViz
+	url = https://github.com/wouterbeek/plGraphViz.git

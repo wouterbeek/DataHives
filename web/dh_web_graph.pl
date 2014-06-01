@@ -46,7 +46,7 @@ dh_web_graph(_Request):-
   reply_html_page(
     app_style,
     html([
-      meta([content(1),'http-equiv'(refresh)], []),
+      %%%%meta([content(1),'http-equiv'(refresh)], []),
       title('DataHives - Graph')
     ]),
     html([
