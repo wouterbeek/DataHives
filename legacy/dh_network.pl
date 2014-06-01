@@ -40,12 +40,13 @@
 :- use_module(dcg(dcg_generic)).
 :- use_module(generics(db_ext)).
 :- use_module(generics(list_ext)).
-:- use_module(gv(gv_file)).
 :- use_module(xml(xml_dom)).
 
 :- use_module(plHtml(html_table)).
 
 :- use_module(plServer(web_modules)).
+
+:- use_module(plGraphViz(gv_file)).
 
 :- use_module(plRdf(rdf_dataset)).
 :- use_module(plRdf(rdf_graph)).

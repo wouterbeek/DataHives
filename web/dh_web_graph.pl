@@ -10,7 +10,6 @@
 :- use_module(library(http/http_dispatch)).
 
 :- use_module(generics(list_ext)).
-:- use_module(gv(gv_file)).
 :- use_module(xml(xml_dom)).
 
 :- use_module(plServer(app_server)).
@@ -20,6 +19,8 @@
 
 :- use_module(plTabular(rdf_html_table)).
 :- use_module(plTabular(rdf_tabular)).
+
+:- use_module(plGraphViz(gv_file)).
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_web(dh_gif)).
