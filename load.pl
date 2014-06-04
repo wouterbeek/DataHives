@@ -12,6 +12,7 @@
     plServer,
     plRdf,
     plDev,
+    plGraphViz,
     plTabular
 ]).
 
