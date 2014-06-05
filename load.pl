@@ -1,4 +1,4 @@
-% The load file for DataHives.
+% The load file the DataHives project.
 
 :- dynamic(user:prolog/3).
 :- multifile(user:prolog/3).
