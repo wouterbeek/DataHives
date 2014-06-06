@@ -15,7 +15,7 @@ using the Linked Open Data stepping paradigm.
 
 @author Baudouin Duthoit
 @author Wouter Beek
-@version 2014/05
+@version 2014/05-2014/06
 */
 
 :- use_module(library(lists)).

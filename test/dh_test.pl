@@ -63,7 +63,7 @@ dh_supervised_test:-
   rdf_graph_exclude_from_gc(G),
   create_agent(
     dh_lod_walk_supervised,
-    supervised_action,
+    default_action,
     update_edge_count,
     G
   ).
@@ -72,7 +72,7 @@ dh_supervised_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_supervised,
-    supervised_action,
+    default_action,
     update_edge_count,
     Url
   ).
