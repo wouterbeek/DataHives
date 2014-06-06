@@ -49,32 +49,58 @@ lod_supervised_step(Resource, Proposition):-
 % Return a proposition in a randomish way,
 % taking the relative weights of the elements into account.
 %
-% @see The argument mirrors that of predicate member/2.
+% ### Definition
+%
+% Suppose that there are edges $e_1, \ldots, e_n$,
+% and the value function is denoted by $v : E \rightarrow \mathcal{N}$.
+%
+% We define the cumulative value $v_c$ of edge $e_i$ as
+% $v_c(e_i) := \bigsum_{1 \leq j \leq i} v(e_j)$,
+% for $1 \leq i \leq n$.
+%
+% If we pick a random number $r$ with $1 \leq r \leq v_c(e_n)$,
+% then we can uniquely identify an edge $e_i$ such that
+% $v_c(e_{i-1}) < r < v_c(e_{i+1})$.
+%
+% ### Implementation detail
+%
+% We consider large values first, since this will reduce
+% the number recursions needed for determining the chosen edge.
+%
+% @see The argument order mirrors that of predicate member/2.
 
 supervised_member(Proposition, [Proposition]):- !.
 supervised_member(Proposition, Propositions):-
   findall(
-    Value-Proposition,
+    Value2-Proposition,
     (
       member(Proposition, Propositions),
-      edge_value(Proposition, Value)
+      edge_value(Proposition, Value1),
+      % We add 1 to each edge value.
+      % Otherwise, edges with value 0 would never be considered.
+      succ(Value1, Value2)
     ),
     Pairs1
   ),
+  
+  % Process large values first.
   keysort(Pairs1, Pairs2),
-  % Running up until the cumulative value exceeds the random choice
-  % is faster if we consider larger values first.
   reverse(Pairs2, Pairs3),
+  
+  % Pick the random value between 1 and the cumulative edge value.
   pairs_keys(Pairs3, Keys),
   sum_list(Keys, SummedValue),
   random(0, SummedValue, Choice),
+  
+  % Choose the edge that is uniquely identified by
+  % the randomly chosen number.
   supervised_member(Choice, Proposition, Pairs3).
 
 supervised_member(Choice, Proposition, Pairs):-
   supervised_member(Choice, Proposition, 0, Pairs).
 
 supervised_member(Choice, Proposition, Cumulative, [_-Proposition|_]):-
-  Choice < Cumulative, !.
+  Choice =< Cumulative, !.
 supervised_member(Choice, Proposition, Cumulative1, [Value-_|T]):-
   Cumulative2 is Cumulative1 + Value,
   supervised_member(Choice, Proposition, Cumulative2, T).
