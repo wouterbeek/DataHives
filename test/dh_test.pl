@@ -13,12 +13,13 @@
 Simple test predicates for running programs in DataHives.
 
 @author Wouter Beek
-@version 2013/09-2013/10, 2014/02, 2014/04-2014/05
+@author Baudouin Duthoit
+@version 2013/09-2013/10, 2014/02, 2014/04-2014/06
 */
 
-:- use_module(library(aggregate)).
-:- use_module(library(random)).
 :- use_module(library(www_browser)).
+
+:- use_module(generics(meta_ext)).
 
 :- use_module(plRdf(rdf_gc)).
 :- use_module(plRdf(rdf_script)).
@@ -29,7 +30,7 @@ Simple test predicates for running programs in DataHives.
 :- use_module(dh_core(dh_lod_walk_random)).
 :- use_module(dh_core(dh_lod_walk_supervised)).
 :- use_module(dh_core(dh_navigation)).
-:- use_module(dh_test(dh_init)).
+:- use_module(dh_test(dh_test_generics)).
 
 :- dynamic(dh_test:www_open).
 :- initialization(assert(dh_test:www_open(false))).
@@ -47,12 +48,7 @@ dh_test:-
   ).
 
 dh_test(Url):-
-  aggregate_all(
-    set(StartUrl),
-    start_url(StartUrl),
-    StartUrls
-  ),
-  random_member(Url, StartUrls),
+  default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_random,
     default_action,
@@ -60,13 +56,6 @@ dh_test(Url):-
     Url
   ),
   www_open.
-
-www_open:-
-  dh_test:www_open(true), !.
-www_open:-
-  retract(dh_test:www_open(false)), !,
-  assert(dh_test:www_open(true)),
-  www_open_url('http://localhost:3040/dh/graph').
 
 
 dh_supervised_test:-
@@ -80,16 +69,22 @@ dh_supervised_test:-
   ).
 
 dh_supervised_test(Url):-
-  aggregate_all(
-    set(StartUrl),
-    start_url(StartUrl),
-    StartUrls
-  ),
-  random_member(Url, StartUrls),
+  default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_supervised,
     supervised_action,
     update_edge_count,
     Url
   ).
+
+
+
+% HELPERS
+
+www_open:-
+  dh_test:www_open(true), !.
+www_open:-
+  retract(dh_test:www_open(false)), !,
+  assert(dh_test:www_open(true)),
+  www_open_url('http://localhost:3040/dh/graph').
 
