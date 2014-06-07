@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{color}
+\usepackage[colorlinks,linkcolor=grey, urlcolor=gray, citecolor=red, breaklinks, pagebackref]{hyperref}
+
+\definecolor{gray}{rgb}{0.7,0.7,0.7}
+\definecolor{grey}{rgb}{0.3,0.5,0.5}
+\newenvironment{itemh}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{gray} \small]}{\end{itemize}}
+\newenvironment{itemH}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{gray} \large]}{\end{itemize}}
+
+\begin{document}
+\title{Comparative Study about intelligent agent on RDF's graph\\
+	\textit{Bachelor Project in Semantic Web using bee and ant agent}}
+\author{	Baudouin Duthoit\\
+		Student number : 2540566
+	\and
+		Wouter Beek
+	\and
+		Stefan Schlobach
+	}
+\maketitle
+
+\abstract{
+	RDF is a standard of W3C to enable computer and human to understand data, to give them sense.
+	That is the Semantic Web.
+	Data is stored in triples formed of a subject and a predicate and an object.
+	Those triples themselves are on different computers well spread all over the web.
+	More and more people are using the Semantic Web and so the online data is increasing a lot
+	making the reasoning over the graph really complex and the more complex it is,
+	the more we need efficient agents to increase performances.
+	Our goal is to create agents that performs that reasoning base on the ants behaviour
+	and compare them to the bee agents we already have, created last year by Christophe Guéret.
+	Those agents are coded in JavaScript and perform as a Web application that any client can use,
+	an example of the preexisting project can be found here \url{http://wouterblog.com/} .
+}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Hypothesis}
+	The goal of this project is to create a new kind of agents based on a different behaviour,
+	agent that we think more powerful than the previous one.
+
+\section{Evaluation}
+	We will verify the hypothesis via different criteria.
+	The first way of compare two agents is quantitative using the number of discovered node (entailment regime).
+	This one is relatively simpler to evaluate than the qualitative which require a human subjective interaction (user feedback).
+	Those two methods will be used to compare 3 kind of agents:
+	\begin{itemh}
+		\item Random (base)
+		\item Bee (already implemented)
+		\item Ant (to be implemented)
+	\end{itemh}
+
+\section{Planning}
+	\subsection{Estimated tasks}
+		Some high-level tasks, to be filled in later:
+		\begin{itemH}
+			\item Implementation framework:
+				\begin{itemh}
+					\item Have a look at the JS-based triple store rdfstore-js
+					\item Integrate Pepijn’s work (as much as possible)  into the new implementation.
+					\item Visualization (optional component) uses D3JS.
+				\end{itemh}
+			\item Strategies:
+				\begin{itemh}
+					\item Random movement + no communication.
+					\item Bee: random node choice / communication / local traversal.
+					\item Ant: movement based on pheromone values + communication via environment/graph annotation.
+				\end{itemh}
+			\item Evaluation:
+				\begin{itemh}
+					\item Quantify over the number of deductions (over time) achieved by a group of agents.
+					\item Qualitative evaluation: more difficult…
+				\end{itemh}
+		\end{itemH}
+
+\section{Work in Progress}
+	\subsection{First try with RDFstore-js}
+		\paragraph{} The first attempt to implement those agents was to use JS, based on the project :
+		\url{https://githu.com/antoniogarrote/rdfstore-js}.
+		Unfortunately, it has been misleading because the documentation was lacking
+		and implementing functions was thus hard to do.
+		It took me 3 days to understand how to load a store in local to work on it !
+	\subsection{Work on DataHives \#1}
+		\paragraph{} This is a submodule of the project Pragmatic Semantic.
+		It already has random agents implemented.
+		Those agents are defined by a cycle of action they perform : Navigate / Act / Communicate.
+		The random agent go somewhere random, don't act nor communicate.
+		We will implement naviguation, action and communication functions step by step,
+		adding a few feature at a time to be sure to get something working in the end.
+		The web interface will show where did the agents went (could be useful for qualitative evalutation).
+		\paragraph{} To start the local server, we had to launch a command from the Pragmatic Semantic folder.
+		The purpose of this command was to laucnh the local server.
+		Then, on it, we could start some random agents using the simple dh\_test(\_) in prolog.
+		After that, the visualization of the agents and their progress is at the web adresse localhost:3040.
+		Unfortunately, the heavy structure was quite hard to manipulate correctly and didn't make a stand alone system.
+		That why DataHives has been recast.
+	\subsection{DataHives \#2 recast}
+		\paragraph{} The recast makes the system more easy to use and more stand alone.
+
+\newpage
+
+\section{Literature}
+	Papers :
+	\begin{itemh}
+		\item Hayes2014 RDFS 1.1 Semantics (section 9.2.1 gives a fair overview).
+		\item Pepijn Kroes, 2013, BNAIC poster.
+		\item Kathrin Dentlez, Christophe Gueret, Stefan Schlobach, IEEE full paper.
+	\end{itemh}
+	Other links :
+	\begin{itemh}
+		\item\url{http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment}
+		\item \url{http://www.doc.gold.ac.uk/~mas02gw/prolog_tutorial/prologpages/index.html#menu}
+	\end{itemh}
+\end{document}
