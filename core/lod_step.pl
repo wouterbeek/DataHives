@@ -24,7 +24,7 @@ from the characterization of a stepping paradigm is that:
      and on a locally loaded graph.
 
 @author Wouter Beek
-@version 2014/02-2014/05
+@version 2014/02-2014/06
 */
 
 :- use_module(library(aggregate)).
@@ -80,16 +80,30 @@ from the characterization of a stepping paradigm is that:
 % but the way in which we select a single proposition can differ.
 
 lod_step(Goal, Resource, Proposition):-
+  % First we assert all triples that describe the given resource
+  % (i.e., the depth-1 description or copmplete ego-graph).
   absolute_file_name(data(dh), File, [access(write),file_type(logging)]),
-  % First we assert all triples that describe a resource (depth 1)
-  % in a graph by that name.
   run_collect_messages(
     assert_resource_graph(Resource),
     File
   ),
+  
   % Then we pick one of those triples according to some method.
   lod_select_triple(Goal, Resource, Proposition).
 
+
+%! assert_resource_graph(+Resource:or([bnode,iri,literal])) is det.
+% Retrieves an ego-graph for the given resource.
+%
+% An **ego-graph** is a graph with one vertex in the middle
+% (the aforementioned resource) and an arbitrary number of vertices
+% surrounding it.
+% The complete ego-graph of a resource gives the depth-1 description
+% of that resource.
+%
+% The complete ego-graph is stores in an RDF grapg with `Resource` as name.
+%
+% @see http://faculty.ucr.edu/~hanneman/nettext/C9_Ego_networks.html
 
 % RDF blank node.
 assert_resource_graph(Resource):-
