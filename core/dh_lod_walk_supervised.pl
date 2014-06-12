@@ -71,8 +71,8 @@ lod_supervised_step(Resource, Proposition):-
 %
 % @see The argument order mirrors that of predicate member/2.
 supervised_member(_,[]):-!,
-  backtrack(_,_,_,_),
-  forbide_path,
+  backtrack(From,_,_,_),
+  forbide_path(From),
   kill_agent.
 supervised_member(Proposition, [Proposition]):- !.
 supervised_member(Proposition, Propositions):-

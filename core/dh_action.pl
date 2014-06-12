@@ -12,7 +12,8 @@
                      % -To:or([bnode,iri,literal])
 
     kill_agent/0,
-    forbide_path/0
+    forbide_path/1 % +From:or([bnode,iri,literal])
+
   ]
 ).
 
@@ -25,11 +26,14 @@ Action predicates for agents in DataHives.
 */
 
 :- use_module(library(debug)).
+:- use_module(library(semweb/rdf_db)).
 
 :- use_module(dcg(dcg_content)).
 :- use_module(dcg(dcg_generic)).
 
 :- use_module(plRdf(rdf_name)).
+:- use_module(plRdf_term(rdf_term)).
+
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_core(dh_navigation)).
@@ -61,9 +65,31 @@ assert_triple(_,_,_):-
 kill_agent:-
   halt.
 
-forbide_path:-
-  backtrack(From, _, To, Link),  % Redundancy because it goes back previously when call. We just want to know where to devalue an edge with a dead end.
-  edge_count(From,Link,To,-1).
+forbide_path(From):-
+  single_alley(From,Alley),
+  maplist(
+    maplist(devalue/2),
+    Alley
+  ).
+
+single_alley(Next, [[Prev,Link,Next]|Alley]):-
+  single_step(Prev, Link, Next),
+  single_alley(Prev, Alley).
+single_alley(_, []).
+
+single_step(Prev, Link, Next):-
+  rdf(Prev, Link, Next),
+  \+ ((
+    rdf(Prev, Link0, Next0),
+    Link0 \== Link,
+    Next0 \== Next
+  )).
+
+% Value of triple S-P-O decreased by one
+devalue([S,P,O],NextValue):-
+  edge_count(S,P,O,Count),
+  succ(NextValue,Count),  % Should we use -2 instead of -1 ?
+  edge_count(S,P,O,NextValue).
 
 dir_trans(backward, left).
 dir_trans(forward, right).
