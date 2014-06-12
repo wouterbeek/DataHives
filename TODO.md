@@ -11,10 +11,16 @@ Nav :
 
 Act :
   - Display path
+	+ Apply http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment to find some more triples ?
 
 Com :
   + Leave pheromons
     + Depending on the relevance of the path (based on found information ?)
+			+ Closeness to a certain node (start node ?)
+	  		+ Distance
+				+ Number of paths between them (too expensive ?)
+				+ Language label (and other labels)
+			+ Importance of a node
+				+ How many in-going / out-going links
+				+ Seens a lot or not
     + Play with bactrack function to optimize efficiency ?
-
-

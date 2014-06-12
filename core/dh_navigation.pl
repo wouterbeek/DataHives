@@ -6,7 +6,9 @@
                    % -Direction:oneof([backward,forward]),
                    % -Link:iri,
                    % -To:or([bnode,iri,literal])
-    dh_navigation_init/1 % +InitialLocation:or([bnode,iri,literal])
+    dh_navigation_init/1, % +InitialLocation:or([bnode,iri,literal])
+
+    backtrack/4
   ]
 ).
 
