@@ -27,24 +27,27 @@ Simple test predicates for running programs in DataHives.
 :- use_module(dh_core(dh_agent)).
 :- use_module(dh_core(dh_action)).
 :- use_module(dh_core(dh_communication)).
+:- use_module(dh_core(dh_evaluation)).
 :- use_module(dh_core(dh_lod_walk_random)).
 :- use_module(dh_core(dh_lod_walk_supervised)).
 :- use_module(dh_core(dh_navigation)).
 :- use_module(dh_test(dh_test_generics)).
 
 :- dynamic(dh_test:www_open).
+
 :- initialization(assert(dh_test:www_open(false))).
 
 
 
 dh_test:-
-  assert_visum(G),
-  rdf_graph_exclude_from_gc(G),
+  assert_visum(Graph),
+  rdf_graph_exclude_from_gc(Graph),
   create_agent(
     dh_lod_walk_random,
     default_action,
     update_edge_count,
-    G
+    default_evaluation,
+    Graph
   ).
 
 dh_test(Url):-
@@ -53,19 +56,21 @@ dh_test(Url):-
     dh_lod_walk_random,
     deductive_action,
     update_edge_count,
+    fitness_evaluation,
     Url
   ),
   www_open.
 
 
 dh_supervised_test:-
-  assert_visum(G),
-  rdf_graph_exclude_from_gc(G),
+  assert_visum(Graph),
+  rdf_graph_exclude_from_gc(Graph),
   create_agent(
     dh_lod_walk_supervised,
     default_action,
     update_edge_count,
-    G
+    default_evaluation,
+    Graph
   ).
 
 dh_supervised_test(Url):-
@@ -74,12 +79,13 @@ dh_supervised_test(Url):-
     dh_lod_walk_supervised,
     default_action,
     update_edge_count,
+    default_evaluation,
     Url
   ).
 
 
 
-% HELPERS
+% Helpers
 
 www_open:-
   dh_test:www_open(true), !.

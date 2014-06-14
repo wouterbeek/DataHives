@@ -1,6 +1,7 @@
 :- module(
   dh_action,
   [
+    deductions/1, % ?Deductions:nonneg
     default_action/4, % +From:or([bnode,iri,literal])
                       % -Direction:oneof([backward,forward])
                       % -Link:iri
@@ -10,6 +11,7 @@
                         % -Link:iri
                         % -To:or([bnode,iri,literal])
     kill_agent/0,
+    lifetime/1, % ?Lifetime:nonneg
     forbide_path/1 % +From:or([bnode,iri,literal])
   ]
 ).
@@ -31,6 +33,7 @@ Action predicates for agents in DataHives.
 :- use_module(dcg(dcg_generic)).
 
 :- use_module(plRdf(rdf_name)).
+:- use_module(plRdf_ent(rdf_bnode_map)).
 :- use_module(plRdf_ent(rdf_entailment_patterns)).
 :- use_module(plRdf_term(rdf_term)).
 
@@ -38,9 +41,13 @@ Action predicates for agents in DataHives.
 :- use_module(dh_core(dh_navigation)).
 :- use_module(dh_test(dh_test)).
 
-%! fitness(?Deductions:nonneg, ?Lifetime:nonneg) is nondet.
+%! deductions(?Deductions:nonneg) is nondet.
 
-:- thread_local(fitness/2).
+:- thread_local(deductions/1).
+
+%! lifetime(?Lifetime:nonneg) is nondet.
+
+:- thread_local(lifetime/1).
 
 
 
@@ -48,50 +55,76 @@ default_action(From, Dir, Link, To):-
   dir_trans(Dir, Orient),
   dcg_with_output_to(atom(Arrow), arrow(Orient, 4)),
   dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
-  debug(dh, '~w\t~w', [Arrow,Triple]).
+  debug(dh, '~w\t~w', [Arrow,Triple]),
+  increment_lifetime.
 
 
 deductive_action(From, backward, Link, To):- !,
   deductive_action(To, forward, Link, From).
 deductive_action(From, forward, Link, To):-
+  forall(
+    rdf_entailment_pattern_match(From, Link, To, U1, V, W),
+    rdf_assert_entailment(U1, V, W)
+  ),
+  increment_lifetime.
+
+
+rdf_assert_entailment(U1, V, W):-
+  (
+    rdf_is_literal(U1)
+  ->
+    r2b(user, U1, U2)
+  ;
+    U2 = U1
+  ),
   thread_self(Me),
   thread_property(Me, alias(MyName)),
-  forall(
-    (
-      rdf_entailment_pattern(rdf(From,Link,To), rdf(U,V,W))
-    ;
-      rdf_entailment_pattern(rdf(From,Link,To), rdf(X,Y,Z), rdf(U,V,W)),
-      rdf(X, Y, Z)
-    ),
-    (
-      rdf_assert(U, V, W, MyName),
-      increment_fitness
-    )
-  ),
-  increment_lifetime,
-  print_message(informational, fitness(MyName)).
+  rdf_assert(U2, V, W, MyName),
+  increment_deductions.
 
 
-increment_fitness:-
+rdf_entailment_pattern_match(From, Link, To, U1, V, W):-
   (
-    retract(fitness(Deductions1, Lifetime1)), !
+    rdf_entailment_pattern(rdf(From,Link,To), rdf(U1,V,W))
   ;
-    Deductions1 = 0,
-    Lifetime1 = 0
+    rdf_entailment_pattern(rdf(From,Link,To), rdf(X,Y,Z), rdf(U1,V,W)),
+    rdf(X, Y, Z)
   ),
-  maplist(succ, [Deductions1,Lifetime1], [Deductions2,Lifetime2]),
-  assert(fitness(Deductions2, Lifetime2)).
+  (
+    rdf_is_literal(U1),
+    has_r2b(user, U1, U2)
+  ->
+    true
+  ;
+    U2 = U1
+  ),
+  \+ rdf(U2, V, W).
 
+
+%! increment_deductions is det.
+% Increments the number of deductions produced by an agent.
+
+increment_deductions:-
+  (
+    retract(deductions(Deductions1)), !
+  ;
+    Deductions1 = 0
+  ),
+  succ(Deductions1, Deductions2),
+  assert(deductions(Deductions2)).
+
+
+%! increment_lifetime is det.
+% Increments an agent's liftime, e.g. a single step.
 
 increment_lifetime:-
   (
-    retract(fitness(Deductions, Lifetime1)), !
+    retract(lifetime(Lifetime1)), !
   ;
-    Deductions = 0,
     Lifetime1 = 0
   ),
   succ(Lifetime1, Lifetime2),
-  assert(fitness(Deductions, Lifetime2)).
+  assert(lifetime(Lifetime2)).
 
 
 kill_agent:-
@@ -129,16 +162,4 @@ devalueTriple([S,P,O]):-
 
 dir_trans(backward, left).
 dir_trans(forward, right).
-
-
-% Messages
-
-:- multifile(prolog:message//1).
-
-prolog:message(fitness(MyName)) -->
-  {
-    fitness(Deductions, Lifetime),
-    Fitness is Deductions / Lifetime
-  },
-  ['[~w] ~f (~D deductions; ~D steps)'-[MyName,Fitness,Deductions,Lifetime]].
 

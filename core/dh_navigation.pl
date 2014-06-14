@@ -44,7 +44,6 @@ dh_current_location(ThreadId, CurrentLocation):-
   thread_signal(ThreadId, backtrack(_,_,_,CurrentLocation)).
 
 
-
 %! dh_navigate(
 %!   :Navigation,
 %!   +From:or([bnode,iri,literal]),
