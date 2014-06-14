@@ -66,11 +66,9 @@ assert_triple(_,_,_):-
   true.
 
 kill_agent:-
-  write("Reborn"),
   dh_supervised_test(_),
+  write("Reborn"),
   thread_exit(_).
-  % print(Term).
-  % thread_join(_,Term).  % Which thread join ? No thread_exit() ?
 
 forbide_path(From):-
   single_alley(From,Alley),

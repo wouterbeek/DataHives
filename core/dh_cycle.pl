@@ -61,7 +61,7 @@ dh_cycle(Nav, Act, Com, InitFrom):-
 % MESSAGES
 
 dh_steps_message(Steps):-
-gtrace,
+%  gtrace,
   print_message(informational, steps_taken(Steps)).
 
 :- multifile(prolog:message).
