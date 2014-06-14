@@ -51,7 +51,7 @@ dh_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_random,
-    default_action,
+    deductive_action,
     update_edge_count,
     Url
   ),
