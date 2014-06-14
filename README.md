@@ -2,6 +2,8 @@
 
 Running agent simulations on the Web of Data / the Linked Open Data cloud.
 
+(https://github.com/wouterbeek/DataHives/dh_graph.png "Example graph of an agent's exploratory behavior.")
+
 ## Get started
 
 ### Installation
