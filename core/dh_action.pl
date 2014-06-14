@@ -37,6 +37,8 @@ Action predicates for agents in DataHives.
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_core(dh_navigation)).
+:- use_module(dh_test(dh_test)).
+
 
 
 default_action(From, Dir, Link, To):-
@@ -45,17 +47,18 @@ default_action(From, Dir, Link, To):-
   dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
   debug(dh, '~w\t~w', [Arrow,Triple]).
 
-supervised_action(From, _, 'rdf:type', 'rdf:Property'):- % Rule rdfs6
-  assert_triple(From,'rdfs:SubProperty',From).
-supervised_action(From, _, 'rdf:type', 'rdfs:Class'):- % Rule rdfs8
-  assert_triple(From,'rdfs:SubClassOf','rdfs:Resource').
+% Do some entailment following the rules of RDFS
+supervised_action(From, _, "rdf:type", "rdf:Property"):- % Rule rdfs6
+  assert_triple(From,"rdfs:SubProperty",From).
+supervised_action(From, _, "rdf:type", "rdfs:Class"):- % Rule rdfs8
+  assert_triple(From,"rdfs:SubClassOf","rdfs:Resource").
 supervised_action(From, Dir, Link, To):-
   % Entailment
-  assert_triple(From,'rdf:type','rdfs:Datatype'), % Rule rdfs1
-  assert_triple(Link,'rdf:type','rdfs:Datatype'), % Rule rdfs1
-  assert_triple(To,'rdf:type','rdfs:Datatype'), % Rule rdfs1
-  assert_triple(From,'rdf:type','rdfs:Resource'), % Rule rdfs4a
-  assert_triple(To,'rdf:type','rdfs:Resource'), % Rule rdfs4b
+  assert_triple(From,"rdf:type","rdfs:Datatype"), % Rule rdfs1
+  assert_triple(Link,"rdf:type","rdfs:Datatype"), % Rule rdfs1
+  assert_triple(To,"rdf:type","rdfs:Datatype"), % Rule rdfs1
+  assert_triple(From,"rdf:type","rdfs:Resource"), % Rule rdfs4a
+  assert_triple(To,"rdf:type","rdfs:Resource"), % Rule rdfs4b
   default_action(From, Dir, Link, To).
 
 % Will be used to store a triple (S,P,O) in the data base.
@@ -63,14 +66,15 @@ assert_triple(_,_,_):-
   true.
 
 kill_agent:-
-  halt.
+  write("Reborn"),
+  dh_supervised_test(_),
+  thread_exit(_).
+  % print(Term).
+  % thread_join(_,Term).  % Which thread join ? No thread_exit() ?
 
 forbide_path(From):-
   single_alley(From,Alley),
-  maplist(
-    maplist(devalue/2),
-    Alley
-  ).
+  devalue(Alley).
 
 single_alley(Next, [[Prev,Link,Next]|Alley]):-
   single_step(Prev, Link, Next),
@@ -86,7 +90,12 @@ single_step(Prev, Link, Next):-
   )).
 
 % Value of triple S-P-O decreased by one
-devalue([S,P,O],NextValue):-
+%
+devalue([]):-!.
+devalue([H|T]):-
+  devalueTriple(H),
+  devalue(T).
+devalueTriple([S,P,O]):-
   edge_count(S,P,O,Count),
   succ(NextValue,Count),  % Should we use -2 instead of -1 ?
   edge_count(S,P,O,NextValue).

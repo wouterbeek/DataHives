@@ -57,7 +57,7 @@ create_agent(Nav, Act, Com, Term):-
   thread_create(
     dh_cycle(Nav, Act, Com, Term),
     _,
-    [alias(Alias)]
+    [alias(Alias),detached(true)]
   ).
 
 
