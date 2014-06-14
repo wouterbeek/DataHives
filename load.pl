@@ -7,9 +7,11 @@
 
 :- use_module(load_project).
 :- load_project([
+    lodCache,
     plc-'Prolog-Library-Collection',
     plHtml,
     plServer,
+    plSparql,
     plRdf,
     plDev,
     plGraphViz,

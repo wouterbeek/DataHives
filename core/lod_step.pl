@@ -35,16 +35,13 @@ from the characterization of a stepping paradigm is that:
 :- use_module(generics(db_ext)).
 :- use_module(lod(lod_location)).
 :- use_module(pl(pl_log)).
-:- use_module(sparql(sparql_build)).
-:- use_module(sparql(sparql_db)).
-:- use_module(sparql(sparql_ext)).
 
 :- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_deb)).
 :- use_module(plRdf(rdf_gc)). % Run graph garbage collection.
 :- use_module(plRdf_ser(rdf_serial)).
 
-:- dynamic(no_dereference/1).
+:- use_module(lodCache(lod_cache_egograph)).
 
 :- db_add_novel(user:prolog_file_type(log, logging)).
 
@@ -84,168 +81,12 @@ lod_step(Goal, Resource, Proposition):-
   % (i.e., the depth-1 description or copmplete ego-graph).
   absolute_file_name(data(dh), File, [access(write),file_type(logging)]),
   run_collect_messages(
-    assert_resource_graph(Resource),
+    assert_egograph(Resource),
     File
   ),
   
   % Then we pick one of those triples according to some method.
   lod_select_triple(Goal, Resource, Proposition).
-
-
-%! assert_resource_graph(+Resource:or([bnode,iri,literal])) is det.
-% Retrieves an ego-graph for the given resource.
-%
-% An **ego-graph** is a graph with one vertex in the middle
-% (the aforementioned resource) and an arbitrary number of vertices
-% surrounding it.
-% The complete ego-graph of a resource gives the depth-1 description
-% of that resource.
-%
-% The complete ego-graph is stores in an RDF grapg with `Resource` as name.
-%
-% @see http://faculty.ucr.edu/~hanneman/nettext/C9_Ego_networks.html
-
-% RDF blank node.
-assert_resource_graph(Resource):-
-  rdf_is_bnode(Resource), !.
-% RDF literal.
-assert_resource_graph(Resource):-
-  rdf_is_literal(Resource), !.
-% IRI: already there, touch it to ensure it remains in cache a bit longer.
-assert_resource_graph(Resource):-
-  rdf_graph(Resource), !,
-  rdf_graph_touch(Resource).
-% IRI: not in cache yet. Here we go...
-assert_resource_graph(Resource):-
-  no_dereference(Resource), !.
-assert_resource_graph(Resource):-
-  % SPARQL query.
-  ignore(catch(assert_resource_graph_by_sparql_query(Resource, Cached1), _, true)),
-
-  % IRI: download a LOD description based on the IRI prefix.
-  ignore(catch(assert_resource_graph_by_prefix(Resource, Cached2), _, true)),
-
-  % IRI: based on the entire IRI we can download a LOD description,
-  % i.e. a "dereference".
-  ignore(catch(assert_resource_graph_by_url(Resource, Cached3), _, true)),
-
-  % DEB
-  report_on_caching(Resource, Cached1, Cached2, Cached3),
-
-  % Can I dereference this resource?
-  register_dereferenceability(Cached1, Cached2, Cached3, Resource).
-
-report_on_caching(Resource, Cached1, Cached2, Cached3):-
-  format(user_output, 'CACHING ~w: ', [Resource]),
-  (Cached1 == true -> format(user_output, ' SPARQL', []) ; true),
-  (Cached2 == true -> format(user_output, ' PREFIX', []) ; true),
-  (Cached3 == true -> format(user_output, ' DEREF',  []) ; true),
-  format(user_output, '~n', []).
-
-register_dereferenceability(false, false, false, Resource):- !,
-  assert(no_dereference(Resource)).
-register_dereferenceability(_, _, _, _).
-
-
-%! assert_resource_graph_by_sparql_query(
-%!   +Resource:iri,
-%!   -Cached:boolean
-%! ) is det.
-
-assert_resource_graph_by_sparql_query(Resource, true):-
-  uri_components(Resource, uri_components(_, Domain1, _, _, _)),
-  (
-    Domain1 == 'dbpedia.org'
-  ->
-    Domain2 = 'live.dbpedia.org'
-  ;
-    true
-  ),
-  sparql_current_remote_domain(Remote, Domain2), !,
-
-  % Find predicate-object pairs.
-  phrase(
-    sparql_formulate(
-      _,
-      _,
-      [],
-      select,
-      true,
-      [p,o],
-      [rdf(iri(Resource),var(p),var(o))],
-      inf,
-      _,
-      _
-    ),
-    Query1
-  ),
-  sparql_query(Remote, Query1, _, Rows1),
-
-  % Find subject-predicate pairs.
-  phrase(
-    sparql_formulate(
-      _,
-      _,
-      [],
-      select,
-      true,
-      [s,p],
-      [rdf(var(s),var(p),iri(Resource))],
-      inf,
-      _,
-      _
-    ),
-    Query2
-  ),
-  sparql_query(Remote, Query2, _, Rows2),
-
-  (Rows1 == [], Rows2 == [] -> true ; true), %DEB
-
-  forall(
-    (
-      member(row(P,O), Rows1)
-    ;
-      member(row(P,O), Rows2)
-    ),
-    rdf_assert(Resource, P, O, Resource)
-  ).
-assert_resource_graph_by_sparql_query(_, false).
-
-
-%! assert_resource_graph_by_prefix(+Resource:iri, -Cached:boolean) is det.
-
-assert_resource_graph_by_prefix(Resource, true):-
-  rdf_global_id(Prefix:_, Resource),
-  lod_location(Prefix, Url), !,
-  assert_resource_graph_by_url_1(Resource, Url).
-assert_resource_graph_by_prefix(_, false).
-
-
-%! assert_resource_graph_by_url(+Iri:iri, -Cached:boolean) is det.
-
-assert_resource_graph_by_url(Iri, true):-
-  uri_iri(Url, Iri),
-  assert_resource_graph_by_url_1(Iri, Url), !.
-assert_resource_graph_by_url(_, false).
-
-%! assert_resource_graph_by_url_1(+Resource:iri, +Url:url) is det.
-
-assert_resource_graph_by_url_1(Resource, Url):-
-  thread_self(Id),
-  atomic_list_concat([Resource,Id], '_', ResourceThread),
-  setup_call_catcher_cleanup(
-    rdf_load_any([], Url, [_-ResourceThread]),
-    rdf_copy(ResourceThread, Resource, _, _, Resource),
-    Exception,
-    (
-      Exception = exception(Error)
-    ->
-      print_message(error, Error)
-    ;
-      rdf_unload_graph_deb(ResourceThread)
-    )
-  ),
-  (rdf_graph(Url) -> true ; gtrace). %DEB
 
 
 %! lod_select_triple(
