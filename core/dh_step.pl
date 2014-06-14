@@ -1,13 +1,13 @@
 :- module(
-  lod_step,
+  dh_step,
   [
-    lod_step/3 % :PropositionSelection
-               % +From:or([bnode,iri,literal])
-               % -Proposition:list(or([bnode,iri,literal]))
+    dh_step/3 % :PropositionSelection
+              % +From:or([bnode,iri,literal])
+              % -Proposition:list(or([bnode,iri,literal]))
   ]
 ).
 
-/** <module> Linked Open Data step
+/** <module> DataHives step
 
 This module implements a stepping paradigm for possible use in DataHives.
 More specifically, it specifies what it means to take a step in
@@ -33,7 +33,6 @@ from the characterization of a stepping paradigm is that:
 :- use_module(library(uri)).
 
 :- use_module(generics(db_ext)).
-:- use_module(lod(lod_location)).
 :- use_module(pl(pl_log)).
 
 :- use_module(plRdf(rdf_build)).
@@ -45,12 +44,12 @@ from the characterization of a stepping paradigm is that:
 
 :- db_add_novel(user:prolog_file_type(log, logging)).
 
-:- meta_predicate(lod_step(2,+,-)).
-:- meta_predicate(lod_select_triple(2,+,-)).
+:- meta_predicate(dh_step(2,+,-)).
+:- meta_predicate(dh_select_triple(2,+,-)).
 
 
 
-%! lod_step(
+%! dh_step(
 %!   :PropositionSelection,
 %!   +From:or([bnode,iri,literal]),
 %!   -Proposition:list(or([bnode,iri,literal]))
@@ -76,7 +75,7 @@ from the characterization of a stepping paradigm is that:
 % i.e. everything we can find in the LOD could today,
 % but the way in which we select a single proposition can differ.
 
-lod_step(Goal, Resource, Proposition):-
+dh_step(Goal, Resource, Proposition):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).
   absolute_file_name(data(dh), File, [access(write),file_type(logging)]),
@@ -86,10 +85,10 @@ lod_step(Goal, Resource, Proposition):-
   ),
   
   % Then we pick one of those triples according to some method.
-  lod_select_triple(Goal, Resource, Proposition).
+  dh_select_triple(Goal, Resource, Proposition).
 
 
-%! lod_select_triple(
+%! dh_select_triple(
 %!   :Goal,
 %!   +Resource:or([bnode,iri,literal]),
 %!   -Proposition:list(or([bnode,iri,literal]))
@@ -102,7 +101,7 @@ lod_step(Goal, Resource, Proposition):-
 % The resultant proposition is a Prolog list containing three RDF terms,
 % forming an RDF triple.
 
-lod_select_triple(Goal, Resource, Proposition):-
+dh_select_triple(Goal, Resource, Proposition):-
   % Ensure uniqueness of propositions by gathering them in an ordered set.
   aggregate_all(
     set([Resource,P,O]),

@@ -22,10 +22,10 @@ using the Linked Open Data stepping paradigm.
 :- use_module(library(pairs)).
 :- use_module(library(random)).
 
+:- use_module(dh_core(dh_action)).
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_core(dh_navigation)).
-:- use_module(dh_core(lod_step)).
-:- use_module(dh_core(dh_action)).
+:- use_module(dh_core(dh_step)).
 
 
 
@@ -43,7 +43,7 @@ dh_lod_walk_supervised(From, Dir, Link, To):-
 %! lod_supervised_step(+Resource, -Proposition:list) is det.
 
 lod_supervised_step(Resource, Proposition):-
-  lod_step(supervised_member, Resource, Proposition).
+  dh_step(supervised_member, Resource, Proposition).
 
 
 %! supervised_member(-Proposition, +Propositions:list) is det.
