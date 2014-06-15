@@ -10,7 +10,6 @@
                         % -Direction:oneof([backward,forward])
                         % -Link:iri
                         % -To:or([bnode,iri,literal])
-    kill_agent/0,
     lifetime/1, % ?Lifetime:nonneg
     forbide_path/1 % +From:or([bnode,iri,literal])
   ]
@@ -125,12 +124,6 @@ increment_lifetime:-
   ),
   succ(Lifetime1, Lifetime2),
   assert(lifetime(Lifetime2)).
-
-
-kill_agent:-
-  dh_supervised_test(_),
-  write("Reborn"),
-  thread_exit(_).
 
 forbide_path(From):-
   single_alley(From,Alley),
