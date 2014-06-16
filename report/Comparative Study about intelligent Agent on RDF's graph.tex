@@ -104,10 +104,17 @@
 		That why DataHives has been recast.
 	\subsection{DataHives \#2 recast}
 		\paragraph{} The recast makes the system more easy to use and more stand alone.
+			The system also produced a picture of the crawled graph (100 most visited edges and their induced nodes).
 		\paragraph{Evaluation \& Fitness.} The cycle has been updated, from this :
 			"Navigate, Act, Communicate" to "Navigate, Act, Communicate, Evaluate".
 			This evalutation is based on a fitness function that says if the agent fits or not,
-			if it fitness is too low, we kill it.
+			if it fitness is too low (typically below $0.5$), we kill it.
+			For now, the fitness function is only a count of deduced information over the number of steps taken.
+			But it will have some new features like taking dead end into account or
+			fitness compare to a set of predefined triples.
+		\paragraph{Rating the edges} is now really basic : if an agent go over an edge it leaves a virtual pheronmon,
+			but soon we'll have some more complicated functions to devalue certain path if they lead to dead ends or
+			if they don't lead to good information (depending on the previous described fitness function)
 
 \newpage
 
