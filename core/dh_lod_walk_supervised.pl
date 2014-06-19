@@ -1,10 +1,11 @@
 :- module(
   dh_lod_walk_supervised,
   [
-    dh_lod_walk_supervised/4 % +From:or([bnode,iri,literal])
+    dh_lod_walk_supervised/4, % +From:or([bnode,iri,literal])
                              % -Direction:oneof([backward,forward])
                              % -Link:iri
                              % -To:or([bnode,iri,literal])
+    backpath/3
   ]
 ).
 
@@ -22,10 +23,22 @@ using the Linked Open Data stepping paradigm.
 :- use_module(library(pairs)).
 :- use_module(library(random)).
 
+:- use_module(dh_core(dh_action)).
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_core(dh_navigation)).
-:- use_module(dh_core(lod_step)).
+:- use_module(dh_core(dh_step)).
 
+
+%! backpath(
+%!   ?From:or([bnode,iri,literal]),
+%!   ?Link:iri,
+%!   ?To:or([bnode,iri,literal])
+%! ) is det.
+%
+%	This predicate store the last node where several posibilities
+%	were available.
+
+:- thread_local(backpath/3).
 
 
 %! dh_lod_walk_supervised(
@@ -39,15 +52,16 @@ dh_lod_walk_supervised(From, Dir, Link, To):-
   dh_navigate(lod_supervised_step, From, Dir, Link, To).
 
 
-%! lod_random_step(+Resource, -Proposition:list) is det.
+%! lod_supervised_step(+Resource, -Proposition:list) is det.
 
 lod_supervised_step(Resource, Proposition):-
-  lod_step(supervised_member, Resource, Proposition).
+  dh_step(supervised_member, Resource, Proposition).
 
 
 %! supervised_member(-Proposition, +Propositions:list) is det.
 % Return a proposition in a randomish way,
 % taking the relative weights of the elements into account.
+% If the list is empty it goes back
 %
 % ### Definition
 %
@@ -68,7 +82,9 @@ lod_supervised_step(Resource, Proposition):-
 % the number recursions needed for determining the chosen edge.
 %
 % @see The argument order mirrors that of predicate member/2.
-
+supervised_member(_,[]):-!,
+  backpath(From,_,_),
+  forbide_path(From).
 supervised_member(Proposition, [Proposition]):- !.
 supervised_member(Proposition, Propositions):-
   findall(
@@ -78,23 +94,28 @@ supervised_member(Proposition, Propositions):-
       edge_value(Proposition, Value1),
       % We add 1 to each edge value.
       % Otherwise, edges with value 0 would never be considered.
-      succ(Value1, Value2)
+      succ(Value1, Value2),
+      % Select only positive value (otherwise the count doesn't work properly)
+      Value2 > 0
     ),
     Pairs1
   ),
-  
+
   % Process large values first.
   keysort(Pairs1, Pairs2),
   reverse(Pairs2, Pairs3),
-  
+
   % Pick the random value between 1 and the cumulative edge value.
   pairs_keys(Pairs3, Keys),
   sum_list(Keys, SummedValue),
   random(0, SummedValue, Choice),
-  
+
   % Choose the edge that is uniquely identified by
   % the randomly chosen number.
-  supervised_member(Choice, Proposition, Pairs3).
+  supervised_member(Choice, Proposition, Pairs3),
+  retract(backpath(_,_,_)),
+  Proposition = S,P,O,
+  assert(backpath(S,P,O)).
 
 supervised_member(Choice, Proposition, Pairs):-
   supervised_member(Choice, Proposition, 0, Pairs).

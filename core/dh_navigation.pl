@@ -6,7 +6,9 @@
                    % -Direction:oneof([backward,forward]),
                    % -Link:iri,
                    % -To:or([bnode,iri,literal])
-    dh_navigation_init/1 % +InitialLocation:or([bnode,iri,literal])
+    dh_navigation_init/1, % +InitialLocation:or([bnode,iri,literal])
+
+    backtrack/4
   ]
 ).
 
@@ -30,8 +32,6 @@ Navigation predicates for agents in DataHives.
 :- meta_predicate(dh_navigate(2,+,-,-,-)).
 :- meta_predicate(dh_step(2,+,-,-,-)).
 
-
-
 %! dh_current_location(
 %!   +ThreadId:atom,
 %!   -CurrentLocation:or([bnode,iri,literal])
@@ -40,7 +40,6 @@ Navigation predicates for agents in DataHives.
 
 dh_current_location(ThreadId, CurrentLocation):-
   thread_signal(ThreadId, backtrack(_,_,_,CurrentLocation)).
-
 
 
 %! dh_navigate(

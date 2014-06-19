@@ -1,9 +1,10 @@
 :- module(
   dh_cycle,
   [
-    dh_cycle/4 % :Navigate
+    dh_cycle/5 % :Navigate
                % :Act
                % :Communicate
+               % :Evaluate
                % +InitialResource:iri
   ]
 ).
@@ -13,18 +14,18 @@
 The navigate-act-communicate cycle for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/04-2014/05
+@version 2014/04-2014/06
 */
 
 :- use_module(generics(meta_ext)).
 
 :- use_module(dh_core(dh_navigation)).
 
-:- meta_predicate(dh_cycle(4,4,4,+)).
+:- meta_predicate(dh_cycle(4,4,4,0,+)).
 
 
 
-%! dh_cycle(:Navigate, :Act, :Communicate, +InitialResource:iri) .
+% ! dh_cycle(:Navigate, :Act, :Communicate, :Evaluate, +InitialResource:iri) .
 % Implementation of the navigate-act-communicate cycle.
 %
 % When the walker visits a blank node or a literal,
@@ -37,13 +38,13 @@ The navigate-act-communicate cycle for agents in DataHives.
 % The same is true for any term that does not dereference,
 %  such as non-dereferencing URLs.
 
-dh_cycle(Nav, Act, Com, InitFrom):-
+dh_cycle(Nav, Act, Com, Eval, InitFrom):-
   % Initialize the backtrack fact in the navigation module.
   dh_navigation_init(InitFrom),
 
   repeat,
 
-  after_n_steps(100, dh_steps_message),
+  after_n_steps(100, print_steps),
 
   % Navigate.
   call(Nav, From, Dir, Link, To),
@@ -54,18 +55,20 @@ dh_cycle(Nav, Act, Com, InitFrom):-
   % Communicate.
   call(Com, From, Dir, Link, To),
 
+  % Evaluate
+  call(Eval),
+
   fail.
 
 
 
-% MESSAGES
+% Messages
 
-dh_steps_message(Steps):-
-gtrace,
+:- multifile(prolog:message//1).
+
+print_steps(Steps):-
   print_message(informational, steps_taken(Steps)).
 
-:- multifile(prolog:message).
-
 prolog:message(steps_taken(Steps)) -->
-  [Steps,' steps have been taken.',nl].
+  ['~D steps have been taken.'-[Steps]].
 

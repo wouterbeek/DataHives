@@ -19,7 +19,6 @@ Count languages and datatypes used in literals.
 :- use_module(library(lists)).
 :- use_module(library(pairs)).
 
-:- use_module(dbpedia(dbpedia)).
 :- use_module(dcg(dcg_generic)).
 :- use_module(generics(meta_ext)).
 
