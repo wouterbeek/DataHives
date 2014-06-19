@@ -49,7 +49,6 @@ dh_test:-
     default_action,
     update_edge_count,
     default_evaluation,
-    true,
     Graph
   ).
 

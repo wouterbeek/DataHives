@@ -1,6 +1,11 @@
 :- module(
   dh_agent,
   [
+    create_agent/5, % :Navigate
+                    % :Act
+                    % :Communicate
+                    % :Evaluate
+                    % +InitialLocation:or([atom,iri])
     create_agent/6, % :Navigate
                     % :Act
                     % :Communicate
@@ -33,6 +38,7 @@ Create and kill agents in DataHives.
 
 :- use_module(dh_core(dh_cycle)).
 
+:- meta_predicate(create_agent(4,4,4,0,+)).
 :- meta_predicate(create_agent(4,4,4,0,:,+)).
 :- meta_predicate(create_agents(4,4,4,0,:,+,+)).
 
@@ -43,8 +49,20 @@ Create and kill agents in DataHives.
 %!   :Act,
 %!   :Communicate,
 %!   :Evaluate,
+%!   +InitialLocation:or([atom,iri])
+%! ) .
+% Wrapper around create_agent/6.
+
+create_agent(Nav, Act, Com, Eval, Init):-
+  create_agent(Nav, Act, Com, Eval, true, Init).
+
+%! create_agent(
+%!   :Navigate,
+%!   :Act,
+%!   :Communicate,
+%!   :Evaluate,
 %!   :Exit
-%!   +InitialLocation:url
+%!   +InitialLocation:or([atom,iri])
 %! ) .
 
 % Initialize by graph.
