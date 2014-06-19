@@ -15,10 +15,16 @@
                   % +Predicate:iri
                   % +Object:or([bnode,iri,literal])
                   % -Value:nonneg
-    update_edge_count/4 % +From:or([bnode,iri,literal])
+    update_edge_count/4, % +From:or([bnode,iri,literal])
                         % +Direction:oneof([backward,forward])
                         % +Link:iri
                         % +To:or([bnode,iri,literal])
+
+    update_edge_count/5 % +From:or([bnode,iri,literal])
+                        % +Direction:oneof([backward,forward])
+                        % +Link:iri
+                        % +To:or([bnode,iri,literal])
+                        % +N:int
   ]
 ).
 
@@ -95,21 +101,23 @@ edge_value(_, _, _, 0).
 %!   +From:or([bnode,iri,literal]),
 %!   +Direction:oneof([backward,forward]),
 %!   +Link:iri,
-%!   +To:or([bnode,iri,literal])
+%!   +To:or([bnode,iri,literal]),
+%!   +N:int
 %! ) is det.
-
-update_edge_count(From, backward, Link, To):- !,
-  update_edge_count(To, forward, Link, From).
-update_edge_count(From, forward, Link, To):-
+update_edge_count(From, Dir, Link, To):-
+  update_edge_count(From, Dir, Link, To, 1).
+update_edge_count(From, backward, Link, To,N):- !,
+  update_edge_count(To, forward, Link, From,N).
+update_edge_count(From, forward, Link, To,N):-
   with_mutex(
     edge_count,
-    update_edge_count0(From, Link, To)
+    update_edge_count0(From, Link, To,N)
   ).
 
-update_edge_count0(From, Link, To):-
+update_edge_count0(From, Link, To,N):-
   retract(edge_count0(From, Link, To, Count1)), !,
-  Count2 is Count1 + 1,
+  Count2 is Count1 + N,
   assert(edge_count0(From, Link, To, Count2)).
-update_edge_count0(From, Link, To):-
+update_edge_count0(From, Link, To,_):-
   assert(edge_count0(From, Link, To, 1)).
 

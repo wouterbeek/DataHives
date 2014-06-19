@@ -145,13 +145,9 @@ single_step(Prev, Link, Next):-
 % Value of triple S-P-O decreased by one
 %
 devalue([]):-!.
-devalue([H|T]):-
-  devalueTriple(H),
+devalue([[S,P,O]|T]):-
+  update_edge_count(S,forward,P,O,-1),
   devalue(T).
-devalueTriple([S,P,O]):-
-  edge_count(S,P,O,Count),
-  succ(NextValue,Count),  % Should we use -2 instead of -1 ?
-  edge_count(S,P,O,NextValue).
 
 dir_trans(backward, left).
 dir_trans(forward, right).
