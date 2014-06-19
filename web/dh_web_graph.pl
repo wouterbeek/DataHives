@@ -19,7 +19,6 @@
 :- use_module(xml(xml_dom)).
 
 :- use_module(plServer(app_server)).
-:- use_module(plServer(web_modules)). % Web module registration.
 
 :- use_module(plHtml(html_pl_term)).
 
@@ -33,17 +32,11 @@
 
 :- multifile(http:location/3).
 :- dynamic(http:location/3).
-
-http:location(dh_web, root(dh), []).
+   http:location(dh_web, root(dh), []).
 
 :- http_handler(dh_web(graph), dh_web_graph, []).
 
-user:web_module('DH Graph', dh_web_graph).
 
-
-
-dh_web_graph(Request):-
-  dh_web_graph(Request, app_style).
 
 dh_web_graph(_, Style):-
   findall(

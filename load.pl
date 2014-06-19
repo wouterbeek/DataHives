@@ -10,7 +10,6 @@
     lodCache,
     plc-'Prolog-Library-Collection',
     plHtml,
-    plServer,
     plSparql,
     plRdf,
     plDev,
