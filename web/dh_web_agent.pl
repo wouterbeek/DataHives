@@ -1,11 +1,17 @@
-:- module(dh_web_agent, []).
+:- module(
+  dh_web_agent,
+  [
+    dh_web_agent/2 % +Request:list(nvpair)
+                   % +Style:atom
+  ]
+).
 
 /** <module> DataHives Web agent
 
 Web-based interface to agents in DataHives.
 
 @author Wouter Beek
-@version 2013/09-2013/10, 2014/02, 2014/04
+@version 2013/09-2013/10, 2014/02, 2014/04, 2014/06
 */
 
 :- use_module(library(http/html_write)).
@@ -13,16 +19,9 @@ Web-based interface to agents in DataHives.
 
 :- use_module(plHtml(html_table)).
 
-:- use_module(plServer(web_modules)).
-
-http:location(dh_web, root(dh), []).
-:- http_handler(dh_web(agent), dh_web_agent, []).
-
-user:web_module('DH Agent', dh_web_agent).
 
 
-
-dh_web_agent(_Request):-
+dh_web_agent(_, Style):-
   findall(
     [Alias,Id,Status,CPU_Time],
     (
@@ -39,7 +38,7 @@ dh_web_agent(_Request):-
     Rows
   ),
   reply_html_page(
-    app_style,
+    Style,
     title('DataHives - Agents'),
     html(
       \html_table(

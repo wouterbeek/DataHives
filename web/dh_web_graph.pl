@@ -18,8 +18,6 @@
 :- use_module(generics(list_ext)).
 :- use_module(xml(xml_dom)).
 
-:- use_module(plServer(app_server)).
-
 :- use_module(plHtml(html_pl_term)).
 
 :- use_module(plTabular(rdf_html_table)).
@@ -29,12 +27,6 @@
 
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_web(dh_gif)).
-
-:- multifile(http:location/3).
-:- dynamic(http:location/3).
-   http:location(dh_web, root(dh), []).
-
-:- http_handler(dh_web(graph), dh_web_graph, []).
 
 
 

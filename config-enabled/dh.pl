@@ -7,16 +7,29 @@
   :- ensure_loaded('../load').
 :- endif.
 
+:- use_module(cliopatria(hooks)).
 
 
-% DataHives
+
+% DataHives: Agent.
+
+:- use_module(dh_web(dh_web_agent)).
+
+cliopatria:menu_item(600=dh/agent, 'DH Agent').
+
+:- http_handler(cliopatria(dh/agent), dh_web_agent, []).
+
+dh_web_agent(Request):-
+  dh_web_agent(Request, cliopatria(default)).
+
+
+% DataHives: Graph.
 
 :- use_module(dh_web(dh_web_graph)).
 
-:- use_module(cliopatria(hooks)).
-   cliopatria:menu_item(700=places/dh, 'DataHives').
+cliopatria:menu_item(700=dh/graph, 'DH Graph').
 
-:- http_handler(cliopatria(dh), dh_web_graph, []).
+:- http_handler(cliopatria(dh/graph), dh_web_graph, []).
 
 dh_web_graph(Request):-
   dh_web_graph(Request, cliopatria(default)).
