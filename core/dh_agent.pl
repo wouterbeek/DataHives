@@ -1,15 +1,17 @@
 :- module(
   dh_agent,
   [
-    create_agent/5, % :Navigate
+    create_agent/6, % :Navigate
                     % :Act
                     % :Communicate
                     % :Evaluate
+                    % :Exit
                     % +InitialLocation:or([atom,iri])
-    create_agents/6 % :Navigate
+    create_agents/7 % :Navigate
                     % :Act
                     % :Communicate
                     % :Evaluate
+                    % :Exit
                     % +InitialLocation:or([atom,iri])
                     % +NumberOfAgents:positive_integer
   ]
@@ -31,8 +33,8 @@ Create and kill agents in DataHives.
 
 :- use_module(dh_core(dh_cycle)).
 
-:- meta_predicate(create_agent(4,4,4,0,+)).
-:- meta_predicate(create_agents(4,4,4,0,+,+)).
+:- meta_predicate(create_agent(4,4,4,0,:,+)).
+:- meta_predicate(create_agents(4,4,4,0,:,+,+)).
 
 
 
@@ -41,11 +43,12 @@ Create and kill agents in DataHives.
 %!   :Act,
 %!   :Communicate,
 %!   :Evaluate,
+%!   :Exit
 %!   +InitialLocation:url
 %! ) .
 
 % Initialize by graph.
-create_agent(Nav, Act, Com, Eval, Graph):-
+create_agent(Nav, Act, Com, Eval, Exit, Graph):-
   rdf_graph(Graph), !,
 
   % Take a random term out of the given graph.
@@ -55,17 +58,17 @@ create_agent(Nav, Act, Com, Eval, Graph):-
     Terms
   ),
   random_member(Term, Terms),
+% Initialize the agent with the found term.
+  create_agent(Nav, Act, Com, Eval, Exit, Term).
 
-  % Initialize the agent with the found term.
-  create_agent(Nav, Act, Com, Eval, Term).
 % Initialize by term.
-create_agent(Nav, Act, Com, Eval, Term):-
+create_agent(Nav, Act, Com, Eval, Exit, Term):-
   flag(agent, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
   thread_create(
     dh_cycle(Nav, Act, Com, Eval, Term),
     _,
-    [alias(Alias),detached(true)]
+    [alias(Alias),detached(true),at_exit(Exit)]
   ).
 
 
@@ -78,9 +81,9 @@ create_agent(Nav, Act, Com, Eval, Term):-
 %!   +NumberOfAgents:positive_integer
 %! ) .
 
-create_agents(Nav, Act, Com, Eval, Init, N):-
+create_agents(Nav, Act, Com, Eval, Exit, Init, N):-
   forall(
     between(1, N, _),
-    create_agent(Nav, Act, Com, Eval, Init)
+    create_agent(Nav, Act, Com, Eval, Exit, Init)
   ).
 

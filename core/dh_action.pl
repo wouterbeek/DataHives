@@ -125,8 +125,8 @@ increment_lifetime:-
   succ(Lifetime1, Lifetime2),
   assert(lifetime(Lifetime2)).
 
-forbide_path(From):-
-  single_alley(From,Alley),
+forbide_path(To):-
+  single_alley(To,Alley),
   devalue(Alley).
 
 single_alley(Next, [[Prev,Link,Next]|Alley]):-

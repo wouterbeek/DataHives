@@ -1,11 +1,10 @@
 :- module(
   dh_lod_walk_supervised,
   [
-    dh_lod_walk_supervised/4, % +From:or([bnode,iri,literal])
+    dh_lod_walk_supervised/4 % +From:or([bnode,iri,literal])
                              % -Direction:oneof([backward,forward])
                              % -Link:iri
                              % -To:or([bnode,iri,literal])
-    backpath/3
   ]
 ).
 
@@ -27,19 +26,6 @@ using the Linked Open Data stepping paradigm.
 :- use_module(dh_core(dh_communication)).
 :- use_module(dh_core(dh_navigation)).
 :- use_module(dh_core(dh_step)).
-
-
-%! backpath(
-%!   ?From:or([bnode,iri,literal]),
-%!   ?Link:iri,
-%!   ?To:or([bnode,iri,literal])
-%! ) is det.
-%
-%	This predicate store the last node where several posibilities
-%	were available.
-
-:- thread_local(backpath/3).
-
 
 %! dh_lod_walk_supervised(
 %!   +From:or([bnode,iri,literal]),
@@ -83,8 +69,9 @@ lod_supervised_step(Resource, Proposition):-
 %
 % @see The argument order mirrors that of predicate member/2.
 supervised_member(_,[]):-!,
-  backpath(From,_,_),
-  forbide_path(From).
+  backtrack(_,_,_,To),
+  forbide_path(To),
+  thread_exit(_).
 supervised_member(Proposition, [Proposition]):- !.
 supervised_member(Proposition, Propositions):-
   findall(
@@ -92,11 +79,11 @@ supervised_member(Proposition, Propositions):-
     (
       member(Proposition, Propositions),
       edge_value(Proposition, Value1),
+      % Select only positive value (otherwise the count doesn't work properly)
+      Value1 >= 0,
       % We add 1 to each edge value.
       % Otherwise, edges with value 0 would never be considered.
-      succ(Value1, Value2),
-      % Select only positive value (otherwise the count doesn't work properly)
-      Value2 > 0
+      succ(Value1, Value2)
     ),
     Pairs1
   ),
@@ -112,10 +99,7 @@ supervised_member(Proposition, Propositions):-
 
   % Choose the edge that is uniquely identified by
   % the randomly chosen number.
-  supervised_member(Choice, Proposition, Pairs3),
-  retract(backpath(_,_,_)),
-  Proposition = S,P,O,
-  assert(backpath(S,P,O)).
+  supervised_member(Choice, Proposition, Pairs3).
 
 supervised_member(Choice, Proposition, Pairs):-
   supervised_member(Choice, Proposition, 0, Pairs).
