@@ -1,14 +1,13 @@
 :- module(
   dh_navigation,
   [
+    backtrack/4,
     dh_navigate/5, % :Navigation,
                    % +From:or([bnode,iri,literal]),
                    % -Direction:oneof([backward,forward]),
                    % -Link:iri,
                    % -To:or([bnode,iri,literal])
-    dh_navigation_init/1, % +InitialLocation:or([bnode,iri,literal])
-
-    backtrack/4
+    dh_navigation_init/1 % +InitialLocation:or([bnode,iri,literal])
   ]
 ).
 

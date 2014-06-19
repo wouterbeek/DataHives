@@ -18,6 +18,10 @@ Evaluation predicates for DataHives agents.
 */
 
 :- use_module(dh_core(dh_action)).
+:- use_module(dh_core(dh_agent)).
+:- use_module(dh_core(dh_communication)).
+:- use_module(dh_core(dh_lod_walk_supervised)).
+:- use_module(dh_core(dh_navigation)).
 
 
 
@@ -56,7 +60,7 @@ send_forager():-
     dh_lod_walk_supervised,
     deductive_action,
     update_edge_count,
-    forager_evalutation,
+    forager_evaluation,
     From,
     5
   ).

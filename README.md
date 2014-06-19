@@ -28,7 +28,7 @@ Running agent simulations on the Web of Data / the Linked Open Data cloud.
 DataHives is started in the following way:
 
 ~~~
-$ swipl load.pl
+$ swipl run.pl
 ~~~
 
 ### Add an agent
