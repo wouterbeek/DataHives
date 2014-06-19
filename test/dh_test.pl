@@ -58,7 +58,7 @@ dh_test(Url):-
     dh_lod_walk_random,
     deductive_action,
     update_edge_count,
-    fitness_evaluation,
+    default_evaluation,
     Url
   ),
   www_open.
@@ -69,7 +69,7 @@ dh_ant_test:-
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
     dh_lod_walk_supervised,
-    default_action,
+    deductive_action,
     update_edge_count,
     fitness_evaluation,
     Graph
@@ -79,7 +79,7 @@ dh_ant_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_supervised,
-    default_action,
+    deductive_action,
     update_edge_count,
     fitness_evaluation,
     Url
@@ -93,7 +93,7 @@ dh_bee_test:-
     dh_lod_walk_supervised,
     default_action,
     update_edge_count,
-    default_evaluation,
+    scout_evaluation,
     Graph
   ).
 
@@ -103,7 +103,7 @@ dh_bee_test(Url):-
     dh_lod_walk_supervised,
     default_action,
     update_edge_count,
-    default_evaluation,
+    scout_evaluation,
     Url
   ).
 
