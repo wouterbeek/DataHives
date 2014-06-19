@@ -49,6 +49,7 @@ dh_test:-
     default_action,
     update_edge_count,
     default_evaluation,
+    true,
     Graph
   ).
 
@@ -59,6 +60,7 @@ dh_test(Url):-
     deductive_action,
     update_edge_count,
     default_evaluation,
+    true,
     Url
   ),
   www_open.
@@ -72,6 +74,7 @@ dh_ant_test:-
     deductive_action,
     update_edge_count,
     fitness_evaluation,
+    dh_ant_test,
     Graph
   ).
 
@@ -82,6 +85,7 @@ dh_ant_test(Url):-
     deductive_action,
     update_edge_count,
     fitness_evaluation,
+    dh_ant_test,
     Url
   ).
 
@@ -94,6 +98,7 @@ dh_bee_test:-
     default_action,
     update_edge_count,
     scout_evaluation,
+    dh_bee_test,
     Graph
   ).
 
@@ -104,6 +109,7 @@ dh_bee_test(Url):-
     default_action,
     update_edge_count,
     scout_evaluation,
+    dh_bee_test,
     Url
   ).
 
