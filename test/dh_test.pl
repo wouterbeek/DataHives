@@ -3,8 +3,10 @@
   [
       dh_test/0,
       dh_test/1, % ?Url:url
-      dh_supervised_test/0,
-      dh_supervised_test/1 % ?Url:url
+      dh_ant_test/0,
+      dh_ant_test/1, % ?Url:url
+      dh_bee_test/0,
+      dh_bee_test/1  % ?Url:url
   ]
 ).
 
@@ -62,7 +64,29 @@ dh_test(Url):-
   www_open.
 
 
-dh_supervised_test:-
+dh_ant_test:-
+  assert_visum(Graph),
+  rdf_graph_exclude_from_gc(Graph),
+  create_agent(
+    dh_lod_walk_supervised,
+    default_action,
+    update_edge_count,
+    fitness_evaluation,
+    Graph
+  ).
+
+dh_ant_test(Url):-
+  default_goal(random_start_url, Url),
+  create_agent(
+    dh_lod_walk_supervised,
+    default_action,
+    update_edge_count,
+    fitness_evaluation,
+    Url
+  ).
+
+
+dh_bee_test:-
   assert_visum(Graph),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
@@ -73,7 +97,7 @@ dh_supervised_test:-
     Graph
   ).
 
-dh_supervised_test(Url):-
+dh_bee_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_supervised,

@@ -1,10 +1,11 @@
 :- module(
   dh_lod_walk_supervised,
   [
-    dh_lod_walk_supervised/4 % +From:or([bnode,iri,literal])
+    dh_lod_walk_supervised/4, % +From:or([bnode,iri,literal])
                              % -Direction:oneof([backward,forward])
                              % -Link:iri
                              % -To:or([bnode,iri,literal])
+    backpath/3
   ]
 ).
 
@@ -27,6 +28,17 @@ using the Linked Open Data stepping paradigm.
 :- use_module(dh_core(dh_navigation)).
 :- use_module(dh_core(dh_step)).
 
+
+%! backpath(
+%!   ?From:or([bnode,iri,literal]),
+%!   ?Link:iri,
+%!   ?To:or([bnode,iri,literal])
+%! ) is det.
+%
+%	This predicate store the last node where several posibilities
+%	were available.
+
+:- thread_local(backpath/3).
 
 
 %! dh_lod_walk_supervised(
@@ -71,7 +83,7 @@ lod_supervised_step(Resource, Proposition):-
 %
 % @see The argument order mirrors that of predicate member/2.
 supervised_member(_,[]):-!,
-  backtrack(From,_,_,_),
+  backpath(From,_,_),
   forbide_path(From).
 supervised_member(Proposition, [Proposition]):- !.
 supervised_member(Proposition, Propositions):-
@@ -100,7 +112,10 @@ supervised_member(Proposition, Propositions):-
 
   % Choose the edge that is uniquely identified by
   % the randomly chosen number.
-  supervised_member(Choice, Proposition, Pairs3).
+  supervised_member(Choice, Proposition, Pairs3),
+  retract(backpath(_,_,_)),
+  Proposition = S,P,O,
+  assert(backpath(S,P,O)).
 
 supervised_member(Choice, Proposition, Pairs):-
   supervised_member(Choice, Proposition, 0, Pairs).

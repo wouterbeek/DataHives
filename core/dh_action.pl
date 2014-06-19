@@ -10,6 +10,10 @@
                         % -Direction:oneof([backward,forward])
                         % -Link:iri
                         % -To:or([bnode,iri,literal])
+    scout_action/4, % +From:or([bnode,iri,literal])
+                    % -Direction:oneof([backward,forward])
+                    % -Link:iri
+		    % -To:or([bnode,iri,literal])
     lifetime/1, % ?Lifetime:nonneg
     forbide_path/1 % +From:or([bnode,iri,literal])
   ]
@@ -48,8 +52,6 @@ Action predicates for agents in DataHives.
 
 :- thread_local(lifetime/1).
 
-
-
 default_action(From, Dir, Link, To):-
   dir_trans(Dir, Orient),
   dcg_with_output_to(atom(Arrow), arrow(Orient, 4)),
@@ -67,6 +69,8 @@ deductive_action(From, forward, Link, To):-
   ),
   increment_lifetime.
 
+scout_action(From, Dir, Link, To):-
+  deductive_action(From, Dir, Link, To).
 
 rdf_assert_entailment(U1, V, W):-
   (

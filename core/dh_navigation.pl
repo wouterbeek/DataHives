@@ -32,8 +32,6 @@ Navigation predicates for agents in DataHives.
 :- meta_predicate(dh_navigate(2,+,-,-,-)).
 :- meta_predicate(dh_step(2,+,-,-,-)).
 
-
-
 %! dh_current_location(
 %!   +ThreadId:atom,
 %!   -CurrentLocation:or([bnode,iri,literal])
