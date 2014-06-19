@@ -1,4 +1,10 @@
-:- module(dh_web_graph, []).
+:- module(
+  dh_web_graph,
+  [
+    dh_web_graph/2 % +Request:list(nvpair)
+                   % +Style:atom
+  ]
+).
 
 /** <module> DataHives graph
 
@@ -36,7 +42,10 @@ user:web_module('DH Graph', dh_web_graph).
 
 
 
-dh_web_graph(_Request):-
+dh_web_graph(Request):-
+  dh_web_graph(Request, app_style).
+
+dh_web_graph(_, Style):-
   findall(
     Count-[S,P,O],
     edge_count(S, P, O, Count),
@@ -45,7 +54,7 @@ dh_web_graph(_Request):-
   keysort(Pairs1, Pairs2),
   reverse(Pairs2, Pairs3),
   reply_html_page(
-    app_style,
+    Style,
     html([
       %%%%meta([content(1),'http-equiv'(refresh)], []),
       title('DataHives - Graph')
