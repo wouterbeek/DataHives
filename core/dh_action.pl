@@ -28,7 +28,6 @@ Action predicates for agents in DataHives.
 @version 2014/02, 2014/04, 2014/06
 */
 
-:- use_module(library(apply)).
 :- use_module(library(debug)).
 :- use_module(library(semweb/rdf_db)).
 
@@ -38,11 +37,8 @@ Action predicates for agents in DataHives.
 :- use_module(plRdf(rdf_name)).
 :- use_module(plRdf_ent(rdf_bnode_map)).
 :- use_module(plRdf_ent(rdf_entailment_patterns)).
-:- use_module(plRdf_term(rdf_term)).
 
 :- use_module(dh_core(dh_communication)).
-:- use_module(dh_core(dh_navigation)).
-:- use_module(dh_test(dh_test)).
 
 %! deductions(?Deductions:nonneg) is nondet.
 

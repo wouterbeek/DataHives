@@ -2,7 +2,8 @@
   dh_evaluation,
   [
     default_evaluation/0,
-    fitness_evaluation/0
+    fitness_evaluation/0,
+    no_evaluation/0
   ]
 ).
 
@@ -30,6 +31,7 @@ fitness_evaluation:-
   (Fitness < 0.5 -> thread_exit(done) ; true),
   print_message(informational, fitness(Deductions,Lifetime,Fitness)).
 
+no_evaluation.
 
 
 % Messages

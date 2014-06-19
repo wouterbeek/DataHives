@@ -27,18 +27,9 @@ from the characterization of a stepping paradigm is that:
 @version 2014/02-2014/06
 */
 
-:- use_module(library(aggregate)).
-:- use_module(library(lists)).
-:- use_module(library(semweb/rdf_db)).
-:- use_module(library(uri)).
-
 :- use_module(generics(db_ext)).
-:- use_module(pl(pl_log)).
 
-:- use_module(plRdf(rdf_build)).
-:- use_module(plRdf(rdf_deb)).
 :- use_module(plRdf(rdf_gc)). % Run graph garbage collection.
-:- use_module(plRdf_ser(rdf_serial)).
 
 :- use_module(lodCache(lod_cache_egograph)).
 
@@ -72,25 +63,21 @@ from the characterization of a stepping paradigm is that:
 % `PropositionSelection`.
 %
 % This means that the collection of propositions is always the same,
-% i.e. everything we can find in the LOD could today,
+% i.e. everything we can find in the LOD cloud today,
 % but the way in which we select a single proposition can differ.
 
 dh_step(Goal, Resource, Proposition):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).
-  absolute_file_name(data(dh), File, [access(write),file_type(logging)]),
-  run_collect_messages(
-    assert_egograph(Resource),
-    File
-  ),
-  
+  assert_egograph(Resource, Propositions),
+
   % Then we pick one of those triples according to some method.
-  dh_select_triple(Goal, Resource, Proposition).
+  dh_select_triple(Goal, Propositions, Proposition).
 
 
 %! dh_select_triple(
 %!   :Goal,
-%!   +Resource:or([bnode,iri,literal]),
+%!   +Propositions:ordset(list(or([bnode,iri,literal]))),
 %!   -Proposition:list(or([bnode,iri,literal]))
 %! ) is det.
 % Selects a single triple with the given resource in the subject position.
@@ -101,13 +88,7 @@ dh_step(Goal, Resource, Proposition):-
 % The resultant proposition is a Prolog list containing three RDF terms,
 % forming an RDF triple.
 
-dh_select_triple(Goal, Resource, Proposition):-
-  % Ensure uniqueness of propositions by gathering them in an ordered set.
-  aggregate_all(
-    set([Resource,P,O]),
-    rdf(Resource, P, O, Resource),
-    Propositions
-  ),
+dh_select_triple(Goal, Propositions, Proposition):-
   % Your selection criterion is applied here.
   call(Goal, Proposition, Propositions).
 

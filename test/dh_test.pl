@@ -56,12 +56,13 @@ dh_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_random,
-    deductive_action,
+    %%%%deductive_action,
+    default_action,
     update_edge_count,
-    fitness_evaluation,
+    %%%%fitness_evaluation,
+    no_evaluation,
     Url
-  ),
-  www_open.
+  ).
 
 
 dh_ant_test:-

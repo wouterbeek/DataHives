@@ -35,9 +35,9 @@ random_start_url(Url):-
 
 
 % DBpedia: ontology
-start_url('http://dbpedia.org/ontology/timeZone').
+%%%%start_url('http://dbpedia.org/ontology/timeZone').
 % DBpedia: resource
 start_url('http://dbpedia.org/resource/Banana').
 % Freebase
-start_url('http://rdf.freebase.com/ns/m.08pbxl').
+%%%%start_url('http://rdf.freebase.com/ns/m.08pbxl').
 
