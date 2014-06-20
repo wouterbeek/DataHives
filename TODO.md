@@ -15,7 +15,7 @@
 
 ## Act :
 	- Display path
-	+ Apply http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment to find some more triples
+	- Apply http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment to find some more triples
 
 ## Com :
 	+ Leave pheromons
@@ -27,7 +27,7 @@
 			+ Importance of a node
 				+ How many in-going / out-going links
 				+ Seens a lot or not
-	+ Play with bactrack function to optimize efficiency
+	- Play with bactrack function to optimize efficiency
 		- single alley predicate
 		- rebirth of a dead agent.
-		@ devaluation with death of an agent
+		- devaluation with death of an agent
