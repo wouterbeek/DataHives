@@ -17,7 +17,6 @@ Generic support for DataHives test modules.
 
 :- use_module(library(aggregate)).
 :- use_module(library(random)).
-:- use_module(library(semweb/rdf_db)).
 
 :- dynamic(start_url/1).
 
@@ -32,10 +31,7 @@ random_start_url(Url2):-
     start_url(Url),
     Urls
   ),
-  random_member(Url1, Urls),
-  % @tbd Apparently aggregate_all/3 performs rdf_global_id/2,
-  %      which we now actively have to revert.
-  rdf_global_id(Url1, Url2).
+  random_member(Url1, Urls).
 
 
 % DBpedia: ontology

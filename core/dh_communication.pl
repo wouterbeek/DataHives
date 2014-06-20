@@ -38,8 +38,9 @@ Communication predicates for agents in DataHives.
 @version 2014/02, 2014/04-2014/05
 */
 
-:- use_module(library(apply)).
 :- use_module(library(ansi_term)).
+:- use_module(library(apply)).
+:- use_module(library(semweb/rdf_db)).
 
 :- dynamic(edge_count0/4).
 
