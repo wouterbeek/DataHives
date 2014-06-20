@@ -5,12 +5,14 @@
 \usepackage{enumitem}
 \usepackage{amssymb}
 \usepackage{color}
-\usepackage[colorlinks,linkcolor=grey, urlcolor=gray, citecolor=red, breaklinks, pagebackref]{hyperref}
+\usepackage[colorlinks,linkcolor=myorange, urlcolor=mygray, citecolor=mygreen, breaklinks, pagebackref]{hyperref}
 
-\definecolor{gray}{rgb}{0.7,0.7,0.7}
-\definecolor{grey}{rgb}{0.3,0.5,0.5}
-\newenvironment{itemh}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{gray} \small]}{\end{itemize}}
-\newenvironment{itemH}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{gray} \large]}{\end{itemize}}
+\definecolor{mygray}{rgb}{0.7,0.7,0.7}
+\definecolor{mygrey}{rgb}{0.5,0.5,0.5}
+\definecolor{myorange}{rgb}{0.9,0.5,0}
+\definecolor{mygreen}{rgb}{0.4,0.8,0}
+\newenvironment{itemh}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{mygray} \small]}{\end{itemize}}
+\newenvironment{itemH}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{mygray} \large]}{\end{itemize}}
 
 \begin{document}
 \title{Comparative Study about intelligent agent on RDF's graph\\
@@ -46,24 +48,48 @@
 
 \section{Introduction}
 	%Introduction to RDF / Semantic Web
-	\paragraph{}
-		Since its creation, the web see its data increasing exponentially.		
-	%Introduction to other work
-	%Introduction to DataHives project
-\section{Hypothesis}
-	The goal of this project is to create a new kind of agents based on a different behaviour,
-	agent that we think more powerful than the previous one.
+	\paragraph{} % Global presentation of RDF : The semantic web \& RDF
+		Since its creation, the web see its data increasing exponentially.
+		Those data are often unstructured and only human readable.
+		Facing those two problems, scientists invented the semantic web to agregate data
+		and make it easy to access for humans and computers.
+		Those metadata are structured in triples that are stored online in a lot of different places in RDF
+		(Resource Description Framework).
+		Each triple is made of a subject, a predicate and an object.
+		We can see it as 2 nodes and an arc from the subject to the object, thus we get an oriented graph.
+		Also, there are several ways to store this data online.
+	\paragraph{}	% Data format
+		The most common one is to put the data on a database and query it via SPARQL,
+		which is language that look like SQL but for RDF.
+		Then we can send a query and get back some results that are in that database.
+		As for SQL, SPARQL could built some complicated queries.
+		The other common way of getting data is directly get files containing RDF in it (turtle, rdf, n3).
+		The las one is by deferencing which i a mix of the two :
+		it ask the server for data about a resource and get a file containing the data.
+	\paragraph{}	%Introduction to other work
+		Last year, another bachelor student worked on a similar project.
+		His goal was to get back information from a search using agents acting like bees (in javascript) \cite{Kroes13}.
+		We used his code as inspiration for our own bees agents (that are in prolog).
+		That work was based on a paper \cite{Gueret10} about Swarm computing.
+	%	\paragraph{}	%Introduction to DataHives project
+	%	\subsection{Hypothesis}
+		\begin{center}
+			\textit{
+			\textbf{Hypothesis :} The goal of this project is to create a new kind of agents based on a different behaviour,
+			agent that we think more powerful than the previous one.}
+		\end{center}
 
-\section{Evaluation}
-	We will verify the hypothesis via different criteria.
-	The first way of compare two agents is quantitative using the number of discovered node (entailment regime).
-	This one is relatively simpler to evaluate than the qualitative which require a human subjective interaction (user feedback).
-	Those two methods will be used to compare 3 kind of agents:
-	\begin{itemh}
-		\item Random (base)
-		\item Bee (already implemented)
-		\item Ant (to be implemented)
-	\end{itemh}
+	%	\subsection{Evaluation}
+		\paragraph{Evaluation:}
+			We will verify the hypothesis via different criteria.
+			The first way of compare two agents is quantitative using the number of discovered node (entailment regime).
+			This one is relatively simpler to evaluate than the qualitative which require a human subjective interaction (user feedback).
+			Those two methods will be used to compare 3 kind of agents:
+		\begin{itemh}
+			\item Random (base)
+			\item Bee (already implemented)
+			\item Ant (to be implemented)
+		\end{itemh}
 
 \newpage
 \section{Planning}
@@ -209,24 +235,55 @@
 			At the end of the thread we also ask for another agent to replace the bad one and keep sustainability in getting information.
 			
 \section{Evaluation of the difference between the agents}
-	
-
+	\subsection{Quantitative Evaluation}
+		\paragraph{}
+			First, we want to compare the agents over the number of deductions over the time they are running.
+			It is something simple to count and objective, but it may be not relevant (if we look at the semantic part).
+			To be more accurate, we will use 10 agents in waves of five.	% Because I decided so
+			Of course, it is running on the same machine to have the same environment as much as possible.
+		\begin{center}
+			\begin{tabular}{|l|c|c|c|}
+				\hline
+				& Random & Bee & Ants\\
+				\hline
+				Time wave \#1 & 11 & 12 & 3 \\
+				Time wave \#2 & 9  & 12 & 3 \\
+				Time wave \#3 & 12 & 12 & 3 \\
+				Time wave \#4 & 11 & 12 & 3 \\
+				Time wave \#5 & 11 & 12 & 3 \\
+				Time wave \#6 & 11 & 12 & 3 \\
+				Time wave \#7 & 11 & 12 & 3 \\
+				Time wave \#8 & 11 & 12 & 3 \\
+				Time wave \#9 & 12 & 12 & 3 \\
+				Time wave \#10& 11 & 12 & 3 \\
+				\hline
+				Average time  & 11 & 12 & 3 \\
+				\hline
+			\end{tabular}
+		\end{center}
+	\subsection{Robustness evaluation}
+		\paragraph{}
+			Our second evaluation will measure the bot robustness by counting the number of deaths
+			in a certain time / steps / number of deductions
+	\subsection{Fitness evolution}
+		\paragraph{}
+			Measuring how the fitness is evolving over time / number of steps to compare population of agents
 \newpage
 \section{Conclusion}
 	
 
 \newpage
-
-\section{Literature}
+\bibliographystyle{plain}
+\bibliography{bibliography}
 	Papers :
-	\begin{itemh}
-		\item Hayes2014 RDFS 1.1 Semantics (section 9.2.1 gives a fair overview).
-		\item Pepijn Kroes, 2013, BNAIC poster.
-		\item Kathrin Dentlez, Christophe Gueret, Stefan Schlobach, IEEE full paper.
-	\end{itemh}
+		\begin{itemh}
+			\item Hayes2014 RDFS 1.1 Semantics (section 9.2.1 gives a fair overview).
+			\item Pepijn Kroes, 2013, BNAIC poster.
+			\item Kathrin Dentlez, Christophe Gueret, Stefan Schlobach, IEEE full paper.
+		\end{itemh}
 	Other links :
-	\begin{itemh}
-		\item\url{http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment}
-		\item \url{http://www.doc.gold.ac.uk/~mas02gw/prolog_tutorial/prologpages/index.html#menu}
-	\end{itemh}
+		\begin{itemh}
+			\item\url{http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment}
+			\item \url{http://www.doc.gold.ac.uk/~mas02gw/prolog_tutorial/prologpages/index.html#menu}
+		\end{itemh}
 \end{document}
