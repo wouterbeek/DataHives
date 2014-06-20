@@ -14,8 +14,7 @@
                     % -Direction:oneof([backward,forward])
                     % -Link:iri
 		    % -To:or([bnode,iri,literal])
-    lifetime/1, % ?Lifetime:nonneg
-    forbide_path/1 % +From:or([bnode,iri,literal])
+    lifetime/1 % ?Lifetime:nonneg
   ]
 ).
 
@@ -124,30 +123,6 @@ increment_lifetime:-
   ),
   succ(Lifetime1, Lifetime2),
   assert(lifetime(Lifetime2)).
-
-forbide_path(To):-
-  single_alley(To,Alley),
-  devalue(Alley).
-
-single_alley(Next, [[Prev,Link,Next]|Alley]):-
-  single_step(Prev, Link, Next),
-  single_alley(Prev, Alley).
-single_alley(_, []).
-
-single_step(Prev, Link, Next):-
-  rdf(Prev, Link, Next),
-  \+ ((
-    rdf(Prev, Link0, Next0),
-    Link0 \== Link,
-    Next0 \== Next
-  )).
-
-% Value of triple S-P-O decreased by one
-%
-devalue([]):-!.
-devalue([[S,P,O]|T]):-
-  update_edge_count(S,forward,P,O,-1),
-  devalue(T).
 
 dir_trans(backward, left).
 dir_trans(forward, right).

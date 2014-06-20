@@ -3,6 +3,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
 \usepackage{enumitem}
+\usepackage{amssymb}
 \usepackage{color}
 \usepackage[colorlinks,linkcolor=grey, urlcolor=gray, citecolor=red, breaklinks, pagebackref]{hyperref}
 
@@ -43,6 +44,12 @@
 
 \newpage
 
+\section{Introduction}
+	%Introduction to RDF / Semantic Web
+	\paragraph{}
+		Since its creation, the web see its data increasing exponentially.		
+	%Introduction to other work
+	%Introduction to DataHives project
 \section{Hypothesis}
 	The goal of this project is to create a new kind of agents based on a different behaviour,
 	agent that we think more powerful than the previous one.
@@ -58,6 +65,7 @@
 		\item Ant (to be implemented)
 	\end{itemh}
 
+\newpage
 \section{Planning}
 	\subsection{Estimated tasks}
 		Some high-level tasks, to be filled in later:
@@ -115,6 +123,97 @@
 		\paragraph{Rating the edges} is now really basic : if an agent go over an edge it leaves a virtual pheronmon,
 			but soon we'll have some more complicated functions to devalue certain path if they lead to dead ends or
 			if they don't lead to good information (depending on the previous described fitness function)
+
+\section{Agents details \& behaviour}
+	\paragraph{}
+		All the agents are implemented in the same way.
+		They follow a cycle of events and repeat that cycle.
+		The cycle to follow is :
+	\begin{center}
+		Navigate / Act / Communicate / Evaluate
+	\end{center}
+	\paragraph{}
+		Navigation is the function that decide WHERE the agent should go, depending on where it is already.
+		In facts, this predicate pick a proposition between all the possibilities,
+		those possibilities are all nodes that are neighbours to the one we are on.
+		Unfortunately, thoses nodes could be literals and then we could get stuck on it because literals are linked to nothing.
+		To avoid that, we have a backtrack function that keeps in mind the last position we were on.
+	\paragraph{}
+		Acting is where the agent do what it is meant for when it is on his own.
+		In a clearer way it means that in this step the agent should work on the nodes it is on.
+		This step is a selfish one where the other agents don't matter at all.
+		The main action is only the deductive action of entailment.
+		The rules for that can be found on the W3C web page \url{http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment}.
+		We apply all of them to get some more information.
+		Because all agents will have the same action, we decide to describe it here.
+	\paragraph{}
+		Communication is the main point of thoses agents.
+		We try different kind of communication to see whether one is more efficient than the other
+		and then compare the different kind of agents.
+	\paragraph{}
+		The evaluation part decides wether an agent diserve to continue his job or not.
+		If it is judge inneficient then we throw it away using the exit function given at the creation of the agent.
+		It's here where the fitness function should act.
+	\subsection{Random Agent}
+		\subsubsection{Navigate}
+			The random agent is implemented to go randomly.
+			It is initialized on a set of available URI where to begin.
+			Then it goes, following "links".
+			Those links are the predicates between 2 nodes of the Linked Open Data (LOD).
+		\subsubsection{Communicate}
+			The communication is not implemented to stick a really basic agent attitude that will serve as reference for efficiency.
+		\subsubsection{Evaluate}
+			The evaluation function is not set for this kind of agent that keep going whatever happens.
+		\subsubsection{At exit}
+			This predicate is not used because it is really bound to the evaluation that we discarded.
+	\subsection{Ant Agent}
+		\subsubsection{Navigate}
+			The ant navigation is based on randomness but a weighted one.
+			Like an ordinary ant, our agent has to pick a path, depending on the pheromons left on it.
+			On the virtual web of the LOD, the pheromons are coeficient left on edges from one node to the other.
+			If another ant went here before, the path get more value.			
+		\subsubsection{Communicate}
+			As said above, an ant leave pheromons in an intelligent way.
+			The insect is looking for food (= information) outside (= on the LOD).
+			When it has found something, it goes back to the anthill and leave pheromons on its way back as well.
+			The main idea here is to upvalue a path which leads to food and devalue one that leads nowhere (ie dead-end path).
+			To represent this in a virtual way here was our main ideas $c \in \mathbb{R}$:
+			\begin{itemh}
+				\item Devalue dead end path, using SPARQL queries to go back and degrade the weight of the path of $c$
+				\item Adding $c$ to all the travelled path for each information deduced
+				\item Adding the agent's current fitness to the current edge
+			\end{itemh}
+			\paragraph{}
+				All those ideas needs to be evaluated and tried to see which one is the more efficient and if we could cross them.
+		\subsubsection{Evaluate}
+			The evaluation is where the fitness function enter in the game.
+			For the ants, the fitness function is quantitative,
+			counting the number of triples discovered via deduction and dividing it by the number of steps taken.
+			If that number is bigger than 0.5, the agent can live, otherwise it dies lauching the exit function.
+		\subsubsection{At exit}
+			When the time comes for an agent to kill himself, it is decided that it must launch another agent to replace him.
+			And so, the agent launch another agent that will work to get more information that the previous one if possible.
+	\subsection{Bee Agent}
+		\subsubsection{Navigate}
+			A bee navigates randomly, whatever her role is.
+			The scouts are wandering around to try to find information.
+			When one succeed, it tells some others (called forager) to come and grab the pollen it has found.
+		\subsubsection{Communicate}
+			Here the communication is really simple.
+			It directly contact the other agent to tell them something : the information is not sustainable, it is not stored somewhere.
+			The information send is used instantly (it makes it more easy to set up).
+		\subsubsection{Evaluate}
+			The evaluation is based on the same criteria aof the one for the ants but here it trigger an action.
+			If the fitness is big enough we send some foragers helping the scout, but if it is too low ... the agent get killed.
+		\subsubsection{At exit}
+			At the end of the thread we also ask for another agent to replace the bad one and keep sustainability in getting information.
+			
+\section{Evaluation of the difference between the agents}
+	
+
+\newpage
+\section{Conclusion}
+	
 
 \newpage
 

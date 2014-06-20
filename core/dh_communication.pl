@@ -20,11 +20,12 @@
                         % +Link:iri
                         % +To:or([bnode,iri,literal])
 
-    update_edge_count/5 % +From:or([bnode,iri,literal])
+    update_edge_count/5, % +From:or([bnode,iri,literal])
                         % +Direction:oneof([backward,forward])
                         % +Link:iri
                         % +To:or([bnode,iri,literal])
                         % +N:int
+    forbide_path/1 % +From:or([bnode,iri,literal])
   ]
 ).
 
@@ -38,6 +39,7 @@ Communication predicates for agents in DataHives.
 */
 
 :- use_module(library(apply)).
+:- use_module(library(ansi_term)).
 
 :- dynamic(edge_count0/4).
 
@@ -121,3 +123,32 @@ update_edge_count0(From, Link, To,N):-
 update_edge_count0(From, Link, To,_):-
   assert(edge_count0(From, Link, To, 1)).
 
+
+% In case of dead ends, we must tell the others about the non viability
+% of the path. Unfortunately (or fortunately), this function seems not
+% being used.
+
+forbide_path(To):-
+  single_alley(To,Alley),
+  ansi_format([italic,fg(red)],'~w','Forbiden Path'),
+  devalue(Alley).
+
+single_alley(Next, [[Prev,Link,Next]|Alley]):-
+  single_step(Prev, Link, Next),
+  single_alley(Prev, Alley).
+single_alley(_, []).
+
+single_step(Prev, Link, Next):-
+  rdf(Prev, Link, Next),
+  \+ ((
+    rdf(Prev, Link0, Next0),
+    Link0 \== Link,
+    Next0 \== Next
+  )).
+
+% Value of triple S-P-O decreased by one
+%
+devalue([]):-!.
+devalue([[S,P,O]|T]):-
+  update_edge_count(S,forward,P,O,-1),
+  devalue(T).
