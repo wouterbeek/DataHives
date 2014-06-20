@@ -61,7 +61,7 @@ create_agent(Nav, Act, Com, Eval, Init):-
 %!   :Act,
 %!   :Communicate,
 %!   :Evaluate,
-%!   :Exit
+%!   :Exit,
 %!   +InitialLocation:or([atom,iri])
 %! ) .
 

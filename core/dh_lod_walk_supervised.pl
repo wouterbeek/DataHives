@@ -41,7 +41,7 @@ dh_lod_walk_supervised(From, Dir, Link, To):-
 %! lod_supervised_step(+Resource, -Proposition:list) is det.
 
 lod_supervised_step(Resource, Proposition):-
-  dh_step(supervised_member, Resource, Proposition).
+  dh_step(supervised_member, Resource, Proposition, []).
 
 
 %! supervised_member(-Proposition, +Propositions:list) is det.

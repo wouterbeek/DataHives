@@ -51,10 +51,10 @@ scout_evaluation:-
   lifetime(Lifetime),
   Fitness is Deductions / Lifetime,
   (Fitness < 0.5 -> thread_exit(done) ; true),
-  (Fitness > 0.8 -> send_forager() ; true),
+  (Fitness > 0.8 -> send_forager ; true),
   print_message(informational, fitness(Deductions,Lifetime,Fitness)).
 
-send_forager():-
+send_forager:-
   backtrack(From,_,_,_),
   create_agent(
     dh_lod_walk_supervised,

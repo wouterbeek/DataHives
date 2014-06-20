@@ -38,5 +38,5 @@ dh_lod_walk_random(From, Dir, Link, To):-
 %! dh_random_step(+Resource, -Proposition:list) is det.
 
 dh_random_step(Resource, Proposition):-
-  dh_step(random_member, Resource, Proposition).
+  dh_step(random_member, Resource, Proposition, []).
 

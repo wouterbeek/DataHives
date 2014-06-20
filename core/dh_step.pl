@@ -1,9 +1,10 @@
 :- module(
   dh_step,
   [
-    dh_step/3 % :PropositionSelection
+    dh_step/4 % :PropositionSelection
               % +From:or([bnode,iri,literal])
               % -Proposition:list(or([bnode,iri,literal]))
+              % +Options:list(nvpair)
   ]
 ).
 
@@ -27,6 +28,8 @@ from the characterization of a stepping paradigm is that:
 @version 2014/02-2014/06
 */
 
+:- use_module(library(predicate_options)). % Declarations.
+
 :- use_module(generics(db_ext)).
 
 :- use_module(plRdf(rdf_gc)). % Run graph garbage collection.
@@ -35,7 +38,11 @@ from the characterization of a stepping paradigm is that:
 
 :- db_add_novel(user:prolog_file_type(log, logging)).
 
-:- meta_predicate(dh_step(2,+,-)).
+:- predicate_options(dh_step/4, 4, [
+     pass_to(lod_cache_egograph/3, 3)
+   ]).
+
+:- meta_predicate(dh_step(2,+,-,+)).
 :- meta_predicate(dh_select_triple(2,+,-)).
 
 
@@ -43,7 +50,8 @@ from the characterization of a stepping paradigm is that:
 %! dh_step(
 %!   :PropositionSelection,
 %!   +From:or([bnode,iri,literal]),
-%!   -Proposition:list(or([bnode,iri,literal]))
+%!   -Proposition:list(or([bnode,iri,literal])),
+%!   +Options:list(nvpair)
 %! ) is det.
 % Performs a step of the LOD cloud.
 %
@@ -65,11 +73,22 @@ from the characterization of a stepping paradigm is that:
 % This means that the collection of propositions is always the same,
 % i.e. everything we can find in the LOD cloud today,
 % but the way in which we select a single proposition can differ.
+%
+% ### Options
+%
+% The following options are supported:
+%   * =|direction(+Direction:oneof([backward,both,forward]))|=
+%     The direction in which links are followed.
+%     Default: `both`.
+%   * =|endpoints(+Endpoints:list(atom))|=
+%     A list of endpoint aliases.
+%     Only these endpoints will be used to cache data from.
+%     By default, all registered endpoints are considered.
 
-dh_step(Goal, Resource, Proposition):-
+dh_step(Goal, Resource, Proposition, Options):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).
-  assert_egograph(Resource, Propositions),
+  lod_cache_egograph(Resource, Propositions, Options),
 
   % Then we pick one of those triples according to some method.
   dh_select_triple(Goal, Propositions, Proposition).
