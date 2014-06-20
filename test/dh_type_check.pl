@@ -30,7 +30,7 @@ dh_type_check(Url):-
   init_agent(
     dh_lod_walk_random,
     type_check,
-    default_communication, %STUB
+    no_communication,
     Url
   ).
 

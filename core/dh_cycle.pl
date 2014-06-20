@@ -47,16 +47,24 @@ dh_cycle(Nav, Act, Com, Eval, InitFrom):-
   after_n_steps(100, print_steps),
 
   % Navigate.
+%catch(
   call(Nav, From, Dir, Link, To),
+%_, (gtrace, call(Nav, From, Dir, Link, To))),
 
   % Act.
+%catch(
   call(Act, From, Dir, Link, To),
+%_, (gtrace, call(Nav, From, Dir, Link, To))),
 
   % Communicate.
+%catch(
   call(Com, From, Dir, Link, To),
+%_, (gtrace, call(Nav, From, Dir, Link, To))),
 
   % Evaluate
+%catch(
   call(Eval),
+%_, (gtrace, call(Nav, From, Dir, Link, To))),
 
   fail.
 

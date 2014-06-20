@@ -10,6 +10,10 @@
                         % -Direction:oneof([backward,forward])
                         % -Link:iri
                         % -To:or([bnode,iri,literal])
+    no_action/4, % +From:or([bnode,iri,literal])
+                 % -Direction:oneof([backward,forward])
+                 % -Link:iri
+                 % -To:or([bnode,iri,literal])
     scout_action/4, % +From:or([bnode,iri,literal])
                     % -Direction:oneof([backward,forward])
                     % -Link:iri
@@ -126,4 +130,7 @@ increment_lifetime:-
 
 dir_trans(backward, left).
 dir_trans(forward, right).
+
+
+no_action(_, _, _, _).
 

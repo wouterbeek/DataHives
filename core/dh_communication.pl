@@ -1,10 +1,6 @@
 :- module(
   dh_communication,
   [
-    default_communication/4, % +From:or([bnode,iri,literal])
-                             % -Direction:oneof([backward,forward])
-                             % -Link:iri
-                             % -To:or([bnode,iri,literal])
     edge_count/4, % ?Subject:or([bnode,iri])
                   % ?Predicate:iri
                   % ?Object:or([bnode,iri,literal])
@@ -15,16 +11,15 @@
                   % +Predicate:iri
                   % +Object:or([bnode,iri,literal])
                   % -Value:nonneg
-    update_edge_count/4, % +From:or([bnode,iri,literal])
-                        % +Direction:oneof([backward,forward])
-                        % +Link:iri
-                        % +To:or([bnode,iri,literal])
-
-    update_edge_count/5, % +From:or([bnode,iri,literal])
-                        % +Direction:oneof([backward,forward])
-                        % +Link:iri
-                        % +To:or([bnode,iri,literal])
-                        % +N:int
+    no_communication/4, % +From:or([bnode,iri,literal])
+                        % -Direction:oneof([backward,forward])
+                        % -Link:iri
+                        % -To:or([bnode,iri,literal])
+    update_edge_count/5, % +Update:integer
+                         % +From:or([bnode,iri,literal])
+                         % +Direction:oneof([backward,forward])
+                         % +Link:iri
+                         % +To:or([bnode,iri,literal])
     forbide_path/1 % +From:or([bnode,iri,literal])
   ]
 ).
@@ -43,10 +38,6 @@ Communication predicates for agents in DataHives.
 :- use_module(library(semweb/rdf_db)).
 
 :- dynamic(edge_count0/4).
-
-
-
-default_communication(_, _, _, _).
 
 
 
@@ -100,29 +91,39 @@ edge_value(S, P, O, Count):-
 edge_value(_, _, _, 0).
 
 
+no_communication(_, _, _, _).
+
+
 %! update_edge_count(
+%!   +Update:integer,
+%!   +Triple:list(or([bnode,iri,literal]))
+%! ) is det.
+
+update_edge_count(N, [S,P,O]):-
+  update_edge_count(N, S, forward, P, O).
+
+%! update_edge_count(
+%!   +Update:integer,
 %!   +From:or([bnode,iri,literal]),
 %!   +Direction:oneof([backward,forward]),
 %!   +Link:iri,
-%!   +To:or([bnode,iri,literal]),
-%!   +N:int
+%!   +To:or([bnode,iri,literal])
 %! ) is det.
-update_edge_count(From, Dir, Link, To):-
-  update_edge_count(From, Dir, Link, To, 1).
-update_edge_count(From, backward, Link, To,N):- !,
-  update_edge_count(To, forward, Link, From,N).
-update_edge_count(From, forward, Link, To,N):-
+
+update_edge_count(N, From, backward, Link, To):- !,
+  update_edge_count(N, To, forward, Link, From).
+update_edge_count(N, From, forward, Link, To):-
   with_mutex(
     edge_count,
-    update_edge_count0(From, Link, To,N)
+    update_edge_count0(From, Link, To, N)
   ).
 
-update_edge_count0(From, Link, To,N):-
+update_edge_count0(From, Link, To, N):-
   retract(edge_count0(From, Link, To, Count1)), !,
   Count2 is Count1 + N,
   assert(edge_count0(From, Link, To, Count2)).
-update_edge_count0(From, Link, To,_):-
-  assert(edge_count0(From, Link, To, 1)).
+update_edge_count0(From, Link, To, N):-
+  assert(edge_count0(From, Link, To, N)).
 
 
 % In case of dead ends, we must tell the others about the non viability
@@ -147,9 +148,9 @@ single_step(Prev, Link, Next):-
     Next0 \== Next
   )).
 
+%! devalue(+Path:list(list(or([bnode,iri,literal])))) is det.
 % Value of triple S-P-O decreased by one
-%
-devalue([]):-!.
-devalue([[S,P,O]|T]):-
-  update_edge_count(S,forward,P,O,-1),
-  devalue(T).
+
+devalue(Triples):-
+  maplist(update_edge_count(-1), Triples).
+

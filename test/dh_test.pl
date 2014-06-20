@@ -47,7 +47,7 @@ dh_test:-
   create_agent(
     dh_lod_walk_random,
     default_action,
-    update_edge_count,
+    update_edge_count(1),
     default_evaluation,
     Graph
   ).
@@ -56,10 +56,8 @@ dh_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_random,
-    %%%%deductive_action,
-    default_action,
-    update_edge_count,
-    %%%%fitness_evaluation,
+    no_action,
+    update_edge_count(1),
     no_evaluation,
     Url
   ).
@@ -71,7 +69,7 @@ dh_ant_test:-
   create_agent(
     dh_lod_walk_supervised,
     deductive_action,
-    update_edge_count,
+    update_edge_count(1),
     fitness_evaluation,
     dh_ant_test,
     Graph
@@ -82,7 +80,7 @@ dh_ant_test(Url):-
   create_agent(
     dh_lod_walk_supervised,
     deductive_action,
-    update_edge_count,
+    update_edge_count(1),
     fitness_evaluation,
     dh_ant_test,
     Url
@@ -95,7 +93,7 @@ dh_bee_test:-
   create_agent(
     dh_lod_walk_supervised,
     default_action,
-    update_edge_count,
+    update_edge_count(1),
     scout_evaluation,
     dh_bee_test,
     Graph
@@ -106,7 +104,7 @@ dh_bee_test(Url):-
   create_agent(
     dh_lod_walk_supervised,
     default_action,
-    update_edge_count,
+    update_edge_count(1),
     scout_evaluation,
     dh_bee_test,
     Url

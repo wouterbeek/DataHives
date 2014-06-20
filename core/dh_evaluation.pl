@@ -59,7 +59,7 @@ send_forager:-
   create_agent(
     dh_lod_walk_supervised,
     deductive_action,
-    update_edge_count,
+    update_edge_count(1),
     forager_evaluation,
     From,
     5

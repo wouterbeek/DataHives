@@ -31,23 +31,11 @@
 
 
 dh_web_graph(_, Style):-
-  findall(
-    Count-[S,P,O],
-    edge_count(S, P, O, Count),
-    Pairs1
-  ),
-  keysort(Pairs1, Pairs2),
-  reverse(Pairs2, Pairs3),
   reply_html_page(
     Style,
-    html([
-      %%%%meta([content(1),'http-equiv'(refresh)], []),
-      title('DataHives - Graph')
-    ]),
-    html([
-      \dh_web_graph_graph,
-      \dh_web_graph_table(Pairs3)
-    ])
+    % Auto-update HTML: `meta([content(1),'http-equiv'(refresh)], [])`
+    html(title('DataHives - Graph')),
+    html(\dh_web_graph_graph)
   ).
 
 
@@ -57,29 +45,4 @@ dh_web_graph_graph -->
     graph_to_svg_dom([method(dot)], Gif, SvgDom)
   },
   html(\xml_dom_as_atom(SvgDom)).
-
-
-dh_web_graph_table(Pairs1) -->
-  {
-    maximum_number_of_rows(MaximumNumberOfRows),
-    list_truncate(Pairs1, MaximumNumberOfRows, Pairs2),
-    findall(
-      [Count|Triple],
-      member(Count-Triple, Pairs2),
-      Rows
-    )
-  },
-  html(
-    \rdf_html_table(
-      [header_row(true)],
-      html([
-        'Ranking of the ',
-        \html_pl_term(_, MaximumNumberOfRows),
-        ' most visited edges.'
-      ]),
-      [['Count','Subject','Predicate','Object']|Rows]
-    )
-  ).
-
-maximum_number_of_rows(100).
 
