@@ -131,7 +131,7 @@ update_edge_count0(From, Link, To,_):-
 
 forbide_path(To):-
   single_alley(To,Alley),
-  ansi_format([italic,fg(red)],'~w','Forbiden Path'),
+  ansi_format([italic,fg(red)],'~w',['WrongPath\n']),
   devalue(Alley).
 
 single_alley(Next, [[Prev,Link,Next]|Alley]):-
