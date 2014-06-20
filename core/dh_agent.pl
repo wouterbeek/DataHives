@@ -42,6 +42,10 @@ Create and kill agents in DataHives.
 :- meta_predicate(create_agent(4,4,4,0,:,+)).
 :- meta_predicate(create_agents(4,4,4,0,:,+,+)).
 
+:- rdf_meta(create_agent(:,:,:,:,r)).
+:- rdf_meta(create_agent(:,:,:,:,:,r)).
+:- rdf_meta(create_agent(:,:,:,:,:,r,+)).
+
 
 
 %! create_agent(

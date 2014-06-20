@@ -29,6 +29,7 @@ from the characterization of a stepping paradigm is that:
 */
 
 :- use_module(library(predicate_options)). % Declarations.
+:- use_module(library(semweb/rdf_db)).
 
 :- use_module(generics(db_ext)).
 
@@ -44,6 +45,8 @@ from the characterization of a stepping paradigm is that:
 
 :- meta_predicate(dh_step(2,+,-,+)).
 :- meta_predicate(dh_select_triple(2,+,-)).
+
+:- rdf_meta(dh_step(:,r,-,+)).
 
 
 
@@ -85,6 +88,15 @@ from the characterization of a stepping paradigm is that:
 %     Only these endpoints will be used to cache data from.
 %     By default, all registered endpoints are considered.
 
+% Blank node.
+dh_step(_, Resource, _, _):-
+  rdf_is_bnode(Resource), !,
+  fail.
+% Literal.
+dh_step(_, Resource, _, _):-
+  rdf_is_literal(Resource), !,
+  fail.
+% IRI.
 dh_step(Goal, Resource, Proposition, Options):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).

@@ -18,9 +18,13 @@ that uses the LOD stepping paradigm.
 */
 
 :- use_module(library(random)).
+:- use_module(library(semweb/rdf_db)). % Declarations.
 
 :- use_module(dh_core(dh_navigation)).
 :- use_module(dh_core(dh_step)).
+
+:- rdf_meta(dh_lod_walk_random(r,-,-,-)).
+:- rdf_meta(dh_random_step(r,-)).
 
 
 

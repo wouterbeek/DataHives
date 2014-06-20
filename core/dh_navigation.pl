@@ -19,6 +19,8 @@ Navigation predicates for agents in DataHives.
 @version 2014/02-2014/05
 */
 
+:- use_module(library(semweb/rdf_db)). % Declarations.
+
 %! backtrack(
 %!   ?From:or([bnode,iri,literal]),
 %!   ?Direction:oneof([backward,forward]),
@@ -30,6 +32,8 @@ Navigation predicates for agents in DataHives.
 
 :- meta_predicate(dh_navigate(2,+,-,-,-)).
 :- meta_predicate(dh_step(2,+,-,-,-)).
+
+:- rdf_meta(dh_step(:,r,-,-,-)).
 
 %! dh_current_location(
 %!   +ThreadId:atom,
