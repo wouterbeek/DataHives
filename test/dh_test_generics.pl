@@ -25,13 +25,13 @@ Generic support for DataHives test modules.
 %! random_start_url(-Url:url) is det.
 % Returns a randomly chosen URL from the start_url/1 pool.
 
-random_start_url(Url2):-
+random_start_url(Url):-
   aggregate_all(
     set(Url),
     start_url(Url),
     Urls
   ),
-  random_member(Url1, Urls).
+  random_member(Url, Urls).
 
 
 % DBpedia: ontology

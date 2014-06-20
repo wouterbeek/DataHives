@@ -101,7 +101,7 @@ dh_step(Goal, Resource, Proposition, Options):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).
   lod_cache_egograph(Resource, Propositions, Options),
-
+  
   % Then we pick one of those triples according to some method.
   dh_select_triple(Goal, Propositions, Proposition).
 
