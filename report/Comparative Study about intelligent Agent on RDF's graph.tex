@@ -114,41 +114,40 @@
 					\item Qualitative evaluation: more difficult…
 				\end{itemh}
 		\end{itemH}
-
-\section{Work in Progress}
-	\subsection{First try with RDFstore-js}
-		\paragraph{} The first attempt to implement those agents was to use JS, based on the project :
-		\url{https://githu.com/antoniogarrote/rdfstore-js}.
-		Unfortunately, it has been misleading because the documentation was lacking
-		and implementing functions was thus hard to do.
-		It took me 3 days to understand how to load a store in local to work on it !
-	\subsection{Work on DataHives \#1}
-		\paragraph{} This is a submodule of the project Pragmatic Semantic.
-		It already has random agents implemented.
-		Those agents are defined by a cycle of action they perform : Navigate / Act / Communicate.
-		The random agent go somewhere random, don't act nor communicate.
-		We will implement naviguation, action and communication functions step by step,
-		adding a few feature at a time to be sure to get something working in the end.
-		The web interface will show where did the agents went (could be useful for qualitative evalutation).
-		\paragraph{} To start the local server, we had to launch a command from the Pragmatic Semantic folder.
-		The purpose of this command was to laucnh the local server.
-		Then, on it, we could start some random agents using the simple dh\_test(\_) in prolog.
-		After that, the visualization of the agents and their progress is at the web adresse localhost:3040.
-		Unfortunately, the heavy structure was quite hard to manipulate correctly and didn't make a stand alone system.
-		That why DataHives has been recast.
-	\subsection{DataHives \#2 recast}
-		\paragraph{} The recast makes the system more easy to use and more stand alone.
-			The system also produced a picture of the crawled graph (100 most visited edges and their induced nodes).
-		\paragraph{Evaluation \& Fitness.} The cycle has been updated, from this :
-			"Navigate, Act, Communicate" to "Navigate, Act, Communicate, Evaluate".
-			This evalutation is based on a fitness function that says if the agent fits or not,
-			if it fitness is too low (typically below $0.5$), we kill it.
-			For now, the fitness function is only a count of deduced information over the number of steps taken.
-			But it will have some new features like taking dead end into account or
-			fitness compare to a set of predefined triples.
-		\paragraph{Rating the edges} is now really basic : if an agent go over an edge it leaves a virtual pheronmon,
-			but soon we'll have some more complicated functions to devalue certain path if they lead to dead ends or
-			if they don't lead to good information (depending on the previous described fitness function)
+	\subsection{Work in Progress}
+		\subsubsection{First try with RDFstore-js}
+			\paragraph{} The first attempt to implement those agents was to use JS, based on the project :
+			\url{https://githu.com/antoniogarrote/rdfstore-js}.
+			Unfortunately, it has been misleading because the documentation was lacking
+			and implementing functions was thus hard to do.
+			It took me 3 days to understand how to load a store in local to work on it !
+		\subsubsection{Work on DataHives \#1}
+			\paragraph{} This is a submodule of the project Pragmatic Semantic.
+			It already has random agents implemented.
+			Those agents are defined by a cycle of action they perform : Navigate / Act / Communicate.
+			The random agent go somewhere random, don't act nor communicate.
+			We will implement naviguation, action and communication functions step by step,
+			adding a few feature at a time to be sure to get something working in the end.
+			The web interface will show where did the agents went (could be useful for qualitative evalutation).
+			\paragraph{} To start the local server, we had to launch a command from the Pragmatic Semantic folder.
+			The purpose of this command was to laucnh the local server.
+			Then, on it, we could start some random agents using the simple dh\_test(\_) in prolog.
+			After that, the visualization of the agents and their progress is at the web adresse localhost:3040.
+			Unfortunately, the heavy structure was quite hard to manipulate correctly and didn't make a stand alone system.
+			That why DataHives has been recast.
+		\subsubsection{DataHives \#2 (recast)}
+			\paragraph{} The recast makes the system more easy to use and more stand alone.
+				The system also produced a picture of the crawled graph (100 most visited edges and their induced nodes).
+			\paragraph{Evaluation \& Fitness.} The cycle has been updated, from this :
+				"Navigate, Act, Communicate" to "Navigate, Act, Communicate, Evaluate".
+				This evalutation is based on a fitness function that says if the agent fits or not,
+				if it fitness is too low (typically below $0.5$), we kill it.
+				For now, the fitness function is only a count of deduced information over the number of steps taken.
+				But it will have some new features like taking dead end into account or
+				fitness compare to a set of predefined triples.
+			\paragraph{Rating the edges} is now really basic : if an agent go over an edge it leaves a virtual pheronmon,
+				but soon we'll have some more complicated functions to devalue certain path if they lead to dead ends or
+				if they don't lead to good information (depending on the previous described fitness function)
 
 \section{Agents details \& behaviour}
 	\paragraph{}
@@ -182,23 +181,29 @@
 		It's here where the fitness function should act.
 	\subsection{Random Agent}
 		\subsubsection{Navigate}
+			\paragraph{}
 			The random agent is implemented to go randomly.
 			It is initialized on a set of available URI where to begin.
 			Then it goes, following "links".
 			Those links are the predicates between 2 nodes of the Linked Open Data (LOD).
 		\subsubsection{Communicate}
+			\paragraph{}
 			The communication is not implemented to stick a really basic agent attitude that will serve as reference for efficiency.
 		\subsubsection{Evaluate}
+			\paragraph{}
 			The evaluation function is not set for this kind of agent that keep going whatever happens.
 		\subsubsection{At exit}
+			\paragraph{}
 			This predicate is not used because it is really bound to the evaluation that we discarded.
 	\subsection{Ant Agent}
 		\subsubsection{Navigate}
+			\paragraph{}
 			The ant navigation is based on randomness but a weighted one.
 			Like an ordinary ant, our agent has to pick a path, depending on the pheromons left on it.
 			On the virtual web of the LOD, the pheromons are coeficient left on edges from one node to the other.
 			If another ant went here before, the path get more value.			
 		\subsubsection{Communicate}
+			\paragraph{}
 			As said above, an ant leave pheromons in an intelligent way.
 			The insect is looking for food (= information) outside (= on the LOD).
 			When it has found something, it goes back to the anthill and leave pheromons on its way back as well.
@@ -212,26 +217,32 @@
 			\paragraph{}
 				All those ideas needs to be evaluated and tried to see which one is the more efficient and if we could cross them.
 		\subsubsection{Evaluate}
+			\paragraph{}
 			The evaluation is where the fitness function enter in the game.
 			For the ants, the fitness function is quantitative,
 			counting the number of triples discovered via deduction and dividing it by the number of steps taken.
 			If that number is bigger than 0.5, the agent can live, otherwise it dies lauching the exit function.
 		\subsubsection{At exit}
+			\paragraph{}
 			When the time comes for an agent to kill himself, it is decided that it must launch another agent to replace him.
 			And so, the agent launch another agent that will work to get more information that the previous one if possible.
 	\subsection{Bee Agent}
 		\subsubsection{Navigate}
+			\paragraph{}
 			A bee navigates randomly, whatever her role is.
 			The scouts are wandering around to try to find information.
 			When one succeed, it tells some others (called forager) to come and grab the pollen it has found.
 		\subsubsection{Communicate}
+			\paragraph{}
 			Here the communication is really simple.
 			It directly contact the other agent to tell them something : the information is not sustainable, it is not stored somewhere.
 			The information send is used instantly (it makes it more easy to set up).
 		\subsubsection{Evaluate}
+			\paragraph{}
 			The evaluation is based on the same criteria aof the one for the ants but here it trigger an action.
 			If the fitness is big enough we send some foragers helping the scout, but if it is too low ... the agent get killed.
 		\subsubsection{At exit}
+			\paragraph{}
 			At the end of the thread we also ask for another agent to replace the bad one and keep sustainability in getting information.
 			
 \section{Evaluation of the difference between the agents}
@@ -268,13 +279,27 @@
 	\subsection{Fitness evolution}
 		\paragraph{}
 			Measuring how the fitness is evolving over time / number of steps to compare population of agents
+
+\section{Main Problems faced}
+	\subsection{Dead ends paths}
+	\subsection{Denied access}
+	\subsection{Lot of deaths}
+
 \newpage
 \section{Conclusion}
-	
+	\subsection{Results}
+		\paragraph{}
+			???
+	\subsection{Thanks}
+		\paragraph{}
+			I would like to thanks the VU university from Amsterdam to makes me able to study here for this year.
+			I also want to thanks Stefan for accepting me to do my Bachelor thesis with him
+			and I escially thanks Wouter for his help during all this project.
 
 \newpage
 \bibliographystyle{plain}
 \bibliography{bibliography}
+\addcontentsline{toc}{section}{Bibliography}
 	Papers :
 		\begin{itemh}
 			\item Hayes2014 RDFS 1.1 Semantics (section 9.2.1 gives a fair overview).
