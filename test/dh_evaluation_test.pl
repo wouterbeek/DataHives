@@ -1,50 +1,45 @@
 :- module(
   dh_evaluation_test,
   [
-       quantitative_evaluation/0,
-       robustness_evaluation/0,
-       fitness_evaluation/0,
-      status/3  % Contain deaths, steps, deduction
-   ]
+       ant_evaluation/0
+  ]
 ).
 
-:-dynamic(status/3).
+:-use_module(library(semweb/rdf_db)).
 
-quantitative_evaluation:-
-  true,
-  default_goal(random_start_url, Url),
-  time(  % Measuring time for ants
-      create_agents(
-	evaluation_navigation,
-	deductive_action,
-	update_edge_count(1),
-	fitness_evaluation,
-	dh_ant_test,
-	Url,
-	10
-      )
+:-use_module(dh_test(dh_test)).
+
+ant_evaluation:-
+  forall(between(1,10,_),dh_ant_test),
+  setup_call_cleanup(
+    open('data/data.csv',write,Stream),
+    evaluation_loop(Stream),
+    close(Stream)
+  ).
+
+evaluation_loop(Stream):-
+  sleep(500),
+  number_of_deduced_triples(D),
+  get_time(T),
+  write(Stream,T),
+  write(Stream,';'),
+  write(Stream,D),
+  nl(Stream),
+  flush,
+  format([bg(blue)],'~w','InTHeaFile'),
+  evaluation_loop(Stream).
+
+number_of_deduced_triples(T):-
+  findall(
+    T,
+    (
+      rdf_graph(G),
+      atom_concat('agent_',_,G),
+      rdf_statistics(triples_by_graph(G,T))
+    ),
+    Ts
   ),
-  time(  % Measuring time for bees
-    create_agents(
-      evaluation_navigation,
-      default_action,
-      update_edge_count(1),
-      scout_evaluation,
-      dh_bee_test,
-      Url,
-      10
-    )
-  ),
-  true.
+  sum_list(Ts,T).
 
-evaluation_navigation(From, Dir, Link, To):-
-  dh_lod_walk_supervised(From, Dir, Link, To),
-  retract(status(_, Steps1, _)),
-  succ(Steps1,Steps2),
-  assert(status(_, Steps2 , _)).
 
-robustness_evaluation:-
-  true.
 
-fitness_evaluation:-
-  true.

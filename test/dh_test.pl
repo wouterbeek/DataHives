@@ -92,7 +92,7 @@ dh_bee_test:-
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
     dh_lod_walk_supervised,
-    default_action,
+    scout_action,
     update_edge_count(1),
     scout_evaluation,
     dh_bee_test,
@@ -103,7 +103,7 @@ dh_bee_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
     dh_lod_walk_supervised,
-    default_action,
+    scout_action,
     update_edge_count(1),
     scout_evaluation,
     dh_bee_test,
