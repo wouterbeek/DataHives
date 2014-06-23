@@ -65,8 +65,18 @@ dh_cycle(Nav, Act, Com, Eval, InitFrom):-
 %catch(
   call(Eval),
 %_, (gtrace, call(Nav, From, Dir, Link, To))),
-
+  
+  process_messages,
+  
   fail.
+
+
+process_messages:-
+  thread_get_message(get_lifetime(Caller)), !,
+  thread_self(Me),
+  dh_navigation:number_of_steps(Lifetime),
+  thread_send_message(Caller, lifetime(Me,Lifetime)).
+process_messages.
 
 
 

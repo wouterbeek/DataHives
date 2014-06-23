@@ -30,6 +30,11 @@ Navigation predicates for agents in DataHives.
 
 :- thread_local(backtrack/4).
 
+%! number_of_steps(+NumberOfSteps:nonneg) is semidet.
+%! number_of_steps(-NumberOfSteps:nonneg) is det.
+
+:- thread_local(number_of_steps/1).
+
 :- meta_predicate(dh_navigate(2,+,-,-,-)).
 :- meta_predicate(dh_step(2,+,-,-,-)).
 
@@ -84,7 +89,8 @@ dh_navigate(Nav, From, Dir, Link, To):-
     retract(backtrack(To, Dir0, Link, From)),
     dir_inv(Dir0, Dir),
     assert(backtrack(From, Dir, Link, To))
-  ).
+  ),
+  increment_number_of_steps.
 
 dir_inv(backward, forward).
 dir_inv(forward, backward).
@@ -142,4 +148,16 @@ dh_step(Nav, From, Direction, Link, To):-
   ->
     Direction = backward
   ).
+
+
+%! increment_number_of_steps is det.
+
+increment_number_of_steps:-
+  (
+    retract(number_of_steps(N1)), !
+  ;
+    N1 = 0
+  ),
+  N2 is N1 + 1,
+  assert(number_of_steps(N2)).
 

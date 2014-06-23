@@ -14,11 +14,10 @@
                  % -Direction:oneof([backward,forward])
                  % -Link:iri
                  % -To:or([bnode,iri,literal])
-    scout_action/4, % +From:or([bnode,iri,literal])
-                    % -Direction:oneof([backward,forward])
-                    % -Link:iri
-		    % -To:or([bnode,iri,literal])
-    lifetime/1 % ?Lifetime:nonneg
+    scout_action/4 % +From:or([bnode,iri,literal])
+                   % -Direction:oneof([backward,forward])
+                   % -Link:iri
+                   % -To:or([bnode,iri,literal])
   ]
 ).
 
@@ -47,16 +46,11 @@ Action predicates for agents in DataHives.
 
 :- thread_local(deductions/1).
 
-%! lifetime(?Lifetime:nonneg) is nondet.
-
-:- thread_local(lifetime/1).
-
 default_action(From, Dir, Link, To):-
   dir_trans(Dir, Orient),
   dcg_with_output_to(atom(Arrow), arrow(Orient, 4)),
   dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
-  debug(dh, '~w\t~w', [Arrow,Triple]),
-  increment_lifetime.
+  debug(dh, '~w\t~w', [Arrow,Triple]).
 
 
 deductive_action(From, backward, Link, To):- !,
@@ -65,8 +59,7 @@ deductive_action(From, forward, Link, To):-
   forall(
     rdf_entailment_pattern_match(From, Link, To, U1, V, W),
     rdf_assert_entailment(U1, V, W)
-  ),
-  increment_lifetime.
+  ).
 
 scout_action(From, Dir, Link, To):-
   deductive_action(From, Dir, Link, To).
@@ -115,18 +108,6 @@ increment_deductions:-
   succ(Deductions1, Deductions2),
   assert(deductions(Deductions2)).
 
-
-%! increment_lifetime is det.
-% Increments an agent's liftime, e.g. a single step.
-
-increment_lifetime:-
-  (
-    retract(lifetime(Lifetime1)), !
-  ;
-    Lifetime1 = 0
-  ),
-  succ(Lifetime1, Lifetime2),
-  assert(lifetime(Lifetime2)).
 
 dir_trans(backward, left).
 dir_trans(forward, right).
