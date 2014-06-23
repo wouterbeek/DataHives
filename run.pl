@@ -30,7 +30,7 @@
    user:web_module('plTabular', rdf_tabular).
 
 rdf_tabular(Request):-
-  rdf_tabular(Request, plTabular).
+  rdf_tabular(Request, app_style).
 
 :- html_resource(plTabular, [requires([css('plTabular.css')]),virtual(true)]).
 
