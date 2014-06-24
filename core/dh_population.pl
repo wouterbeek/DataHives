@@ -1,16 +1,13 @@
 :- module(
-  dh_main,
+  dh_population,
   [
     total_lifetime/1 % -TotalLifetime:nonneg
   ]
 ).
 
-/** <module> DataHives: main thread
+/** <module> DataHives: population
 
-The main thread that starts agents processes.
-
-We want this thread to be as shallow as possible,
-since the system should be quite distributed.
+Population statistics for DataHives
 
 @author Wouter Beek
 @version 2014/06

@@ -3,7 +3,7 @@
   [
     dh_step/4 % :PropositionSelection
               % +From:or([bnode,iri,literal])
-              % -Proposition:list(or([bnode,iri,literal]))
+              % -Triple:compound
               % +Options:list(nvpair)
   ]
 ).
@@ -53,7 +53,7 @@ from the characterization of a stepping paradigm is that:
 %! dh_step(
 %!   :PropositionSelection,
 %!   +From:or([bnode,iri,literal]),
-%!   -Proposition:list(or([bnode,iri,literal])),
+%!   -Triple:compound,
 %!   +Options:list(nvpair)
 %! ) is det.
 % Performs a step of the LOD cloud.
@@ -97,19 +97,19 @@ dh_step(_, Resource, _, _):-
   rdf_is_literal(Resource), !,
   fail.
 % IRI.
-dh_step(Goal, Resource, Proposition, Options):-
+dh_step(Goal, Resource, Triple, Options):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).
-  lod_cache_egograph(Resource, Propositions, Options),
+  lod_cache_egograph(Resource, Triples, Options),
   
   % Then we pick one of those triples according to some method.
-  dh_select_triple(Goal, Propositions, Proposition).
+  dh_select_triple(Goal, Triples, Triple).
 
 
 %! dh_select_triple(
 %!   :Goal,
-%!   +Propositions:ordset(list(or([bnode,iri,literal]))),
-%!   -Proposition:list(or([bnode,iri,literal]))
+%!   +Triples:ordset(compound),
+%!   -Triple:compound
 %! ) is det.
 % Selects a single triple with the given resource in the subject position.
 %
@@ -119,7 +119,7 @@ dh_step(Goal, Resource, Proposition, Options):-
 % The resultant proposition is a Prolog list containing three RDF terms,
 % forming an RDF triple.
 
-dh_select_triple(Goal, Propositions, Proposition):-
+dh_select_triple(Goal, Triples, Triple):-
   % Your selection criterion is applied here.
-  call(Goal, Proposition, Propositions).
+  call(Goal, Triple, Triples).
 

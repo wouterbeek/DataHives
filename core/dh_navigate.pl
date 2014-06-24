@@ -1,13 +1,17 @@
 :- module(
-  dh_navigation,
+  dh_navigate,
   [
-    backtrack/4,
+    backtrack/4, % -From:or([bnode,iri,literal]),
+                 % -Direction:oneof([backward,forward]),
+                 % -Link:iri,
+                 % -To:or([bnode,iri,literal])
     dh_navigate/5, % :Navigation,
                    % +From:or([bnode,iri,literal]),
                    % -Direction:oneof([backward,forward]),
                    % -Link:iri,
                    % -To:or([bnode,iri,literal])
-    dh_navigation_init/1 % +InitialLocation:or([bnode,iri,literal])
+    dh_navigate_init/1, % +InitialLocation:or([bnode,iri,literal])
+    number_of_steps/1 % -NumberOfSteps:nonneg
   ]
 ).
 
@@ -21,6 +25,8 @@ Navigation predicates for agents in DataHives.
 
 :- use_module(library(semweb/rdf_db)). % Declarations.
 
+:- use_module(generics(flag_ext)).
+
 %! backtrack(
 %!   ?From:or([bnode,iri,literal]),
 %!   ?Direction:oneof([backward,forward]),
@@ -29,11 +35,6 @@ Navigation predicates for agents in DataHives.
 %! ) is det.
 
 :- thread_local(backtrack/4).
-
-%! number_of_steps(+NumberOfSteps:nonneg) is semidet.
-%! number_of_steps(-NumberOfSteps:nonneg) is det.
-
-:- thread_local(number_of_steps/1).
 
 :- meta_predicate(dh_navigate(2,+,-,-,-)).
 :- meta_predicate(dh_step(2,+,-,-,-)).
@@ -90,13 +91,13 @@ dh_navigate(Nav, From, Dir, Link, To):-
     dir_inv(Dir0, Dir),
     assert(backtrack(From, Dir, Link, To))
   ),
-  increment_number_of_steps.
+  thread_flag(number_of_steps, N, N + 1).
 
 dir_inv(backward, forward).
 dir_inv(forward, backward).
 
 
-dh_navigation_init(InitFrom):-
+dh_navigate_init(InitFrom):-
   assert(
     backtrack(
       InitFrom,
@@ -140,24 +141,19 @@ dh_step(Nav, From, Direction, Link, To):-
   % Find the direction of movement,
   % prefering forward movement in the case of symmetric links.
   (
-    Proposition = [From,Link,To]
+    Proposition = rdf(From,Link,To)
   ->
     Direction = forward
   ;
-    Proposition = [To,Link,From]
+    Proposition = rdf(To,Link,From)
   ->
     Direction = backward
   ).
 
 
-%! increment_number_of_steps is det.
+%! number_of_steps(-NumberOfSteps:nonneg) is det.
 
-increment_number_of_steps:-
-  (
-    retract(number_of_steps(N1)), !
-  ;
-    N1 = 0
-  ),
-  N2 is N1 + 1,
-  assert(number_of_steps(N2)).
+number_of_steps(N):-
+  thread_flag(number_of_steps, N, N), !.
+number_of_steps(0).
 

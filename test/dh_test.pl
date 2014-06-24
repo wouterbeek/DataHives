@@ -26,13 +26,17 @@ Simple test predicates for running programs in DataHives.
 :- use_module(plRdf(rdf_gc)).
 :- use_module(plRdf(rdf_script)).
 
+:- use_module(dh_agent(dh_agent_ant)).
+:- use_module(dh_agent(dh_agent_bee)).
+:- use_module(dh_agent(dh_agent_entailment)).
+:- use_module(dh_com(dh_edge_weight)).
 :- use_module(dh_core(dh_agent)).
-:- use_module(dh_core(dh_action)).
-:- use_module(dh_core(dh_communication)).
-:- use_module(dh_core(dh_evaluation)).
-:- use_module(dh_core(dh_lod_walk_random)).
-:- use_module(dh_core(dh_lod_walk_supervised)).
-:- use_module(dh_core(dh_navigation)).
+:- use_module(dh_core(dh_act)).
+:- use_module(dh_core(dh_communicate)).
+:- use_module(dh_core(dh_evaluate)).
+:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_nav(dh_random_lod_walk)).
+:- use_module(dh_nav(dh_weighted_lod_walk)).
 :- use_module(dh_test(dh_test_generics)).
 
 :- dynamic(dh_test:www_open).
@@ -45,7 +49,7 @@ dh_test:-
   assert_visum(Graph),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
-    dh_lod_walk_random,
+    dh_random_lod_walk,
     default_action,
     update_edge_count(1),
     default_evaluation,
@@ -55,7 +59,7 @@ dh_test:-
 dh_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
-    dh_lod_walk_random,
+    dh_random_lod_walk,
     no_action,
     update_edge_count(1),
     no_evaluation,
@@ -67,10 +71,10 @@ dh_ant_test:-
   assert_visum(Graph),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
-    dh_lod_walk_supervised,
+    dh_weighted_lod_walk,
     deductive_action,
     update_edge_count(1),
-    fitness_evaluation,
+    evaluate_entailment,
     dh_ant_test,
     Graph
   ).
@@ -78,10 +82,10 @@ dh_ant_test:-
 dh_ant_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
-    dh_lod_walk_supervised,
+    dh_weighted_lod_walk,
     deductive_action,
     update_edge_count(1),
-    fitness_evaluation,
+    evaluate_entailment,
     dh_ant_test,
     Url
   ).
@@ -91,10 +95,10 @@ dh_bee_test:-
   assert_visum(Graph),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
-    dh_lod_walk_supervised,
+    dh_weighted_lod_walk,
     scout_action,
     update_edge_count(1),
-    scout_evaluation,
+    evaluate_scout,
     dh_bee_test,
     Graph
   ).
@@ -102,10 +106,10 @@ dh_bee_test:-
 dh_bee_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
-    dh_lod_walk_supervised,
+    dh_weighted_lod_walk,
     scout_action,
     update_edge_count(1),
-    scout_evaluation,
+    evaluate_scout,
     dh_bee_test,
     Url
   ).

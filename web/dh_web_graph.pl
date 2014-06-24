@@ -25,7 +25,7 @@
 
 :- use_module(plGraphViz(gv_file)).
 
-:- use_module(dh_core(dh_communication)).
+:- use_module(dh_core(dh_communicate)).
 :- use_module(dh_web(dh_gif)).
 
 

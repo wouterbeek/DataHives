@@ -1,11 +1,12 @@
 :- module(
   dh_cycle,
   [
-    dh_cycle/5 % :Navigate
-               % :Act
-               % :Communicate
-               % :Evaluate
-               % +InitialResource:iri
+    dh_cycle/5, % :Navigate
+                % :Act
+                % :Communicate
+                % :Evaluate
+                % +InitialResource:iri
+    number_of_cycles/1 % -Cycles:nonneg
   ]
 ).
 
@@ -17,9 +18,10 @@ The navigate-act-communicate cycle for agents in DataHives.
 @version 2014/04-2014/06
 */
 
-:- use_module(generics(meta_ext)).
+:- use_module(generics(flag_ext)).
 
-:- use_module(dh_core(dh_navigation)).
+:- use_module(dh_core(dh_messages)).
+:- use_module(dh_core(dh_navigate)).
 
 :- meta_predicate(dh_cycle(4,4,4,0,+)).
 
@@ -40,43 +42,47 @@ The navigate-act-communicate cycle for agents in DataHives.
 
 dh_cycle(Nav, Act, Com, Eval, InitFrom):-
   % Initialize the backtrack fact in the navigation module.
-  dh_navigation_init(InitFrom),
+  dh_navigate_init(InitFrom),
+  init_call_every_n(number_of_cycles),
 
+  % CHOICEPOINT.
   repeat,
 
-  after_n_steps(100, print_steps),
+  call_every_n(number_of_cycles, 100, print_number_of_cycles),
 
   % Navigate.
-%catch(
-  call(Nav, From, Dir, Link, To),
-%_, (gtrace, call(Nav, From, Dir, Link, To))),
+gtrace,
+  call0(Nav, From, Dir, Link, To),
 
   % Act.
-%catch(
-  call(Act, From, Dir, Link, To),
-%_, (gtrace, call(Nav, From, Dir, Link, To))),
+  call0(Act, From, Dir, Link, To),
 
   % Communicate.
-%catch(
-  call(Com, From, Dir, Link, To),
-%_, (gtrace, call(Nav, From, Dir, Link, To))),
+  call0(Com, From, Dir, Link, To),
 
   % Evaluate
-%catch(
   call(Eval),
-%_, (gtrace, call(Nav, From, Dir, Link, To))),
-  
+
+  % Process message queue.
   process_messages,
-  
+
   fail.
 
+:- meta_predicate(call0(:,?,?,?,?)).
+call0(Goal, Q, X, Y, Z):-
+  %fail, %DEB
+  call(Goal, Q, X, Y, Z), !.
+call0(Goal, Q, X, Y, Z):-
+  catch(
+    call(Goal, Q, X, Y, Z),
+    _,
+    (gtrace, call(Goal, Q, X, Y, Z))
+  ).
 
-process_messages:-
-  thread_get_message(get_lifetime(Caller)), !,
-  thread_self(Me),
-  dh_navigation:number_of_steps(Lifetime),
-  thread_send_message(Caller, lifetime(Me,Lifetime)).
-process_messages.
+
+number_of_cycles(N):-
+  thread_flag(number_of_cycles, N, N), !.
+number_of_cycles(0).
 
 
 
@@ -84,9 +90,9 @@ process_messages.
 
 :- multifile(prolog:message//1).
 
-print_steps(Steps):-
-  print_message(informational, steps_taken(Steps)).
+print_number_of_cycles(N):-
+  print_message(informational, number_of_cycles(N)).
 
-prolog:message(steps_taken(Steps)) -->
-  ['~D steps have been taken.'-[Steps]].
+prolog:message(number_of_cycles(N)) -->
+  ['~D cycles.'-[N]].
 

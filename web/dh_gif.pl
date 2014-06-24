@@ -11,7 +11,7 @@ Produces descriptions of graphs in DataHives
 using the Graph Interchange Format.
 
 @author Wouter Beek
-@version 2014/04-2014/05
+@version 2014/04-2014/06
 */
 
 :- use_module(library(aggregate)).
@@ -23,14 +23,15 @@ using the Graph Interchange Format.
 
 :- use_module(plRdf(rdf_name)). % Meta-DCG.
 
-:- use_module(dh_core(dh_communication)).
+:- use_module(dh_com(dh_edge_weight)).
+:- use_module(dh_core(dh_communicate)).
 
 
 
 %! dh_edge(-Triple:triple(or([bnode,iri,literal]))) is nondet.
 
 dh_edge(S-P-O):-
-  edge_count(S, P, O, _).
+  edge_count(rdf(S,P,O), _).
 
 
 %! dh_graph(-Gif) is det.
@@ -40,7 +41,7 @@ dh_graph(Gif):-
   (
     aggregate_all(
       max(Count),
-      edge_count(_, _, _, Count),
+      edge_count(_, Count),
       MaxCount
     )
   ->
@@ -77,9 +78,9 @@ dh_graph(MaxCount, Vs, Es, graph(V_Terms,E_Terms,Attrs)):-
 %! dh_vertex(-Vertex:or([bnode,iri,literal])) is nondet.
 
 dh_vertex(V):-
-  edge_count(V, _, _, _).
+  edge_count(rdf(V,_,_), _).
 dh_vertex(V):-
-  edge_count(_, _, V, _).
+  edge_count(rdf(_,_,V), _).
 
 
 edges_to_vertices([], []):- !.
@@ -98,7 +99,7 @@ edge_name(_-P-_, Label):-
   dcg_with_output_to(atom(Label), rdf_term_name(P)).
 
 edge_penwidth(MaxCount, S-P-O, Penwidth):-
-  edge_count(S, P, O, Count),
+  edge_count(rdf(S,P,O), Count),
   Penwidth is Count / MaxCount * 10.
 
 edge_style(_, solid).

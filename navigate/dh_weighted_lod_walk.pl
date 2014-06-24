@@ -1,10 +1,10 @@
 :- module(
-  dh_lod_walk_supervised,
+  dh_weighted_lod_walk,
   [
-    dh_lod_walk_supervised/4 % +From:or([bnode,iri,literal])
-                             % -Direction:oneof([backward,forward])
-                             % -Link:iri
-                             % -To:or([bnode,iri,literal])
+    dh_weighted_lod_walk/4 % +From:or([bnode,iri,literal])
+                           % -Direction:oneof([backward,forward])
+                           % -Link:iri
+                           % -To:or([bnode,iri,literal])
   ]
 ).
 
@@ -22,29 +22,30 @@ using the Linked Open Data stepping paradigm.
 :- use_module(library(pairs)).
 :- use_module(library(random)).
 
-:- use_module(dh_core(dh_action)).
-:- use_module(dh_core(dh_communication)).
-:- use_module(dh_core(dh_navigation)).
-:- use_module(dh_core(dh_step)).
+:- use_module(dh_com(dh_edge_weight)).
+:- use_module(dh_core(dh_act)).
+:- use_module(dh_core(dh_communicate)).
+:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_nav(dh_step)).
 
-%! dh_lod_walk_supervised(
+%! dh_weighted_lod_walk(
 %!   +From:or([bnode,iri,literal]),
 %!   -Direction:oneof([backward,forward]),
 %!   -Link:iri,
 %!   -To:or([bnode,iri,literal])
 %! ) is det.
 
-dh_lod_walk_supervised(From, Dir, Link, To):-
-  dh_navigate(lod_supervised_step, From, Dir, Link, To).
+dh_weighted_lod_walk(From, Dir, Link, To):-
+  dh_navigate(lod_weighted_step, From, Dir, Link, To).
 
 
-%! lod_supervised_step(+Resource, -Proposition:list) is det.
+%! lod_weighted_step(+Resource, -Triple:list) is det.
 
-lod_supervised_step(Resource, Proposition):-
-  dh_step(supervised_member, Resource, Proposition, []).
+lod_weighted_step(Resource, Triple):-
+  dh_step(weighted_member, Resource, Triple, []).
 
 
-%! supervised_member(-Proposition, +Propositions:list) is det.
+%! weighted_member(-Triple, +Triples:list) is det.
 % Return a proposition in a randomish way,
 % taking the relative weights of the elements into account.
 % If the list is empty it goes back
@@ -68,22 +69,24 @@ lod_supervised_step(Resource, Proposition):-
 % the number recursions needed for determining the chosen edge.
 %
 % @see The argument order mirrors that of predicate member/2.
-supervised_member(_,[]):-!,
+
+weighted_member(_,[]):-!,
   backtrack(_,_,_,To),
   forbide_path(To),
   thread_exit(_).
-supervised_member(Proposition, [Proposition]):- !.
-supervised_member(Proposition, Propositions):-
+weighted_member(Triple, [Triple]):- !.
+weighted_member(Triple, Triples):-
   findall(
-    Value2-Proposition,
+    EdgeWeight2-Triple,
     (
-      member(Proposition, Propositions),
-      edge_value(Proposition, Value1),
-      % Select only positive value (otherwise the count doesn't work properly)
-      Value1 >= 0,
+      member(Triple, Triples),
+      edge_weight(Triple, EdgeWeight1),
+      % Select only positive values
+      % (otherwise the count does not work properly)
+      EdgeWeight1 >= 0,
       % We add 1 to each edge value.
-      % Otherwise, edges with value 0 would never be considered.
-      succ(Value1, Value2)
+      % Otherwise, edges with value 0 would not be considered.
+      EdgeWeight2 is EdgeWeight1 + 1
     ),
     Pairs1
   ),
@@ -99,14 +102,14 @@ supervised_member(Proposition, Propositions):-
 
   % Choose the edge that is uniquely identified by
   % the randomly chosen number.
-  supervised_member(Choice, Proposition, Pairs3).
+  weighted_member(Choice, Triple, Pairs3).
 
-supervised_member(Choice, Proposition, Pairs):-
-  supervised_member(Choice, Proposition, 0, Pairs).
+weighted_member(Choice, Triple, Pairs):-
+  weighted_member(Choice, Triple, 0, Pairs).
 
-supervised_member(Choice, Proposition, Cumulative, [_-Proposition|_]):-
+weighted_member(Choice, Triple, Cumulative, [_-Triple|_]):-
   Choice =< Cumulative, !.
-supervised_member(Choice, Proposition, Cumulative1, [Value-_|T]):-
+weighted_member(Choice, Triple, Cumulative1, [Value-_|T]):-
   Cumulative2 is Cumulative1 + Value,
-  supervised_member(Choice, Proposition, Cumulative2, T).
+  weighted_member(Choice, Triple, Cumulative2, T).
 

@@ -1,7 +1,7 @@
 :- module(
-  dh_lod_walk_random,
+  dh_random_lod_walk,
   [
-    dh_lod_walk_random/4 % +From:or([bnode,iri,literal]),
+    dh_random_lod_walk/4 % +From:or([bnode,iri,literal]),
                          % -Direction:oneof([backward,forward]),
                          % -Link:iri,
                          % -To:or([bnode,iri,literal])
@@ -20,22 +20,22 @@ that uses the LOD stepping paradigm.
 :- use_module(library(random)).
 :- use_module(library(semweb/rdf_db)). % Declarations.
 
-:- use_module(dh_core(dh_navigation)).
-:- use_module(dh_core(dh_step)).
+:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_nav(dh_step)).
 
-:- rdf_meta(dh_lod_walk_random(r,-,-,-)).
+:- rdf_meta(dh_random_lod_walk(r,-,-,-)).
 :- rdf_meta(dh_random_step(r,-)).
 
 
 
-%! dh_lod_walk_random(
+%! dh_random_lod_walk(
 %!   +From:or([bnode,iri,literal]),
 %!   -Direction:oneof([backward,forward]),
 %!   -Link:iri,
 %!   -To:or([bnode,iri,literal])
 %! ) is det.
 
-dh_lod_walk_random(From, Dir, Link, To):-
+dh_random_lod_walk(From, Dir, Link, To):-
   dh_navigate(dh_random_step, From, Dir, Link, To).
 
 
