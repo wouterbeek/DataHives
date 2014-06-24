@@ -16,10 +16,17 @@ using the Graph Interchange Format.
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
+:- use_module(library(lists)).
+:- use_module(library(option)).
 :- use_module(library(ordsets)).
+:- use_module(library(semweb/rdf_db)).
 
 :- use_module(dcg(dcg_generic)).
 :- use_module(generics(list_ext)).
+:- use_module(generics(typecheck)).
+:- use_module(generics(uri_ext)).
+:- use_module(http(http_download)).
+:- use_module(os(image_ext)).
 
 :- use_module(plRdf(rdf_name)). % Meta-DCG.
 
@@ -59,6 +66,15 @@ dh_graph(MaxCount, Gif):-
     dh_edge(E),
     Es
   ),
+  dh_graph(MaxCount, Es, Gif).
+
+%! dh_graph(
+%!   +MaxCount:positive_integer,
+%!   +Edges:ordset(triple(or([bnode,iri,literal]))),
+%!   -Gif:compound
+%! ) is det.
+
+dh_graph(MaxCount, Es, Gif):-
   edges_to_vertices(Es, Vs),
   dh_graph(MaxCount, Vs, Es, Gif).
 
@@ -98,6 +114,7 @@ edge_arrow_head(_, normal).
 edge_name(_-P-_, Label):-
   dcg_with_output_to(atom(Label), rdf_term_name(P)).
 
+edge_penwidth(0, _, 1):- !.
 edge_penwidth(MaxCount, S-P-O, Penwidth):-
   edge_count(rdf(S,P,O), Count),
   Penwidth is Count / MaxCount * 10.
@@ -118,6 +135,20 @@ edge_term(MaxCount, Vs, E, edge(FromId,ToId,Attrs)):-
 
 % VERTEX TERMS
 
+vertex_image(Spec, Attrs, [image=CacheFile|Attrs]):-
+  image_url(Spec), !,
+  rdf_global_id(Spec, Url),
+  url_nested_file(data(.), Url, CacheFile),
+  (
+    access_file(CacheFile, exist), !
+  ;
+    download_to_file(Url, CacheFile, []), !
+  ;
+    fail
+  ).
+
+vertex_image(_, Attrs, Attrs).
+
 vertex_label(V, Label):-
   dcg_with_output_to(atom(Label), rdf_term_name([literal_ellipsis(50)], V)).
 
@@ -125,9 +156,10 @@ vertex_peripheries(_, 1).
 
 vertex_shape(_, ellipse).
 
-vertex_term(Vs, V, vertex(Id,V,Attrs)):-
+vertex_term(Vs, V, vertex(Id,V,Attrs2)):-
   nth0chk(Id, Vs, V),
   vertex_label(V, Label),
   vertex_shape(V, Shape),
-  Attrs = [label=Label,shape=Shape].
+  Attrs1 = [label=Label,shape=Shape],
+  vertex_image(V, Attrs1, Attrs2).
 
