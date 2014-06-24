@@ -51,7 +51,6 @@ dh_cycle(Nav, Act, Com, Eval, InitFrom):-
   call_every_n(number_of_cycles, 100, print_number_of_cycles),
 
   % Navigate.
-gtrace,
   call0(Nav, From, Dir, Link, To),
 
   % Act.

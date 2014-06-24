@@ -1,7 +1,8 @@
 :- module(
   dh_population,
   [
-    total_lifetime/1 % -TotalLifetime:nonneg
+    total_number_of_cycles/1, % -Cycles:nonneg
+    total_number_of_steps/1 % -Steps:nonneg
   ]
 ).
 
@@ -15,41 +16,20 @@ Population statistics for DataHives
 
 :- use_module(library(lists)).
 
+:- use_module(generics(vox_populi)).
 
 
-%! total_lifetime(-TotalLifetime:nonneg) is det.
 
-total_lifetime(TotalLifetime):-
-  thread_self(Me),
-  findall(
-    Thread,
-    (
-      agent_thread(Thread),
-      thread_send_message(Thread, get_lifetime(Me))
-    ),
-    Threads
-  ),
-  collect_answers(Threads, Lifetimes),
-  sum_list(Lifetimes, TotalLifetime).
+%! total_number_of_cycles(-Cycles:nonneg) is det.
+
+total_number_of_cycles(Cycles):-
+  ask(agent_, number_of_cycles, Cycless),
+  sum_list(Cycless, Cycles).
 
 
-collect_answers(Threads, Answers):-
-  collect_answers(Threads, [], Answers).
+%! total_number_of_steps(-Steps:nonneg) is det.
 
-collect_answers([], Solution, Solution):- !.
-collect_answers(Threads1, Answers, Solution):-
-  thread_get_message(lifetime(Thread,Answer)),
-  selectchk(Thread, Threads1, Threads2), !,
-  collect_answers(Threads2, [Answer|Answers], Solution).
-collect_answers(Threads, Answers, Solution):-
-  sleep(1),
-  collect_answers(Threads, Answers, Solution).
-
-
-agent_thread(Thread):-
-  thread_property(Thread, status(_)),
-  agent_thread_name(Thread).
-
-agent_thread_name(Thread):-
-  atom_concat('agent_', _, Thread).
+total_number_of_steps(Steps):-
+  ask(agent_, number_of_steps, Stepss),
+  sum_list(Stepss, Steps).
 
