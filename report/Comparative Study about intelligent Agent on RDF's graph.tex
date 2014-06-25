@@ -92,63 +92,6 @@
 		\end{itemh}
 
 \newpage
-\section{Planning}
-	\subsection{Estimated tasks}
-		Some high-level tasks, to be filled in later:
-		\begin{itemH}
-			\item Implementation framework:
-				\begin{itemh}
-					\item Have a look at the JS-based triple store rdfstore-js
-					\item Integrate Pepijn’s work (as much as possible)  into the new implementation.
-					\item Visualization (optional component) uses D3JS.
-				\end{itemh}
-			\item Strategies:
-				\begin{itemh}
-					\item Random movement + no communication.
-					\item Bee: random node choice / communication / local traversal.
-					\item Ant: movement based on pheromone values + communication via environment/graph annotation.
-				\end{itemh}
-			\item Evaluation:
-				\begin{itemh}
-					\item Quantify over the number of deductions (over time) achieved by a group of agents.
-					\item Qualitative evaluation: more difficult…
-				\end{itemh}
-		\end{itemH}
-	\subsection{Work in Progress}
-		\subsubsection{First try with RDFstore-js}
-			\paragraph{} The first attempt to implement those agents was to use JS, based on the project :
-			\url{https://githu.com/antoniogarrote/rdfstore-js}.
-			Unfortunately, it has been misleading because the documentation was lacking
-			and implementing functions was thus hard to do.
-			It took me 3 days to understand how to load a store in local to work on it !
-		\subsubsection{Work on DataHives \#1}
-			\paragraph{} This is a sub-module of the project Pragmatic Semantic.
-			It already has random agents implemented.
-			Those agents are defined by a cycle of action they perform : Navigate / Act / Communicate.
-			The random agent go somewhere random, don't act nor communicate.
-			We will implement navigation, action and communication functions step by step,
-			adding a few feature at a time to be sure to get something working in the end.
-			The web interface will show where did the agents went (could be useful for qualitative evaluation).
-			\paragraph{} To start the local server, we had to launch a command from the Pragmatic Semantic folder.
-			The purpose of this command was to launch the local server.
-			Then, on it, we could start some random agents using the simple dh\_test(\_) in prolog.
-			After that, the visualization of the agents and their progress is at the web address localhost:3040.
-			Unfortunately, the heavy structure was quite hard to manipulate correctly and didn't make a stand alone system.
-			That why DataHives has been recast.
-		\subsubsection{DataHives \#2 (recast)}
-			\paragraph{} The recast makes the system more easy to use and more stand alone.
-				The system also produced a picture of the crawled graph (100 most visited edges and their induced nodes).
-			\paragraph{Evaluation \& Fitness.} The cycle has been updated, from this :
-				"Navigate, Act, Communicate" to "Navigate, Act, Communicate, Evaluate".
-				This evaluation is based on a fitness function that says if the agent fits or not,
-				if it fitness is too low (typically below $0.5$), we kill it.
-				For now, the fitness function is only a count of deduced information over the number of steps taken.
-				But it will have some new features like taking dead end into account or
-				fitness compare to a set of predefined triples.
-			\paragraph{Rating the edges} is now really basic : if an agent go over an edge it leaves a virtual pheromone,
-				but soon we'll have some more complicated functions to devalue certain path if they lead to dead ends or
-				if they don't lead to good information (depending on the previous described fitness function)
-
 \section{Agents details \& behaviour}
 	\paragraph{}
 		All the agents are implemented in the same way.

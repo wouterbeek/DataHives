@@ -1,7 +1,7 @@
 :- module(
   dh_population,
   [
-    number_of_deduced_triples/1 % -TotaNumberOfDeducedTriples:nonneg
+    number_of_deduced_triples/1, % -TotaNumberOfDeducedTriples:nonneg
     total_number_of_cycles/1, % -Cycles:nonneg
     total_number_of_steps/1 % -Steps:nonneg
   ]
