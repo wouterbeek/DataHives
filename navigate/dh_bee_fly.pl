@@ -13,6 +13,8 @@
 :- use_module(dh_core(dh_navigate)).
 :- use_module(dh_nav(dh_step)).
 
+:- use_module(library(semweb/rdf_db)).
+
 dh_bee_lod_fly(From, Dir, Link, To):-
   dh_navigate(random_fly_step, From, Dir, Link, To).
 

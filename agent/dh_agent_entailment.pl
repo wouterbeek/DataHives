@@ -6,7 +6,8 @@
                         % -Direction:oneof([backward,forward])
                         % -Link:iri
                         % -To:or([bnode,iri,literal])
-    evaluate_entailment/0
+    evaluate_entailment/0,
+    increment_deductions/1
   ]
 ).
 
@@ -76,12 +77,12 @@ rdf_assert_entailment(rdf(U1,V,W)):-
   ;
     U2 = U1
   ),
-  
+
   % Assert the triple in the graph named after the agent alias.
   thread_self(Me),
   thread_property(Me, alias(MyName)),
   rdf_assert(U2, V, W, MyName),
-  
+
   % Count the number of deductions per agent.
   increment_deductions.
 
@@ -102,7 +103,7 @@ rdf_entailment_pattern_match(rdf(From,Link,To), rdf(U1,V,W)):-
     % The second predicate must be in cache.
     rdf(X, Y, Z)
   ),
-  
+
   % Use the existing blank node map
   % to replace literals with their blank node proxy.
   (
@@ -113,7 +114,7 @@ rdf_entailment_pattern_match(rdf(From,Link,To), rdf(U1,V,W)):-
   ;
     U2 = U1
   ),
-  
+
   % The conclusion must be new.
   \+ rdf(U2, V, W).
 
@@ -122,12 +123,15 @@ rdf_entailment_pattern_match(rdf(From,Link,To), rdf(U1,V,W)):-
 % Increments the number of deductions produced by an agent.
 
 increment_deductions:-
+  increment_deductions(1).
+
+increment_deductions(N):-
   (
     retract(deductions(N1)), !
   ;
     N1 = 0
   ),
-  N2 is N1 + 1,
+  N2 is N1 + N,
   assert(deductions(N2)).
 
 

@@ -21,16 +21,11 @@ Action predicates for agents in DataHives.
 */
 
 :- use_module(library(debug)).
-:- use_module(library(semweb/rdf_db)).
 
 :- use_module(dcg(dcg_content)).
 :- use_module(dcg(dcg_generic)).
 
 :- use_module(plRdf(rdf_name)).
-
-:- use_module(dh_core(dh_communicate)).
-
-
 
 default_action(From, Dir, Link, To):-
   dir_trans(Dir, Orient),
@@ -43,4 +38,3 @@ dir_trans(forward, right).
 
 
 no_action(_, _, _, _).
-
