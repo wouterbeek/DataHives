@@ -2,10 +2,10 @@
   dh_bee_fly,
   [
 % SCOUT
-    dh_bee_lod_fly/4  % -From
-		       % +Dir
-                       % +Link
-                       % +To
+    dh_bee_lod_fly/4 % -From
+                     % +Dir
+                     % +Link
+                     % +To
   ]
 ).
 
@@ -19,5 +19,7 @@ dh_bee_lod_fly(From, Dir, Link, To):-
 random_fly_step(Resource, Proposition):-
   dh_step(get_random_proposition, Resource, Proposition, []).
 
-get_random_proposition([S,'http://www.w3.org/2002/07/owl#sameAs',S],_):-
-   random_start_url(S).
+get_random_proposition(rdf(S,P,S), _):-
+  rdf_global_id(owl:sameAs, P),
+  random_start_url(S).
+
