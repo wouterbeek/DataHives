@@ -21,17 +21,15 @@
 */
 
 :- use_module(dh_agent(dh_agent_entailment)).
-:- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_core(dh_agent)).
 :- use_module(dh_core(dh_cycle)).
+:- use_module(dh_core(dh_agent)).
 :- use_module(dh_core(dh_navigate)).
-:- use_module(dh_core(dh_act)).
+
 :- use_module(dh_nav(dh_random_lod_walk)).
-:- use_module(dh_nav(dh_bee_fly)).
+:- use_module(dh_com(dh_edge_weight)).
 
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(lodCache(lod_cache_egograph)).
 
 % FORAGER %
 
@@ -48,29 +46,32 @@ evaluate_forager:-
 
 send_forager:-
   backtrack(From, _, _, _),
-  create_agent(
+  send_forager(From).
+
+send_forager(URL):-
+  create_agents(
     dh_random_lod_walk,
     deductive_action,
     update_edge_count(1),
     evaluate_forager,
-    From,
+    true,
+    URL,
     5
   ).
-
 
 
 % SCOUT %
 
 scout_action(From, Dir, Link, To):-
   deductive_action(From, Dir, Link, To),
-  lod_cache_egograph(From,_),
   findall(
     Result,
-    (rdf(From,'rdfs:comment',Result),
-     rdf(Result,'rdfs:label',_)),
+    (rdf(From,'rdfs:comment',Result)),
     Results
   ),
   length(Results,N),
+  forall(member(_,Results),
+	send_forager(From)),
   increment_deductions(N).
 
 evaluate_scout:-
