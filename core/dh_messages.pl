@@ -13,14 +13,22 @@ Where message queue are being processed.
 @version 2014/06
 */
 
-:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_core(dh_cycle)). % Meta-calls.
+:- use_module(dh_core(dh_navigate)). % Meta-calls.
 
+:- meta_predicate(answer_question(1,+)).
+
+
+
+answer_question(Goal, X):-
+  call(Goal, X).
 
 
 process_messages:-
-  thread_peek_message(get_lifetime(Caller)), !,
+  thread_peek_message(question(Caller,Question)), !,
+  thread_get_message(question(Caller,Question)),
+  answer_question(Question, Answer),
   thread_self(Me),
-  number_of_steps(Lifetime),
-  thread_send_message(Caller, lifetime(Me,Lifetime)).
+  thread_send_message(Caller, answer(Me,Answer)).
 process_messages.
 
