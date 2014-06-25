@@ -1,7 +1,8 @@
 :- module(
   dh_population,
   [
-    total_lifetime/1 % -TotalLifetime:nonneg
+    total_lifetime/1, % -TotalLifetime:nonneg
+    number_of_deduced_triples/1 % -TotaNumberOfDeducedTriples:nonneg
   ]
 ).
 
@@ -14,7 +15,7 @@ Population statistics for DataHives
 */
 
 :- use_module(library(lists)).
-
+:- use_module(library(semweb/rdf_db)).
 
 
 %! total_lifetime(-TotalLifetime:nonneg) is det.
@@ -53,3 +54,17 @@ agent_thread(Thread):-
 agent_thread_name(Thread):-
   atom_concat('agent_', _, Thread).
 
+
+%! number_of_deduced_triples(-TotaNumberOfDeducedTriples:nonneg) is det
+
+number_of_deduced_triples(T):-
+  findall(
+    T,
+    (
+      rdf_graph(G),
+      atom_concat('agent_',_,G),
+      rdf_statistics(triples_by_graph(G,T))
+    ),
+    Ts
+  ),
+  sum_list(Ts,T).
