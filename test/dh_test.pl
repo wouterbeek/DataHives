@@ -36,6 +36,7 @@ Simple test predicates for running programs in DataHives.
 :- use_module(dh_core(dh_evaluate)).
 :- use_module(dh_core(dh_navigate)).
 :- use_module(dh_nav(dh_random_lod_walk)).
+:- use_module(dh_nav(dh_bee_fly)).
 :- use_module(dh_nav(dh_weighted_lod_walk)).
 :- use_module(dh_test(dh_test_generics)).
 
@@ -95,7 +96,7 @@ dh_bee_test:-
   assert_visum(Graph),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
-    dh_weighted_lod_walk,
+    dh_bee_lod_fly,
     scout_action,
     update_edge_count(1),
     evaluate_scout,
@@ -106,7 +107,7 @@ dh_bee_test:-
 dh_bee_test(Url):-
   default_goal(random_start_url, Url),
   create_agent(
-    dh_weighted_lod_walk,
+    dh_bee_lod_fly,
     scout_action,
     update_edge_count(1),
     evaluate_scout,

@@ -25,7 +25,8 @@
 :- use_module(dh_core(dh_agent)).
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_navigate)).
-:- use_module(dh_nav(dh_weighted_lod_walk)).
+:- use_module(dh_nav(dh_random_lod_walk)).
+:- use_module(dh_nav(dh_bee_fly)).
 
 
 
@@ -45,7 +46,7 @@ evaluate_forager:-
 send_forager:-
   backtrack(From, _, _, _),
   create_agent(
-    dh_weighted_lod_walk,
+    dh_random_lod_walk,
     deductive_action,
     update_edge_count(1),
     evaluate_forager,
@@ -62,11 +63,11 @@ evaluate_scout:-
   number_of_cycles(Lifetime),
   Fitness is Deductions / Lifetime,
   (
-    Fitness < 0.5
+    Fitness < 0.3
   ->
     thread_exit(done)
   ;
-    Fitness > 0.8
+    Fitness > 0.4
   ->
     send_forager
   ;

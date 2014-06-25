@@ -71,12 +71,15 @@
 		His goal was to get back information from a search using agents acting like bees (in JavaScript) \cite{Kroes13}.
 		We used his code as inspiration for our own bees agents (that are in prolog).
 		That work was based on a paper \cite{Gueret10} about Swarm computing.
-	%	\paragraph{}	%Introduction to DataHives project
-	%	\subsection{Hypothesis}
+	%	\paragraph{}	%Introduction to DataHives subsection
+	%	\project{Hypothesis}
 		\begin{center}
 			\textit{
-			\textbf{Hypothesis :} The goal of this project is to create a new kind of agents based on a different behaviour,
-			agent that we think more powerful than the previous one.}
+			\textbf{Hypothesis :} In this project, we will compare the graphs induced by the bee walk,
+				to the one obtain by the random agents and also the one induced by the ant walk.
+				We expect to have a high number of cluster of high betweeness centrality on the bee graph,
+				and a pagerank-like graph for the rendom agents.
+				The ants have a few components and a high connected one}
 		\end{center}
 
 	%	\subsection{Evaluation}
@@ -87,7 +90,7 @@
 			Those two methods will be used to compare 3 kind of agents:
 		\begin{itemh}
 			\item Random (base)
-			\item Bee (already implemented)
+			\item Bee (already implementedin another language)
 			\item Ant (to be implemented)
 		\end{itemh}
 
@@ -175,8 +178,9 @@
 		\subsubsection{Navigate}
 			\paragraph{}
 			A bee navigates randomly, whatever her role is.
+			It goes to a random place and then another random place, and keep going in doing this.
 			The scouts are wandering around to try to find information.
-			When one succeed, it tells some others (called forager) to come and grab the pollen it has found.
+			When one succeed, it tells some others (called forager) to come and grab the "pollen" it has found.
 		\subsubsection{Communicate}
 			\paragraph{}
 			Here the communication is really simple.
