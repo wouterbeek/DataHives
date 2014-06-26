@@ -66,7 +66,7 @@
 		Then we can send a query and get back some results that are in that database.
 		As for SQL, SPARQL could built some complicated queries.
 		The other common way of getting data is directly get files containing RDF in it (turtle, rdf, n3).
-		The last one is by deferencing which is a mix of the two :
+		The last one is with deferenced data which is a mix of the two :
 		it ask the server for data about a resource and get a file containing the data.
 	\paragraph{}	%Introduction to other work
 		Last year, another bachelor student worked on a similar project.
@@ -79,7 +79,7 @@
 			\textit{
 			\textbf{Hypothesis :} In this project, we will compare the graphs induced by the bee walk,
 				to the one obtain by the random agents and also the one induced by the ant walk.
-				We expect to have a high number of cluster of high betweeness centrality on the bee graph,
+				We expect to have a high number of cluster of high betweenness centrality on the bee graph,
 				and a pagerank-like graph for the random agents.
 				The ants have a few components and a high connected one}
 		\end{center}
@@ -87,12 +87,12 @@
 	%	\subsection{Evaluation}
 		\paragraph{Evaluation:}
 			We will verify the hypothesis via different criteria.
-			The first way of compare two agents is quantitative using the number of discovered node (entailment regime).
-			This one is relatively simpler to evaluate than the qualitative which require a human subjective interaction (user feedback).
+			We'll make them work for a certain time and then compute the betweenness centrality and the clustering coefficient.
+			We will also variate the number of agents to see if there are some big variations or not (saturation ?).
 			Those two methods will be used to compare 3 kind of agents:
 		\begin{itemh}
 			\item Random (base)
-			\item Bee (already implementedin another language)
+			\item Bee (already implemented in another language)
 			\item Ant (to be implemented)
 		\end{itemh}
 
@@ -109,8 +109,8 @@
 		Navigation is the function that decide \textbf{where} the agent should go, depending on where it is already.
 		In facts, this predicate pick a proposition between all the possibilities,
 		those possibilities are all nodes that are neighbours to the one we are on.
-		The graph containing all the neighbours is called the ego-graph of the choosen node,
-		we assume it contains all the incomming and out going neighbours.
+		The graph containing all the neighbours is called the ego-graph of the chosen node,
+		we assume it contains all the incoming and out going neighbours.
 		Unfortunately, those nodes could be literals and then we could get stuck on it because literals are linked to nothing.
 		To avoid that, we have a backtrack function that keeps in mind the last position we were on.
 	\paragraph{}
@@ -209,7 +209,7 @@
 			This Web interface also enable show a table containing all the agents working at the moment on the graph with their status.
 			If one of the agent crash, it shows up and the reason why.
 
-\section{Evaluation of the difference between the agents}
+\section{Difference between the agents}
 	\subsection{Quantitative Evaluation}
 		\paragraph{}
 			First, we want to compare the agents over the number of deductions over the time they are running.
@@ -221,24 +221,13 @@
 		\end{center}
 		\paragraph{}
 			Description of the graph and deductions
-	\subsection{Robustness evaluation}
+	\subsection{Graph figures comparison}
 		\paragraph{}
-			Our second evaluation will measure the bot robustness by counting the number of deaths
-			in a certain time / steps / number of deductions
-		\begin{center}
-			\textit{Place for a future graph, comparing agents x = time, y = deaths}
-		\end{center}
+			We formulate in the hypothesis that the crawled graph must differ between every kind of agents.
+			To prove this, we have been using Gephi to dig out some figures of our graphs.
+			The more representation figures were the betweenness centrality and the clustering coefficient.
 		\paragraph{}
-			Description of the graph and deductions
-	\subsection{Fitness evolution}
-		\paragraph{}
-			Measuring how the fitness is evolving over time / number of steps to compare population of agents
-		\begin{center}
-			\textit{Place for a future graph, comparing agents x = time, y = deductions}
-		\end{center}
-		\paragraph{}
-			Description of the graph and deductions
-
+		
 \section{Main Problems faced}
 	\subsection{Dead end paths}
 		\paragraph{}
@@ -246,18 +235,18 @@
 			Especially in some dead end path, because the graph is oriented and going back is not easy.
 			We have a backtrack function in case of which we would have arrived on a literal (special case),
 			But this backtrack function is only limited to go one step backward.
-			Storing the whole path would be memory unefficient.
+			Storing the whole path would be memory inefficient.
 		\paragraph{}
 			To solve this, we start an action when an agent detect when it is in a dead end path (when it can't go anywhere).
-			This specific action is quite simple, it start from the node wher the agent got stuck and devalue the path to it.
-			To know the path, we just crawl the cache starting from the "stucking node"
-			and see if there is other possibilites that the one we come from.
+			This specific action is quite simple, it start from the node where the agent got stuck and devalue the path to it.
+			To know the path, we just crawl the cache starting from the "blocking node"
+			and see if there is other possibilities that the one we come from.
 			If yes, it means that the node we just arrived on is the end of the dead end path.
 			If no, we just repeat the previous step to find that node which show the end of the path.
 			Also, we kill the agent and create a new one instead that will crawl from another place.
 	\subsection{Denied access}
 		\paragraph{}
-			The LOD contains some retricted area we the agents cannot go.
+			The LOD contains some restricted area we the agents cannot go.
 			When an agent meet such a place, it just go backward of one step.
 			Sometimes, it is also because the server where we try to grab information from is down.
 			Some of them, like dbpedia have a live version of it which is sometime replacing the other one,
@@ -272,8 +261,8 @@
 		\paragraph{}
 			Even if we want the agents to communicate with each other, it is better if their communication remain light,
 			otherwise, they spend too much time waiting for each other and the efficiency becomes bad.
-			For example, the system we work on don't have a kind of mothership that give orders.
-			Each agent is working on his own and has is own independants functions.
+			For example, the system we work on don't have a kind of mother-ship that give orders.
+			Each agent is working on his own and has is own independent functions.
 		\paragraph{}
 			A necessary communication that has been establish between threads is a message system to get information about the thread,
 			like the number of steps taken.
