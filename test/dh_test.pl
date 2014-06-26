@@ -96,7 +96,7 @@ dh_bee_test:-
   assert_visum(Graph),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
-    dh_bee_lod_fly,
+    dh_bee_lod_fly(Graph),
     scout_action,
     update_edge_count(1),
     evaluate_scout,

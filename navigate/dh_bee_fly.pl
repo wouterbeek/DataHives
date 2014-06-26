@@ -1,25 +1,39 @@
 :- module(
   dh_bee_fly,
   [
-% SCOUT
-    dh_bee_lod_fly/4 % -From
-                     % +Dir
-                     % +Link
-                     % +To
+    dh_bee_lod_fly/4, % +From:or([bnode,iri,literal]),
+                      % -Direction:oneof([backward,forward]),
+                      % -Link:iri,
+                      % -To:or([bnode,iri,literal])
+    dh_bee_lod_fly/5 % +Graph:atom
+                     % +From:or([bnode,iri,literal]),
+                     % -Direction:oneof([backward,forward]),
+                     % -Link:iri,
+                     % -To:or([bnode,iri,literal])
   ]
 ).
 
-:- use_module(dh_test(dh_test_generics)).
 :- use_module(dh_core(dh_navigate)).
 :- use_module(dh_nav(dh_step)).
+:- use_module(dh_test(dh_test_generics)).
 
 :- use_module(library(semweb/rdf_db)).
+
+
 
 dh_bee_lod_fly(From, Dir, Link, To):-
   dh_navigate(random_fly_step, From, Dir, Link, To).
 
+dh_bee_lod_fly(Graph, From, Dir, Link, To):-
+  dh_navigate(random_fly_step(Graph), From, Dir, Link, To).
+
+
 random_fly_step(Resource, Proposition):-
   dh_step(get_random_proposition, Resource, Proposition, []).
+
+random_fly_step(Graph, Resource, Proposition):-
+  dh_step(Graph, get_random_proposition, Resource, Proposition, []).
+
 
 get_random_proposition(rdf(S,P,S), _):-
   rdf_global_id(owl:sameAs, P),

@@ -6,6 +6,7 @@
 :- if(\+ current_module(load_project)).
   :- ensure_loaded('../load').
 :- endif.
+:- ensure_loaded('../debug').
 
 :- use_module(cliopatria(hooks)).
 
@@ -35,7 +36,6 @@ dh_web_graph(Request):-
   dh_web_graph(Request, cliopatria(default)).
 
 
-
 % plTabular
 
 :- use_module(plTabular(rdf_tabular)).
@@ -50,3 +50,4 @@ rdf_tabular(Request):-
 user:body(plTabular, Body) -->
   html_requires(plTabular),
   user:body(cliopatria(default), Body).
+
