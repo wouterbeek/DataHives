@@ -50,7 +50,7 @@ dh_test:-
   assert_visum(Graph),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(
-    dh_random_lod_walk,
+    dh_random_lod_walk(Graph),
     default_action,
     update_edge_count(1),
     default_evaluation,

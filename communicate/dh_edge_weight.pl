@@ -36,7 +36,7 @@ where in the absence of an edge count the edge's weight is 0.
 
 %! edge_count(+Triple:compound, +Count:integer) is semidet.
 %! edge_count(+Triple:compound, -Count:integer) is semidet.
-%! edge_count(-Triple:compound, +Count:integer) is nonedet.
+%! edge_count(-Triple:compound, +Count:integer) is nondet.
 %! edge_count(-Triple:compound, -Count:integer) is nondet.
 % Relates triples to their edge count.
 %

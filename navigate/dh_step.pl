@@ -1,7 +1,12 @@
 :- module(
   dh_step,
   [
-    dh_step/4 % :PropositionSelection
+    dh_step/4, % :TripleSelection
+               % +From:or([bnode,iri,literal])
+               % -Triple:compound
+               % +Options:list(nvpair)
+    dh_step/5 % +Graph:atom
+              % :TripleSelection
               % +From:or([bnode,iri,literal])
               % -Triple:compound
               % +Options:list(nvpair)
@@ -34,6 +39,7 @@ from the characterization of a stepping paradigm is that:
 :- use_module(generics(db_ext)).
 
 :- use_module(plRdf(rdf_gc)). % Run graph garbage collection.
+:- use_module(plRdf(rdf_read)).
 
 :- use_module(lodCache(lod_cache_egograph)).
 
@@ -42,16 +48,21 @@ from the characterization of a stepping paradigm is that:
 :- predicate_options(dh_step/4, 4, [
      pass_to(lod_cache_egograph/3, 3)
    ]).
+:- predicate_options(dh_step/5, 5, [
+     direction(+oneof([backward,both,forward]))
+   ]).
 
 :- meta_predicate(dh_step(2,+,-,+)).
+:- meta_predicate(dh_step(+,2,+,-,+)).
 :- meta_predicate(dh_select_triple(2,+,-)).
 
 :- rdf_meta(dh_step(:,r,-,+)).
+:- rdf_meta(dh_step(+,:,r,-,+)).
 
 
 
 %! dh_step(
-%!   :PropositionSelection,
+%!   :TripleSelection,
 %!   +From:or([bnode,iri,literal]),
 %!   -Triple:compound,
 %!   +Options:list(nvpair)
@@ -71,7 +82,7 @@ from the characterization of a stepping paradigm is that:
 %
 % Once we have all the propositions in which `Resource` appears,
 % we select one of those according to the criterion implemented by goal
-% `PropositionSelection`.
+% `TripleSelection`.
 %
 % This means that the collection of propositions is always the same,
 % i.e. everything we can find in the LOD cloud today,
@@ -97,17 +108,35 @@ dh_step(_, Resource, _, _):-
   rdf_is_literal(Resource), !,
   fail.
 % IRI.
-dh_step(Goal, Resource, Triple, Options):-
+dh_step(TripleSelection, Resource, Triple, Options):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).
   lod_cache_egograph(Resource, Triples, Options),
   
   % Then we pick one of those triples according to some method.
-  dh_select_triple(Goal, Triples, Triple).
+  dh_select_triple(TripleSelection, Triples, Triple).
+
+
+%! dh_step(
+%!   +Graph:atom,
+%!   :TripleSelection,
+%!   +From:or([bnode,iri,literal]),
+%!   -Triple:compound,
+%!   +Options:list(nvpair)
+%! ) is det.
+% The following options are supported:
+%   * =|direction(+Direction:oneof([backward,both,forward]))|=
+%     The direction in which links are followed.
+%     Default: `both`.
+
+dh_step(Graph, TripleSelection, From, Triple, Options):-
+  option(direction(Direction), Options, both),
+  rdf_direction(Direction, From, Graph, Triples),
+  dh_select_triple(TripleSelection, Triples, Triple).
 
 
 %! dh_select_triple(
-%!   :Goal,
+%!   :TripleSelection,
 %!   +Triples:ordset(compound),
 %!   -Triple:compound
 %! ) is det.
@@ -119,7 +148,7 @@ dh_step(Goal, Resource, Triple, Options):-
 % The resultant proposition is a Prolog list containing three RDF terms,
 % forming an RDF triple.
 
-dh_select_triple(Goal, Triples, Triple):-
+dh_select_triple(TripleSelection, Triples, Triple):-
   % Your selection criterion is applied here.
-  call(Goal, Triple, Triples).
+  call(TripleSelection, Triple, Triples).
 

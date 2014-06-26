@@ -41,14 +41,6 @@ Navigation predicates for agents in DataHives.
 
 :- rdf_meta(dh_step(:,r,-,-,-)).
 
-%! dh_current_location(
-%!   +ThreadId:atom,
-%!   -CurrentLocation:or([bnode,iri,literal])
-%! ) is det.
-% @tbd This requires thread communication.
-
-dh_current_location(ThreadId, CurrentLocation):-
-  thread_signal(ThreadId, backtrack(_,_,_,CurrentLocation)).
 
 
 %! dh_navigate(
