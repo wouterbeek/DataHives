@@ -6,6 +6,8 @@
 \usepackage{amssymb}
 \usepackage{color}
 \usepackage[colorlinks,linkcolor=myorange, urlcolor=mygray, citecolor=mygreen, breaklinks, pagebackref]{hyperref}
+\usepackage{graphicx}
+\usepackage{caption}
 
 \definecolor{mygray}{rgb}{0.7,0.7,0.7}
 \definecolor{mygrey}{rgb}{0.5,0.5,0.5}
@@ -78,7 +80,7 @@
 			\textbf{Hypothesis :} In this project, we will compare the graphs induced by the bee walk,
 				to the one obtain by the random agents and also the one induced by the ant walk.
 				We expect to have a high number of cluster of high betweeness centrality on the bee graph,
-				and a pagerank-like graph for the rendom agents.
+				and a pagerank-like graph for the random agents.
 				The ants have a few components and a high connected one}
 		\end{center}
 
@@ -193,7 +195,20 @@
 		\subsubsection{At exit}
 			\paragraph{}
 			At the end of the thread we also ask for another agent to replace the bad one and keep sustainability in getting information.
-			
+
+\section{Web UI}
+	\paragraph{}
+		This section will present to you what features already implemented in the project are in use.
+		What we have access in this interface to the graph the agents have been crawling.
+		\begin{figure}[!h]
+			\hspace{-2cm}
+			\includegraphics[width=1.4\textwidth]{../dh_graph}
+			\captionof{figure}{Sketch of the graph}
+		\end{figure}
+		\paragraph{}
+			This Web interface also enable show a table containing all the agents working at the moment on the graph with their status.
+			If one of the agent crash, it shows up and the reason why.
+
 \section{Evaluation of the difference between the agents}
 	\subsection{Quantitative Evaluation}
 		\paragraph{}

@@ -79,11 +79,11 @@ evaluate_scout:-
   number_of_cycles(Lifetime),
   Fitness is Deductions / Lifetime,
   (
-    Fitness < 0.3
+    Fitness < 0.5
   ->
     thread_exit(done)
   ;
-    Fitness > 0.4
+    Fitness > 1
   ->
     send_forager
   ;
