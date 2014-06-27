@@ -64,7 +64,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   directed_triple(InitDirTriple, InitTriple),
   assert(backtrack(InitDirTriple)),
 
-  init_call_every_n(number_of_cycles),
+  reset_thread_flag(number_of_cycles),
 
   % CHOICEPOINT.
   repeat,

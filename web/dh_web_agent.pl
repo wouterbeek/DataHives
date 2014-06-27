@@ -19,12 +19,15 @@ Web-based interface to agents in DataHives.
 
 :- use_module(plHtml(html_table)).
 
+:- use_module(dh_core(dh_population)).
+
 
 
 dh_web_agent(_, Style):-
   findall(
     [Alias,Id,Status,CPU_Time],
     (
+      dh_agent_thread(Id),
       thread_property(Id, alias(Alias)),
       thread_property(Id, status(Status)),
       (
@@ -42,9 +45,9 @@ dh_web_agent(_, Style):-
     title('DataHives - Agents'),
     html(
       \html_table(
-        [header_row(true),index(true)],
         html('Overview of the currently running agents in DataHives.'),
-        [['Alias','Id','Status','CPU time']|Rows]
+        [['Alias','Id','Status','CPU time']|Rows],
+        [header_row(true),index(true)]
       )
     )
   ).

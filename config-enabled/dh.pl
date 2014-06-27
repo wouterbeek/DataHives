@@ -12,7 +12,7 @@
 
 
 
-% DataHives: Agent.
+% DataHives: agent.
 
 :- use_module(dh_web(dh_web_agent)).
 
@@ -24,7 +24,7 @@ dh_web_agent(Request):-
   dh_web_agent(Request, cliopatria(default)).
 
 
-% DataHives: Graph.
+% DataHives: graph.
 
 :- use_module(dh_web(dh_web_graph)).
 

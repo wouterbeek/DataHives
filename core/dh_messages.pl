@@ -15,8 +15,10 @@ Where message queue are being processed.
 
 :- use_module(dh_core(dh_cycle)). % Meta-calls.
 :- use_module(dh_core(dh_navigate)). % Meta-calls.
+:- use_module(dh_core(dh_population)). % Meta-calls.
 
 :- meta_predicate(answer_question(1,+)).
+:- meta_predicate(execute_command(0)).
 
 
 
@@ -24,6 +26,14 @@ answer_question(Goal, X):-
   call(Goal, X).
 
 
+execute_command(Goal):-
+  call(Goal).
+
+
+process_messages:-
+  thread_peek_message(command(Caller,Command)), !,
+  thread_get_message(command(Caller,Command)),
+  execute_command(Command).
 process_messages:-
   thread_peek_message(question(Caller,Question)), !,
   thread_get_message(question(Caller,Question)),

@@ -20,6 +20,8 @@ Create and kill agents in DataHives.
 
 :- use_module(library(predicate_options)).
 
+:- use_module(generics(flag_ext)).
+
 :- use_module(plRdf(rdf_random)).
 
 :- use_module(dh_core(dh_cycle)).
@@ -34,7 +36,7 @@ Create and kill agents in DataHives.
 
 create_agent(Agent, Init):-
   user:agent_definition(Agent, [Nav,Act,Com,Eva]), !,
-  create_agent([Nav,Act,Com,Eva], true, Init).
+  create_agent([Nav,Act,Com,Eva], default_exit, Init).
 create_agent(Agent, Init):-
   user:agent_definition(Agent, [Nav,Act,Com,Eval,Exit]), !,
   create_agent([Nav,Act,Com,Eval], Exit, Init).
@@ -87,4 +89,12 @@ create_agents(N, Agent, Init):-
 
 number_of_agents(N):-
   flag(agents, N, N).
+
+
+%! default_exit is det.
+
+default_exit:-
+  retractall(backtrack(_)),
+  retractall(deductions(_)),
+  reset_thread_flag(number_of_cycles).
 
