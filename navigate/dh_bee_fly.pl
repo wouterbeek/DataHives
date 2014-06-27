@@ -1,41 +1,40 @@
 :- module(
   dh_bee_fly,
   [
-    dh_bee_lod_fly/4, % +From:or([bnode,iri,literal]),
-                      % -Direction:oneof([backward,forward]),
-                      % -Link:iri,
-                      % -To:or([bnode,iri,literal])
-    dh_bee_lod_fly/5 % +Graph:atom
-                     % +From:or([bnode,iri,literal]),
-                     % -Direction:oneof([backward,forward]),
-                     % -Link:iri,
-                     % -To:or([bnode,iri,literal])
+    dh_bee_lod_fly/2 % +DirectedTriple:compound
+                     % +Options:list(nvpair)
   ]
 ).
 
-:- use_module(dh_core(dh_navigate)).
-:- use_module(dh_nav(dh_step)).
-:- use_module(dh_test(dh_test_generics)).
+/** <module> DataHives bee navigation
+
+@author Baudouin Duthoit
+@author Wouter Beek
+@version 2014/06
+*/
 
 :- use_module(library(semweb/rdf_db)).
 
+:- use_module(dh(rdf_random_dbpedia)).
+:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_nav(dh_step)).
 
 
-dh_bee_lod_fly(From, Dir, Link, To):-
-  dh_navigate(random_fly_step, From, Dir, Link, To).
 
-dh_bee_lod_fly(Graph, From, Dir, Link, To):-
-  dh_navigate(random_fly_step(Graph), From, Dir, Link, To).
+%! dh_bee_lod_fly(+DirectedTriple:compound, +Options:list(nvpair)) is det.
 
+dh_bee_lod_fly(DirTriple, Options):-
+  dh_navigate(random_fly_step, DirTriple, Options).
 
-random_fly_step(Resource, Proposition):-
-  dh_step(get_random_proposition, Resource, Proposition, []).
+%! random_fly_step(
+%!   +Resource:or([bnode,iri,literal]),
+%!   +Triple:compound,
+%!   +Options:list(nvpair)
+%! ) is det.
 
-random_fly_step(Graph, Resource, Proposition):-
-  dh_step(Graph, get_random_proposition, Resource, Proposition, []).
+random_fly_step(Resource, Triple, Options):-
+  dh_step(rdf_random_dbpedia_triple0, Resource, Triple, Options).
 
-
-get_random_proposition(rdf(S,P,S), _):-
-  rdf_global_id(owl:sameAs, P),
-  random_start_url(S).
+rdf_random_dbpedia_triple0(Triple, _):-
+  rdf_random_dbpedia_triple(Triple).
 

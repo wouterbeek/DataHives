@@ -1,16 +1,10 @@
 :- module(
   dh_navigate,
   [
-    backtrack/4, % -From:or([bnode,iri,literal]),
-                 % -Direction:oneof([backward,forward]),
-                 % -Link:iri,
-                 % -To:or([bnode,iri,literal])
-    dh_navigate/5, % :Navigation,
-                   % +From:or([bnode,iri,literal]),
-                   % -Direction:oneof([backward,forward]),
-                   % -Link:iri,
-                   % -To:or([bnode,iri,literal])
-    dh_navigate_init/1, % +InitialLocation:or([bnode,iri,literal])
+    backtrack/1, % ?DirectedTriple:compound
+    dh_navigate/3, % :Navigation,
+                   % ?DirectedTriple:compound
+                   % +Options:list(nvpair)
     number_of_steps/1 % -NumberOfSteps:nonneg
   ]
 ).
@@ -20,35 +14,28 @@
 Navigation predicates for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/02-2014/05
+@version 2014/02-2014/06
 */
 
 :- use_module(library(semweb/rdf_db)). % Declarations.
 
 :- use_module(generics(flag_ext)).
 
-%! backtrack(
-%!   ?From:or([bnode,iri,literal]),
-%!   ?Direction:oneof([backward,forward]),
-%!   ?Link:iri,
-%!   ?To:or([bnode,iri,literal])
-%! ) is det.
+:- use_module(dh_core(dh_generic)).
 
-:- thread_local(backtrack/4).
+%! backtrack(?DirectedTriple:compound) is det.
 
-:- meta_predicate(dh_navigate(2,+,-,-,-)).
-:- meta_predicate(dh_step(2,+,-,-,-)).
+:- thread_local(backtrack/1).
 
-:- rdf_meta(dh_step(:,r,-,-,-)).
+:- meta_predicate(dh_navigate(3,?,+)).
+:- meta_predicate(dh_step(3,?,-)).
 
 
 
 %! dh_navigate(
 %!   :Navigation,
-%!   +From:or([bnode,iri,literal]),
-%!   -Direction:oneof([backward,forward]),
-%!   -Link:iri,
-%!   -To:or([bnode,iri,literal])
+%!   ?DirectedTriple:compound,
+%!   +Options:list(nvpair)
 %! ) is det.
 % Walk from one location (called `From`) to a location (called `To`),
 % via `Link`. `From` and `To` may be the same. When stuck,
@@ -71,41 +58,28 @@ Navigation predicates for agents in DataHives.
 %
 % @tbd Backtracking is now very primitive.
 
-dh_navigate(Nav, From, Dir, Link, To):-
-  backtrack(_, _, _, From),
+dh_navigate(Nav, dir(From,Dir,Link,To), Options):-
+  backtrack(dir(_,_,_,From)),
   (
-    dh_step(Nav, From, Dir, Link, To)
+    dh_step(Nav, dir(From,Dir,Link,To), Options)
   ->
-    retract(backtrack(_, _, _, _)),
-    assert(backtrack(From, Dir, Link, To))
+    % Normal navigation is possible: there is no need to use
+    % the backtrack option. Update the backtrack option for future use.
+    retract(backtrack(_)),
+    assert(backtrack(dir(From,Dir,Link,To)))
   ;
-    retract(backtrack(To, Dir0, Link, From)),
-    dir_inv(Dir0, Dir),
-    assert(backtrack(From, Dir, Link, To))
+    % Use the backtrack assertion to navigate.
+    retract(backtrack(dir(To,InvDir,Link,From))),
+    invert_direction(InvDir, Dir),
+    assert(backtrack(dir(From,Dir,Link,To)))
   ),
   thread_flag(number_of_steps, N, N + 1).
-
-dir_inv(backward, forward).
-dir_inv(forward, backward).
-
-
-dh_navigate_init(InitFrom):-
-  assert(
-    backtrack(
-      InitFrom,
-      forward,
-      'http://www.w3.org/2002/07/owl#sameAs',
-      InitFrom
-    )
-  ).
 
 
 %! dh_step(
 %!   :Navigation,
-%!   +From:or([bnode,iri,literal]),
-%!   -Direction:oneof([backward,forward]),
-%!   -Link:iri,
-%!   -To:or([bnode,iri,literal])
+%!   +DirectedTriple:compound,
+%!   +Options:list(nvpair)
 %! ) is semidet.
 % Take a single step from one location (called `From`)
 % to a location (called `To`), via `Link`.
@@ -125,19 +99,19 @@ dh_navigate_init(InitFrom):-
 % to walk *backwards* accross a symmetric link,
 % e.g. from =|rdfs:Class|= to itself, via =|rdf:type|=.
 
-dh_step(Nav, From, Direction, Link, To):-
+dh_step(Nav, dir(From,Direction,Link,To), Options):-
   % The nativation goal produces a single proposition,
   % where location `From` appears as either the subject or the object term.
-  call(Nav, From, Proposition),
+  call(Nav, From, Triple, Options),
 
   % Find the direction of movement,
   % prefering forward movement in the case of symmetric links.
   (
-    Proposition = rdf(From,Link,To)
+    Triple = rdf(From,Link,To)
   ->
     Direction = forward
   ;
-    Proposition = rdf(To,Link,From)
+    Triple = rdf(To,Link,From)
   ->
     Direction = backward
   ).

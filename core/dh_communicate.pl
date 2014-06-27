@@ -1,10 +1,7 @@
 :- module(
   dh_communicate,
   [
-    no_communication/4, % +From:or([bnode,iri,literal])
-                        % -Direction:oneof([backward,forward])
-                        % -Link:iri
-                        % -To:or([bnode,iri,literal])
+    no_communication/1, % ?DirectedTriple:compound
     forbide_path/1 % +From:or([bnode,iri,literal])
   ]
 ).
@@ -13,8 +10,8 @@
 
 Communication predicates for agents in DataHives.
 
-@author Wouter Beek
 @author Baudouin Duthoit
+@author Wouter Beek
 @version 2014/02, 2014/04-2014/05
 */
 
@@ -26,7 +23,7 @@ Communication predicates for agents in DataHives.
 
 
 
-no_communication(_, _, _, _).
+no_communication(dir(_,_,_,_)).
 
 
 % In case of dead ends, we must tell the others about the non viability

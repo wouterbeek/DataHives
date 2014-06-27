@@ -2,9 +2,7 @@
   rdf_random_dbpedia,
   [
     rdf_random_dbpedia_resource/1, % -RandomResource:iri
-    rdf_random_dbpedia_triple/3 % -RandomSubject:or([bnode,iri])
-                                % -RandomPredicate:iri
-                                % -RandomObject:or([bnode,iri,literal])
+    rdf_random_dbpedia_triple/1 % -Triple:compound
   ]
 ).
 
@@ -39,13 +37,21 @@ Support for random RDF triples coming from DBpedia.
 %! rdf_random_dbpedia_resource(-Resource:iri) is det.
 
 rdf_random_dbpedia_resource(Resource):-
+  % We must repeat, since some English words do not deliver
+  % any search results on DBpedia.
   repeat,
-    random_word('en-US', Word, _),
-    setup_call_cleanup(
-      new_memory_file(Handle),
-      rdf_random_dbpedia_resource(Word, Handle, Resource),
-      free_memory_file(Handle)
-    ), !.
+  
+  % Take a random word from an English dictionary.
+  random_word('en-US', Word, _),
+  
+  % Return a triple from the description of the dereference of
+  % the first resource found upon searching for the given word
+  % using DBpedia's Virtuoso search service.
+  setup_call_cleanup(
+    new_memory_file(Handle),
+    rdf_random_dbpedia_resource(Word, Handle, Resource),
+    free_memory_file(Handle)
+  ), !.
 
 %! rdf_random_dbpedia_resource(
 %!   +Word:atom,
@@ -91,13 +97,9 @@ expand_resource_name(Resource0, Resource):-
   rdf_global_id(Namespace:LocalName, Resource).
 
 
-%! rdf_random_dbpedia_triple(
-%!   -RandomSubject:or([bnode,iri])
-%!   -RandomPredicate:iri
-%!   -RandomObject:or([bnode,iri,literal])
-%! ) is det.
+%! rdf_random_dbpedia_triple(-Triple:compound) is det.
 
-rdf_random_dbpedia_triple(S, P, O):-
+rdf_random_dbpedia_triple(rdf(S,P,O)):-
   rdf_random_dbpedia_resource(Resource),
   lod_cache_egograph(Resource, Triples, [cache(false)]),
   random_member(rdf(S,P,O), Triples).

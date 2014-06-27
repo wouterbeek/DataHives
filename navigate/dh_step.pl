@@ -1,12 +1,7 @@
 :- module(
   dh_step,
   [
-    dh_step/4, % :TripleSelection
-               % +From:or([bnode,iri,literal])
-               % -Triple:compound
-               % +Options:list(nvpair)
-    dh_step/5 % +Graph:atom
-              % :TripleSelection
+    dh_step/4 % :TripleSelection
               % +From:or([bnode,iri,literal])
               % -Triple:compound
               % +Options:list(nvpair)
@@ -46,18 +41,13 @@ from the characterization of a stepping paradigm is that:
 :- db_add_novel(user:prolog_file_type(log, logging)).
 
 :- predicate_options(dh_step/4, 4, [
-     pass_to(lod_cache_egograph/3, 3)
-   ]).
-:- predicate_options(dh_step/5, 5, [
-     direction(+oneof([backward,both,forward]))
+     direction(+oneof([backward,both,forward])),
+     graph(+atom),
+     pass_to(load_cahce_egograph/3, 3)
    ]).
 
 :- meta_predicate(dh_step(2,+,-,+)).
-:- meta_predicate(dh_step(+,2,+,-,+)).
 :- meta_predicate(dh_select_triple(2,+,-)).
-
-:- rdf_meta(dh_step(:,r,-,+)).
-:- rdf_meta(dh_step(+,:,r,-,+)).
 
 
 
@@ -98,40 +88,30 @@ from the characterization of a stepping paradigm is that:
 %     A list of endpoint aliases.
 %     Only these endpoints will be used to cache data from.
 %     By default, all registered endpoints are considered.
+%   * =|graph(+Graph:atom)|=
+%     Use LOD that is locally stored in a graph.
 
-% Blank node.
+% Do not use any endpoints, i.e. only use LOD that is stored locally.
+dh_step(TripleSelection, Resource, Triple, Options):-
+  option(graph(Graph), Options), !,
+  option(direction(Direction), Options, both),
+  rdf_direction(Direction, Resource, Graph, Triples),
+  dh_select_triple(TripleSelection, Triples, Triple).
+% Remote LOD lookup: blank node.
 dh_step(_, Resource, _, _):-
   rdf_is_bnode(Resource), !,
   fail.
-% Literal.
+% Remote LOD lookup: literal.
 dh_step(_, Resource, _, _):-
   rdf_is_literal(Resource), !,
   fail.
-% IRI.
+% Remote LOD lookup: IRI.
 dh_step(TripleSelection, Resource, Triple, Options):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or copmplete ego-graph).
   lod_cache_egograph(Resource, Triples, Options),
   
   % Then we pick one of those triples according to some method.
-  dh_select_triple(TripleSelection, Triples, Triple).
-
-
-%! dh_step(
-%!   +Graph:atom,
-%!   :TripleSelection,
-%!   +From:or([bnode,iri,literal]),
-%!   -Triple:compound,
-%!   +Options:list(nvpair)
-%! ) is det.
-% The following options are supported:
-%   * =|direction(+Direction:oneof([backward,both,forward]))|=
-%     The direction in which links are followed.
-%     Default: `both`.
-
-dh_step(Graph, TripleSelection, From, Triple, Options):-
-  option(direction(Direction), Options, both),
-  rdf_direction(Direction, From, Graph, Triples),
   dh_select_triple(TripleSelection, Triples, Triple).
 
 

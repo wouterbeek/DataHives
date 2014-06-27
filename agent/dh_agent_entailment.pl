@@ -2,10 +2,7 @@
   dh_agent_entailment,
   [
     deductions/1, % ?Deductions:nonneg
-    deductive_action/4, % +From:or([bnode,iri,literal])
-                        % -Direction:oneof([backward,forward])
-                        % -Link:iri
-                        % -To:or([bnode,iri,literal])
+    deductive_action/1, % +DirectedTriple:compound
     evaluate_entailment/0,
     increment_deductions/1
   ]
@@ -25,6 +22,7 @@ DataHives agents that implement RDFS 1.1 entailment.
 :- use_module(plRdf_ent(rdf_entailment_patterns)).
 
 :- use_module(dh_core(dh_cycle)).
+:- use_module(dh_core(dh_generic)).
 
 %! deductions(?Deductions:nonneg) is nondet.
 
@@ -32,19 +30,13 @@ DataHives agents that implement RDFS 1.1 entailment.
 
 
 
-%! deductive_action(
-%!   +From:or([bnode,iri,literal]),
-%!   -Direction:oneof([backward,forward]),
-%!   -Link:iri,
-%!   -To:or([bnode,iri,literal])
-%! ) is det.
+%! deductive_action(+DirectedTriple:compound) is det.
 
-deductive_action(From, backward, Link, To):- !,
-  deductive_action(To, forward, Link, From).
-deductive_action(From, forward, Link, To):-
+deductive_action(DirTriple):-
+  directed_triple(DirTriple, Triple),
   forall(
-    rdf_entailment_pattern_match(rdf(From,Link,To), rdf(U1,V,W)),
-    rdf_assert_entailment(rdf(U1,V,W))
+    rdf_entailment_pattern_match(Triple, EntailedTriple),
+    rdf_assert_entailment(EntailedTriple)
   ).
 
 
@@ -92,15 +84,15 @@ rdf_assert_entailment(rdf(U1,V,W)):-
 %!   -Conclusion:compound
 %! ) is det.
 
-rdf_entailment_pattern_match(rdf(From,Link,To), rdf(U1,V,W)):-
+rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
   % Instantiate the predicates of an entailment pattern.
   (
     % One predicate, one conclusion.
-    rdf_entailment_pattern(rdf(From,Link,To), rdf(U1,V,W))
+    rdf_entailment_pattern(Premise1, rdf(U1,V,W))
   ;
     % Two predicates, one conclusion.
-    rdf_entailment_pattern(rdf(From,Link,To), rdf(X,Y,Z), rdf(U1,V,W)),
-    % The second predicate must be in cache.
+    rdf_entailment_pattern(Premise1, rdf(X,Y,Z), rdf(U1,V,W)),
+    % The second premise must be true in cache.
     rdf(X, Y, Z)
   ),
 

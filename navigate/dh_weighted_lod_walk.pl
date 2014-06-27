@@ -1,10 +1,8 @@
 :- module(
   dh_weighted_lod_walk,
   [
-    dh_weighted_lod_walk/4 % +From:or([bnode,iri,literal])
-                           % -Direction:oneof([backward,forward])
-                           % -Link:iri
-                           % -To:or([bnode,iri,literal])
+    dh_weighted_lod_walk/2 % +DirectedTriple:compound
+                           % +Options:list(nvpair)
   ]
 ).
 
@@ -28,24 +26,26 @@ using the Linked Open Data stepping paradigm.
 :- use_module(dh_core(dh_navigate)).
 :- use_module(dh_nav(dh_step)).
 
+
+
 %! dh_weighted_lod_walk(
-%!   +From:or([bnode,iri,literal]),
-%!   -Direction:oneof([backward,forward]),
-%!   -Link:iri,
-%!   -To:or([bnode,iri,literal])
+%!   +DirectedTriple:compound,
+%!   +Options:list(nvpair)
 %! ) is det.
 
-dh_weighted_lod_walk(From, Dir, Link, To):-
-  dh_navigate(lod_weighted_step, From, Dir, Link, To).
+dh_weighted_lod_walk(DirTriple, Options):-
+  dh_navigate(lod_weighted_step, DirTriple, Options).
 
+%! lod_weighted_step(
+%!   +Resource:or([bnode,iri,literal]),
+%!   -Triple:compound,
+%!   +Options:list(nvpair)
+%! ) is det.
 
-%! lod_weighted_step(+Resource, -Triple:list) is det.
+lod_weighted_step(Resource, Triple, Options):-
+  dh_step(weighted_member, Resource, Triple, Options).
 
-lod_weighted_step(Resource, Triple):-
-  dh_step(weighted_member, Resource, Triple, []).
-
-
-%! weighted_member(-Triple, +Triples:list) is det.
+%! weighted_member(-Triple:compound, +Triples:list(compound)) is det.
 % Return a proposition in a randomish way,
 % taking the relative weights of the elements into account.
 % If the list is empty it goes back
@@ -71,7 +71,7 @@ lod_weighted_step(Resource, Triple):-
 % @see The argument order mirrors that of predicate member/2.
 
 weighted_member(_,[]):-!,
-  backtrack(_,_,_,To),
+  backtrack(dir(_,_,_,To)),
   forbide_path(To),
   thread_exit(_).
 weighted_member(Triple, [Triple]):- !.

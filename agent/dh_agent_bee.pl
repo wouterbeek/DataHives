@@ -1,14 +1,11 @@
 :- module(
   dh_agent_bee,
   [
-% FORAGER
+% Forager
     evaluate_forager/0,
     send_forager/0,
-% SCOUT
-    scout_action/4, % +From:or([bnode,iri,literal])
-                    % -Direction:oneof([backward,forward])
-                    % -Link:iri
-                    % -To:or([bnode,iri,literal])
+% Scout
+    scout_action/1, % +DirectedTriple:compound
     evaluate_scout/0
   ]
 ).
@@ -20,15 +17,33 @@
 @version 2014/06
 */
 
-:- use_module(dh_agent(dh_agent_entailment)).
-:- use_module(dh_core(dh_cycle)).
-:- use_module(dh_core(dh_agent)).
-:- use_module(dh_core(dh_navigate)).
-
-:- use_module(dh_nav(dh_random_lod_walk)).
-:- use_module(dh_com(dh_edge_weight)).
-
 :- use_module(library(semweb/rdf_db)).
+
+:- use_module(dh_agent(dh_agent_entailment)).
+:- use_module(dh_com(dh_edge_weight)).
+:- use_module(dh_core(dh_agent)).
+:- use_module(dh_core(dh_cycle)).
+:- use_module(dh_core(dh_generic)).
+:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_nav(dh_random_lod_walk)).
+
+
+:- dynamic(user:agent_definition/2).
+:- multifile(user:agent_definition/2).
+   user:agent_definition(forager, [
+     dh_random_lod_walk,
+     deductive_action,
+     update_edge_count(1),
+     evaluate_forager
+   ]).
+   user:agent_definition(scout, [
+     dh_bee_lod_fly,
+     scout_action,
+     update_edge_count(1),
+     evaluate_scout,
+     dh_bee_test
+   ]).
+
 
 
 % FORAGER %
@@ -45,34 +60,32 @@ evaluate_forager:-
 
 
 send_forager:-
-  backtrack(From, _, _, _),
-  send_forager(From).
+  backtrack(DirTriple),
+  directed_triple(DirTriple, Triple),
+  send_forager(Triple).
 
-send_forager(URL):-
-  create_agents(
-    dh_random_lod_walk,
-    deductive_action,
-    update_edge_count(1),
-    evaluate_forager,
-    true,
-    URL,
-    5
-  ).
+
+send_forager(InitialTriple):-
+  create_agents(5, forager, InitialTriple).
+
 
 
 % SCOUT %
 
-scout_action(From, Dir, Link, To):-
-  deductive_action(From, Dir, Link, To),
+scout_action(dir(From,Dir,Link,To)):-
+  deductive_action(dir(From,Dir,Link,To)),
   findall(
     Result,
-    (rdf(From,'rdfs:comment',Result)),
+    rdf(From, rdfs:comment, Result),
     Results
   ),
   length(Results,N),
-  forall(member(_,Results),
-	send_forager(From)),
+  forall(
+    between(1, N, _),
+	  send_forager(From)
+  ),
   increment_deductions(N).
+
 
 evaluate_scout:-
   deductions(Deductions),

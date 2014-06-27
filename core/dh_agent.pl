@@ -1,24 +1,12 @@
 :- module(
   dh_agent,
   [
-    create_agent/5, % :Navigate
-                    % :Act
-                    % :Communicate
-                    % :Evaluate
-                    % +InitialLocation:or([atom,iri])
-    create_agent/6, % :Navigate
-                    % :Act
-                    % :Communicate
-                    % :Evaluate
-                    % :Exit
-                    % +InitialLocation:or([atom,iri])
-    create_agents/7 % :Navigate
-                    % :Act
-                    % :Communicate
-                    % :Evaluate
-                    % :Exit
-                    % +InitialLocation:or([atom,iri])
-                    % +NumberOfAgents:positive_integer
+    create_agent/2, % +Agent:atom
+                    % +Initialization:or([atom,compound])
+    create_agents/3, % +NumberOfAgents:positive_integer
+                     % +Agent:atom
+                     % +Initialization:or([atom,compound])
+    number_of_agents/1 % -NumberOfAgents:nonneg
   ]
 ).
 
@@ -30,82 +18,73 @@ Create and kill agents in DataHives.
 @version 2014/02, 2014/04, 2014/06
 */
 
-:- use_module(library(aggregate)).
-:- use_module(library(random)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(predicate_options)).
 
-:- use_module(plRdf_term(rdf_term)).
+:- use_module(plRdf(rdf_random)).
 
 :- use_module(dh_core(dh_cycle)).
 
-:- meta_predicate(create_agent(4,4,4,0,+)).
-:- meta_predicate(create_agent(4,4,4,0,:,+)).
-:- meta_predicate(create_agents(4,4,4,0,:,+,+)).
-
-:- rdf_meta(create_agent(:,:,:,:,r)).
-:- rdf_meta(create_agent(:,:,:,:,:,r)).
-:- rdf_meta(create_agent(:,:,:,:,:,r,+)).
+:- predicate_options(create_agent/4, 4, [
+     pass_to(dh_cycle/3, 3)
+   ]).
 
 
 
-%! create_agent(
-%!   :Navigate,
-%!   :Act,
-%!   :Communicate,
-%!   :Evaluate,
-%!   +InitialLocation:or([atom,iri])
-%! ) .
-% Wrapper around create_agent/6.
+%! create_agent(+Agent:atom, +Initialization:or([atom,compound])) is det.
 
-create_agent(Nav, Act, Com, Eval, Init):-
-  create_agent(Nav, Act, Com, Eval, true, Init).
+create_agent(Agent, Init):-
+  user:agent_definition(Agent, [Nav,Act,Com,Eva]), !,
+  create_agent([Nav,Act,Com,Eva], true, Init).
+create_agent(Agent, Init):-
+  user:agent_definition(Agent, [Nav,Act,Com,Eval,Exit]), !,
+  create_agent([Nav,Act,Com,Eval], Exit, Init).
 
 %! create_agent(
-%!   :Navigate,
-%!   :Act,
-%!   :Communicate,
-%!   :Evaluate,
+%!   +Predicates:list(atom),
 %!   :Exit,
-%!   +InitialLocation:or([atom,iri])
-%! ) .
+%!   +Initialization:or([atom,compound])
+%! ) is det.
 
 % Initialize by graph.
-create_agent(Nav, Act, Com, Eval, Exit, Graph):-
-  rdf_graph(Graph), !,
+create_agent(Preds, Exit, graph(Graph)):- !,
+  rdf_random_triple(S, P, O, Graph),
+  create_agent(Preds, Exit, rdf(S,P,O), [graph(Graph)]).
+% Initialize by triple.
+create_agent(Preds, Exit, rdf(S,P,O)):-
+  create_agent(Preds, Exit, rdf(S,P,O), []).
 
-  % Take a random term out of the given graph.
-  aggregate_all(
-    set(Term),
-    rdf_term(Term, Graph),
-    Terms
-  ),
-  random_member(Term, Terms),
-% Initialize the agent with the found term.
-  create_agent(Nav, Act, Com, Eval, Exit, Term).
+%! create_agent(
+%!   +Predicates:list(atom),
+%!   :Exit,
+%!   +InitialTriple:compound,
+%!   +Options:list(nvpair)
+%! ) is det.
 
-% Initialize by term.
-create_agent(Nav, Act, Com, Eval, Exit, Term):-
+create_agent(Preds, Exit, InitTriple, Options):-
   flag(agent, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
   thread_create(
-    dh_cycle(Nav, Act, Com, Eval, Term),
+    dh_cycle(Preds, InitTriple, Options),
     _,
     [alias(Alias),detached(true),at_exit(Exit)]
   ).
 
 
 %! create_agents(
-%!   :Navigate,
-%!   :Act,
-%!   :Communicate,
-%!   :Evaluate,
-%!   +InitialLocation:url,
-%!   +NumberOfAgents:positive_integer
-%! ) .
+%!   +NumberOfAgents:positive_integer,
+%!   +Agent:atom,
+%!   +Initialization:or([atom,compound])
+%! ) is det.
 
-create_agents(Nav, Act, Com, Eval, Exit, Init, N):-
+create_agents(N, Agent, Init):-
   forall(
     between(1, N, _),
-    create_agent(Nav, Act, Com, Eval, Exit, Init)
+    create_agent(Agent, Init)
   ).
+
+
+%! number_of_agents(-NumberOfAgents:nonneg) is det.
+
+number_of_agents(N):-
+  flag(agents, N, N).
 

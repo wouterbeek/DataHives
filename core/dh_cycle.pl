@@ -1,11 +1,9 @@
 :- module(
   dh_cycle,
   [
-    dh_cycle/5, % :Navigate
-                % :Act
-                % :Communicate
-                % :Evaluate
-                % +InitialResource:iri
+    dh_cycle/3, % +Predicates:list(atom)
+                % +InitialTriple:compound
+                % +Options:list(nvpair)
     number_of_cycles/1 % -Cycles:nonneg
   ]
 ).
@@ -18,31 +16,54 @@ The navigate-act-communicate cycle for agents in DataHives.
 @version 2014/04-2014/06
 */
 
+:- use_module(library(option)).
+:- use_module(library(predicate_options)).
+
 :- use_module(generics(flag_ext)).
 
+:- use_module(dh_com(dh_edge_weight)). % Agent components.
+:- use_module(dh_core(dh_act)). % Agent components.
+:- use_module(dh_core(dh_evaluate)). % Agent components.
+:- use_module(dh_core(dh_generic)).
 :- use_module(dh_core(dh_messages)).
-:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_core(dh_navigate)). % Agent components.
+:- use_module(dh_core(dh_communicate)). % Agent components.
+:- use_module(dh_nav(dh_bee_fly)). % Agent components.
+:- use_module(dh_nav(dh_random_lod_walk)). % Agent components.
+:- use_module(dh_nav(dh_weighted_lod_walk)). % Agent components.
 
-:- meta_predicate(dh_cycle(4,4,4,0,+)).
 
 
-
-% ! dh_cycle(:Navigate, :Act, :Communicate, :Evaluate, +InitialResource:iri) .
+%! dh_cycle(
+%!   +Predicates:list(atom),
+%!   +InitialTriple:compound,
+%!   +Options:list(nvpair)
+%! ) .
 % Implementation of the navigate-act-communicate cycle.
 %
 % When the walker visits a blank node or a literal,
-%  it is impossible to use the LOD walker
-%  since literals and blank nodes give no information
-%  as to where on the Web we may find linked data.
+% it is impossible to use the LOD walker
+% since literals and blank nodes give no information
+% as to where on the Web we may find linked data.
+%
 % The `Backtrack` parameter is instatiated with the last traversal,
-%  which is the node that will be visited after a literal or blank node
-%  was visited.
+% which is the node that will be visited after a literal or blank node
+% was visited.
+%
 % The same is true for any term that does not dereference,
-%  such as non-dereferencing URLs.
+% such as non-dereferencing URLs.
+%
+% We assue that the following predicates are provided (in this order):
+%   * Navigate
+%   * Act
+%   * Communicate
+%   * Evaluate
 
-dh_cycle(Nav, Act, Com, Eval, InitFrom):-
-  % Initialize the backtrack fact in the navigation module.
-  dh_navigate_init(InitFrom),
+dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
+  % Initialize the backtrack fact.
+  directed_triple(InitDirTriple, InitTriple),
+  assert(backtrack(InitDirTriple)),
+
   init_call_every_n(number_of_cycles),
 
   % CHOICEPOINT.
@@ -51,13 +72,13 @@ dh_cycle(Nav, Act, Com, Eval, InitFrom):-
   call_every_n(number_of_cycles, 100, print_number_of_cycles),
 
   % Navigate.
-  call0(Nav, From, Dir, Link, To),
+  call(Nav, dir(From,Dir,Link,To), Options),
 
   % Act.
-  call0(Act, From, Dir, Link, To),
+  call(Act, dir(From,Dir,Link,To)),
 
   % Communicate.
-  call0(Com, From, Dir, Link, To),
+  call(Com, dir(From,Dir,Link,To)),
 
   % Evaluate
   call(Eval),
@@ -66,17 +87,6 @@ dh_cycle(Nav, Act, Com, Eval, InitFrom):-
   process_messages,
 
   fail.
-
-:- meta_predicate(call0(:,?,?,?,?)).
-call0(Goal, Q, X, Y, Z):-
-  %fail, %DEB
-  call(Goal, Q, X, Y, Z), !.
-call0(Goal, Q, X, Y, Z):-
-  catch(
-    call(Goal, Q, X, Y, Z),
-    _,
-    (gtrace, call(Goal, Q, X, Y, Z))
-  ).
 
 
 number_of_cycles(N):-
@@ -90,6 +100,7 @@ number_of_cycles(0).
 :- multifile(prolog:message//1).
 
 print_number_of_cycles(N):-
+  gtrace, %DEB
   print_message(informational, number_of_cycles(N)).
 
 prolog:message(number_of_cycles(N)) -->
