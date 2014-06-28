@@ -12,13 +12,23 @@
 
 
 
+% DataHives: web.
+
+:- multifile(http:location/3).
+   http:location(dh, cliopatria(dh), []).
+
+:- multifile(user:file_search_path/2).
+   user:file_search_path(css, dh_web(css)).
+   user:file_search_path(js, dh_web(js)).
+
+
 % DataHives: agent.
 
 :- use_module(dh_web(dh_web_agent)).
 
 cliopatria:menu_item(600=dh/agent, 'DH Agent').
 
-:- http_handler(cliopatria(dh/agent), dh_web_agent, [id(agent)]).
+:- http_handler(dh(agent), dh_web_agent, [id(agent)]).
 
 dh_web_agent(Request):-
   dh_web_agent(Request, cliopatria(default)).
@@ -30,7 +40,7 @@ dh_web_agent(Request):-
 
 cliopatria:menu_item(700=dh/graph, 'DH Graph').
 
-:- http_handler(cliopatria(dh/graph), dh_web_graph, [id(graph)]).
+:- http_handler(dh(graph), dh_web_graph, [id(graph)]).
 
 dh_web_graph(Request):-
   dh_web_graph(Request, cliopatria(default)).

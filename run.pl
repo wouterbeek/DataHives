@@ -46,6 +46,10 @@ rdf_tabular(Request):-
 :- dynamic(http:location/3).
    http:location(dh_web, root(dh), []).
 
+:- multifile(user:file_search_path/2).
+   user:file_search_path(css, dh_web(css)).
+   user:file_search_path(js, dh_web(js)).
+
 :- dynamic(user:web_module/2).
 :- multifile(user:web_module/2).
 
