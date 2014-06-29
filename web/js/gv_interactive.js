@@ -1,31 +1,30 @@
-window.onload = function() {
-  var currentObject,
-      mode;
-  
-  if (document.getElementById("move").checked == "checked") {
-    mode = "moving";
-  } else {
-    mode = "resizing";
+function loadFiles() {
+  var img = document.getElementById("ImgMov");
+  var file = document.getElementById("files")["files"][0];
+  var reader = new FileReader();
+  reader.onload = function () {
+    img.src = reader.result;
   }
-  
+  reader.readAsDataURL(file);
+}
+
+window.onload = function() {
   document.onmousedown = mousedownHandler;
   document.onmouseup = mouseupHandler;
+  
+  var currentObject;
   
   function mousedownHandler(event) {
     currentObject = event.target;
     
     // Start action, based on the current mode.
-    if (mode == "moving") {
-      startMove(event);
-    } else if (mode == "resizing") {
-      startResize(event);
-    }
-    
     // Set mouse movement handler.
-    if (mode == "moving") {
-      document.onmousemove = moving;
-    } else if (mode == "resizing") {
-      document.onmousemove = resizing;
+    if (document.getElementById("move")["checked"]) {
+      startMove(event);
+      document.onmousemove = move;
+    } else if (document.getElementById("resize")["checked"]) {
+      startResize(event);
+      document.onmousemove = resize;
     }
     
     return false;
@@ -33,9 +32,9 @@ window.onload = function() {
   
   function mouseupHandler(event) {
     // End action, based on the current mode.
-    if (mode == "moving") {
+    if (document.getElementById("move")["checked"]) {
       endMove(event);
-    } else if (mode == "resizing") {
+    } else if (document.getElementById("resize")["checked"]) {
       endResize(event);
     }
     currentObject = null;
@@ -68,7 +67,7 @@ window.onload = function() {
     return false;
   }
   
-  function moving(event) {
+  function move(event) {
     currentObject.style.left = startLeft + event.clientX - startX + "px";
     currentObject.style.top =  startTop + event.clientY - startY + "px";
     
@@ -83,11 +82,6 @@ window.onload = function() {
   
   
   // Resizing
-  
-  var startWidth,
-      startHeight,
-      startX,
-      startY;
   
   function startResize(event) {
     if (currentObject.width == "") {
@@ -109,7 +103,7 @@ window.onload = function() {
     return false;
   }
   
-  function resizing(event) {
+  function resize(event) {
     currentObject.style.width = startWidth + event.clientX - startX + 'px';
     currentObject.style.height = startHeight + event.clientY - startY + 'px';
   }
@@ -148,6 +142,6 @@ window.onload = function() {
         "deg);-o-transform-origin:0% 0%;'></div>"
   }
   
-  linedraw(200, 400, 500, 900);
+  //linedraw(200, 400, 500, 900);
 }
 
