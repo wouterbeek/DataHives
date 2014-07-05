@@ -19,3 +19,6 @@
 
 :- use_module(dh_test(dh_test)).
 
+:- use_module(dh_agent(dh_agent)).
+:- initialization(dh_list_agents).
+
