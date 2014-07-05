@@ -6,7 +6,8 @@
     send_forager/0,
 % Scout
     scout_action/1, % +DirectedTriple:compound
-    evaluate_scout/0
+    evaluate_scout/0,
+    scout_rebirth/0
   ]
 ).
 
@@ -41,7 +42,7 @@
      scout_action,
      update_edge_count(1),
      evaluate_scout,
-     dh_bee_test
+     dh_agent_bee:scout_rebirth
    ]).
 
 
@@ -104,3 +105,6 @@ evaluate_scout:-
   ),
   print_message(informational, fitness(Deductions,Lifetime,Fitness)).
 
+scout_rebirth:-
+  rdf_random_dbpedia:rdf_random_dbpedia_triple(X),
+  dh_agent:create_agent(scout,X).

@@ -1,7 +1,7 @@
 :- module(
   dh_evaluation_test,
   [
-       ant_evaluation/0 % Start an evaluation of the ant agents.
+    evaluation/2
   ]
 ).
 
@@ -14,14 +14,20 @@ Evaluation / comparison of the different kind of agents
 @version 2014/06
 */
 
-:-use_module(dh_test(dh_test)).
+
+:- use_module(dh(rdf_random_dbpedia)).
+:- use_module(dh_agent(dh_agent_ant)). % Agent definition.
+:- use_module(dh_agent(dh_agent_bee)). % Agent definitions.
+:- use_module(dh_agent(dh_agent_random)). % Agent definition.
+:- use_module(dh_core(dh_agent)).
+
 :-use_module(dh_core(dh_population)).
-:-use_module(library(pce_config)).
 
 % Start an evaluation of the ant agents.
 
-ant_evaluation:-
-  forall(between(1,10,_),dh_ant_test),
+evaluation(Type,N):-
+  rdf_random_dbpedia_triple(S,P,O),
+  forall(between(1,N,_),create_agent(Type,rdf(S,P,O))),
   evaluation_loop.
 
 evaluation_loop:-
