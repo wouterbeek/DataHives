@@ -27,12 +27,9 @@ Evaluation / comparison of the different kind of agents
 
 evaluation(Type,N):-
   gtrace,
-  forall(between(1,N,_),create_quick(Type)),
-  evaluation_loop.
-
-create_quick(Type):-
   rdf_random_dbpedia_triple(X),
-  create_agent(Type,X).
+  create_agents(N, Type,X),
+  evaluation_loop.
 
 evaluation_loop:-
   open('data/data.csv',append,Stream),
