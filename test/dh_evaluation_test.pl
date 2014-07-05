@@ -23,12 +23,16 @@ Evaluation / comparison of the different kind of agents
 
 :-use_module(dh_core(dh_population)).
 
-% Start an evaluation of the ant agents.
+% Start an evaluation of the agents.
 
 evaluation(Type,N):-
-  rdf_random_dbpedia_triple(S,P,O),
-  forall(between(1,N,_),create_agent(Type,rdf(S,P,O))),
+  gtrace,
+  forall(between(1,N,_),create_quick(Type)),
   evaluation_loop.
+
+create_quick(Type):-
+  rdf_random_dbpedia_triple(X),
+  create_agent(Type,X).
 
 evaluation_loop:-
   open('data/data.csv',append,Stream),

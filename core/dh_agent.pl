@@ -7,7 +7,7 @@
                      % +Agent:atom
                      % +Initialization:or([atom,compound])
     number_of_agents/1, % -NumberOfAgents:nonneg
-    rebirth/1 %Type of agent to start again
+    rebirth/1 % +Type:atom
   ]
 ).
 
