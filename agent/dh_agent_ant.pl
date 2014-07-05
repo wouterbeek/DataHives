@@ -14,6 +14,6 @@
      deductive_action,
      update_edge_count(1),
      evaluate_entailment,
-     dh_ant_test
+     rebirth(ant)
    ]).
 

@@ -6,7 +6,8 @@
     create_agents/3, % +NumberOfAgents:positive_integer
                      % +Agent:atom
                      % +Initialization:or([atom,compound])
-    number_of_agents/1 % -NumberOfAgents:nonneg
+    number_of_agents/1, % -NumberOfAgents:nonneg
+    rebirth/1 %Type of agent to start again
   ]
 ).
 
@@ -97,4 +98,8 @@ default_exit:-
   retractall(backtrack(_)),
   retractall(deductions(_)),
   reset_thread_flag(number_of_cycles).
+
+rebirth(Type):-
+  rdf_random_dbpedia:rdf_random_dbpedia_triple(X),
+  create_agent(Type,X).
 
