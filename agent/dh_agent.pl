@@ -112,7 +112,7 @@ print_agent_definition(Name, Definition):-
 
 print_behaviors(_, []).
 print_behaviors([Prefix|T1], [Behavior|T2]):-
-  format('  * ~a: ~17+~w\n', [Prefix,Behavior]),
+  format('  * ~a: ~18+~w\n', [Prefix,Behavior]),
   print_behaviors(T1, T2).
 
 

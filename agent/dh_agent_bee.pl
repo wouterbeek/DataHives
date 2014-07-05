@@ -24,9 +24,9 @@
 :- use_module(dh_com(dh_edge_weight)).
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_generic)).
-:- use_module(dh_nav(dh_navigate)).
+:- use_module(dh_nav(dh_random_lod_jump)).
 :- use_module(dh_nav(dh_random_lod_walk)).
-
+:- use_module(dh_nav(dh_walk)).
 
 :- dynamic(dh:agent_definition/2).
 :- multifile(dh:agent_definition/2).
@@ -37,7 +37,7 @@
      evaluate_forager
    ]).
    dh:agent_definition(scout, [
-     dh_bee_lod_fly,
+     dh_random_lod_jump,
      scout_action,
      update_edge_count(1),
      evaluate_scout,
