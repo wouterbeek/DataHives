@@ -13,17 +13,17 @@ using the Linked Open Data stepping paradigm.
 
 @author Baudouin Duthoit
 @author Wouter Beek
-@version 2014/05-2014/06
+@version 2014/05-2014/07
 */
 
 :- use_module(library(lists)).
 :- use_module(library(pairs)).
 :- use_module(library(random)).
 
+:- use_module(dh_act(dh_act)).
+:- use_module(dh_com(dh_communicate)).
 :- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_core(dh_act)).
-:- use_module(dh_core(dh_communicate)).
-:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_nav(dh_navigate)).
 :- use_module(dh_nav(dh_step)).
 
 

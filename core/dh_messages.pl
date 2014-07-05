@@ -14,8 +14,8 @@ Where message queue are being processed.
 */
 
 :- use_module(dh_core(dh_cycle)). % Meta-calls.
-:- use_module(dh_core(dh_navigate)). % Meta-calls.
 :- use_module(dh_core(dh_population)). % Meta-calls.
+:- use_module(dh_nav(dh_navigate)). % Meta-calls.
 
 :- meta_predicate(answer_question(1,+)).
 :- meta_predicate(execute_command(0)).

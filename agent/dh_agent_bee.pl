@@ -14,29 +14,29 @@
 
 @author Baudouin Duthoit
 @author Wouter Beek
-@version 2014/06
+@version 2014/06-2014/07
 */
 
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(dh_agent(dh_agent_entailment)).
+:- use_module(dh_act(dh_entailment)).
+:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_core(dh_agent)).
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_generic)).
-:- use_module(dh_core(dh_navigate)).
+:- use_module(dh_nav(dh_navigate)).
 :- use_module(dh_nav(dh_random_lod_walk)).
 
 
-:- dynamic(user:agent_definition/2).
-:- multifile(user:agent_definition/2).
-   user:agent_definition(forager, [
+:- dynamic(dh:agent_definition/2).
+:- multifile(dh:agent_definition/2).
+   dh:agent_definition(forager, [
      dh_random_lod_walk,
      deductive_action,
      update_edge_count(1),
      evaluate_forager
    ]).
-   user:agent_definition(scout, [
+   dh:agent_definition(scout, [
      dh_bee_lod_fly,
      scout_action,
      update_edge_count(1),

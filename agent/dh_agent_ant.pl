@@ -7,9 +7,9 @@
 @version 2014/06
 */
 
-:- dynamic(user:agent_definition/2).
-:- multifile(user:agent_definition/2).
-   user:agent_definition(ant, [
+:- dynamic(dh:agent_definition/2).
+:- multifile(dh:agent_definition/2).
+   dh:agent_definition(ant, [
      dh_weighted_lod_walk,
      deductive_action,
      update_edge_count(1),

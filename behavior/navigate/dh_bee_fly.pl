@@ -10,13 +10,14 @@
 
 @author Baudouin Duthoit
 @author Wouter Beek
-@version 2014/06
+@version 2014/06-2014/07
 */
 
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(dh(rdf_random_dbpedia)).
-:- use_module(dh_core(dh_navigate)).
+:- use_module(plSparql(sparql_random)).
+
+:- use_module(dh_nav(dh_navigate)).
 :- use_module(dh_nav(dh_step)).
 
 
@@ -36,5 +37,5 @@ random_fly_step(Resource, Triple, Options):-
   dh_step(rdf_random_dbpedia_triple0, Resource, Triple, Options).
 
 rdf_random_dbpedia_triple0(Triple, _):-
-  rdf_random_dbpedia_triple(Triple).
+  sparql_random_triple(dbpedia, Triple).
 

@@ -21,14 +21,14 @@ The navigate-act-communicate cycle for agents in DataHives.
 
 :- use_module(generics(flag_ext)).
 
+:- use_module(dh_act(dh_act)). % Agent components.
 :- use_module(dh_com(dh_edge_weight)). % Agent components.
-:- use_module(dh_core(dh_act)). % Agent components.
-:- use_module(dh_core(dh_evaluate)). % Agent components.
 :- use_module(dh_core(dh_generic)).
 :- use_module(dh_core(dh_messages)).
-:- use_module(dh_core(dh_navigate)). % Agent components.
-:- use_module(dh_core(dh_communicate)). % Agent components.
+:- use_module(dh_com(dh_communicate)). % Agent components.
+:- use_module(dh_eval(dh_evaluate)). % Agent components.
 :- use_module(dh_nav(dh_bee_fly)). % Agent components.
+:- use_module(dh_nav(dh_navigate)). % Agent components.
 :- use_module(dh_nav(dh_random_lod_walk)). % Agent components.
 :- use_module(dh_nav(dh_weighted_lod_walk)). % Agent components.
 

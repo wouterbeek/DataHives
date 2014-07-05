@@ -11,23 +11,23 @@
 Evaluation / comparison of the different kind of agents
 
 @author Baudouin Duthoit
-@version 2014/06
+@author Wouter Beek
+@version 2014/06-2014/07
 */
 
+:- use_module(plSparql(sparql_random_triple)).
 
-:- use_module(dh(rdf_random_dbpedia)).
+:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_agent(dh_agent_ant)). % Agent definition.
 :- use_module(dh_agent(dh_agent_bee)). % Agent definitions.
 :- use_module(dh_agent(dh_agent_random)). % Agent definition.
-:- use_module(dh_core(dh_agent)).
-
-:-use_module(dh_core(dh_population)).
+:- use_module(dh_core(dh_population)).
 
 % Start an evaluation of the agents.
 
 evaluation(Type,N):-
   gtrace,
-  rdf_random_dbpedia_triple(X),
+  sparql_random_triple(dbpedia, X),
   create_agents(N, Type,X),
   evaluation_loop.
 
@@ -43,5 +43,4 @@ evaluation_loop:-
   format([bg(blue)],'~w','InTheFile'),
   close(Stream),
   evaluation_loop.
-
 
