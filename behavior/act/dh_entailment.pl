@@ -13,7 +13,7 @@
 DataHives agents that implement RDFS 1.1 entailment.
 
 @author Wouter Beek
-@version 2014/06
+@version 2014/06-2014/07
 */
 
 :- use_module(library(semweb/rdf_db)).
@@ -21,6 +21,7 @@ DataHives agents that implement RDFS 1.1 entailment.
 :- use_module(plRdf_ent(rdf_bnode_map)).
 :- use_module(plRdf_ent(rdf_entailment_patterns)).
 
+:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_generics)).
 
@@ -71,9 +72,8 @@ rdf_assert_entailment(rdf(U1,V,W)):-
   ),
 
   % Assert the triple in the graph named after the agent alias.
-  thread_self(Me),
-  thread_property(Me, alias(MyName)),
-  rdf_assert(U2, V, W, MyName),
+  agent_self_graph(MyGraph),
+  rdf_assert(U2, V, W, MyGraph),
 
   % Count the number of deductions per agent.
   increment_deductions.
@@ -133,9 +133,6 @@ increment_deductions(N):-
 :- multifile(prolog:message//1).
 
 prolog:message(entailment_fitness(Deductions,Lifetime,Fitness)) -->
-  {
-    thread_self(Me),
-    thread_property(Me, alias(MyName))
-  },
-  ['[~w] ~f (~D entailments; ~D steps)'-[MyName,Fitness,Deductions,Lifetime]].
+  {agent_self_graph(MyGraph)},
+  ['[~w] ~f (~D entailments; ~D steps)'-[MyGraph,Fitness,Deductions,Lifetime]].
 

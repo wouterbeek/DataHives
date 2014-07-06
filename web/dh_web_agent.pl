@@ -27,7 +27,7 @@ dh_web_agent(_, Style):-
   findall(
     [Alias,Id,Status,CPU_Time],
     (
-      dh_agent_thread(Id),
+      agent_thread(Id),
       thread_property(Id, alias(Alias)),
       thread_property(Id, status(Status)),
       (

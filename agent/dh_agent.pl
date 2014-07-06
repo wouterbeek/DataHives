@@ -1,6 +1,7 @@
 :- module(
   dh_agent,
   [
+    agent_self_graph/1, % -Graph:atom
     create_agent/2, % +Agent:atom
                     % +Initialization:compound
     create_agents/3, % +NumberOfAgents:positive_integer
@@ -36,6 +37,16 @@ e.g. listing the currently loaded agent definitions.
      pass_to(dh_cycle/3, 3)
    ]).
 
+
+
+%! agent_self_graph(-Graph:atom) is semidet.
+% Returns the name of this agent thread's RDF graph.
+%
+% Silently fails if the current thread is not an agent.
+
+agent_self_graph(Graph):-
+  thread_self(Me),
+  thread_property(Me, alias(Graph)).
 
 
 %! create_agent(+Agent:atom, +Initialization:compound) is det.

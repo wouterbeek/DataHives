@@ -12,13 +12,14 @@ Communication predicates for agents in DataHives.
 
 @author Baudouin Duthoit
 @author Wouter Beek
-@version 2014/02, 2014/04-2014/05
+@version 2014/02, 2014/04-2014/05, 2014/07
 */
 
 :- use_module(library(ansi_term)).
 :- use_module(library(apply)).
 :- use_module(library(semweb/rdf_db)).
 
+:- reexport(dh_agent(dh_agent_scout)).
 :- reexport(dh_com(dh_edge_weight)).
 
 

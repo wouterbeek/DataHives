@@ -16,6 +16,7 @@
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
+:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_core(dh_generics)).
 
 
@@ -31,10 +32,9 @@ search_action(Search, ResultsGraph, DirTriple):-
   (
     search_result_found(Search, Triple)
   ->
-    thread_self(Me),
-    thread_property(Me, alias(MyName)),
     Triple = rdf(S,P,O),
-    rdf_assert(S, P, O, MyName),
+    agent_self_graph(MyGraph),
+    rdf_assert(S, P, O, MyGraph),
     rdf_assert(S, P, O, ResultsGraph)
   ;
     true
@@ -45,6 +45,9 @@ search_action(Search, ResultsGraph, DirTriple):-
 
 search_result_found(instance_of(Class1), rdf(S,_,O)):-
   rdf_global_id(Class1, Class2),
-  rdfs_individual_of(S, Class2),
-  rdfs_individual_of(O, Class2).
+  (
+    rdfs_individual_of(S, Class2)
+  ;
+    rdfs_individual_of(O, Class2)
+  ), !.
 

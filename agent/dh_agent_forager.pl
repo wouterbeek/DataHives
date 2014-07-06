@@ -9,8 +9,6 @@ Defines the forager bee agent for use in DataHives.
 @version 2014/06-2014/07
 */
 
-:- use_module(dh_act(dh_search)).
-
 :- dynamic(dh:agent_definition/2).
 :- multifile(dh:agent_definition/2).
    dh:agent_definition(forager, [

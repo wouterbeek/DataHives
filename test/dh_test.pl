@@ -15,8 +15,6 @@ Simple test predicates for running programs in DataHives.
 @version 2013/09-2013/10, 2014/02, 2014/04-2014/06
 */
 
-:- use_module(library(predicate_options)).
-
 :- use_module(generics(meta_ext)).
 
 :- use_module(plRdf(rdf_gc)).
@@ -25,10 +23,6 @@ Simple test predicates for running programs in DataHives.
 :- use_module(plSparql(sparql_random)).
 
 :- use_module(dh_agent(dh_agent)).
-
-:- predicate_options(dh_test/3, 3, [
-     pass_to(create_agent/3, 3)
-   ]).
 
 
 

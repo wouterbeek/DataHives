@@ -1,7 +1,7 @@
 :- module(
   dh_population,
   [
-    dh_agent_thread/1, % ?Thread:atom
+    agent_thread/1, % ?Thread:atom
     exit_population/0,
     number_of_deduced_triples/1, % -TotaNumberOfDeducedTriples:nonneg
     total_number_of_cycles/1, % -Cycles:nonneg
@@ -31,21 +31,21 @@ The population is the collection of all agent threads that are active.
 
 
 
-dh_agent_prefix(agent_).
+agent_prefix(agent_).
 
 
-%! dh_agent_thread(+Thread:atom) is semidet.
-%! dh_agent_thread(-Thread:atom) is nondet.
+%! agent_thread(+Thread:atom) is semidet.
+%! agent_thread(-Thread:atom) is nondet.
 
-dh_agent_thread(Thread):-
-  dh_agent_prefix(Prefix),
+agent_thread(Thread):-
+  agent_prefix(Prefix),
   thread_prefix(Prefix, Thread).
 
 
 %! exit_population is det.
 
 exit_population:-
-  dh_agent_prefix(Prefix),
+  agent_prefix(Prefix),
   command_thread_prefix(Prefix, thread_exit(true)),
   reset_edge_count,
   flag(number_of_agents, _, 0).
@@ -54,7 +54,7 @@ exit_population:-
 %! total_number_of_cycles(-Cycles:nonneg) is det.
 
 total_number_of_cycles(Cycles):-
-  dh_agent_prefix(Prefix),
+  agent_prefix(Prefix),
   ask_thread_prefix(Prefix, number_of_cycles, Cycless),
   sum_list(Cycless, Cycles).
 
@@ -62,7 +62,7 @@ total_number_of_cycles(Cycles):-
 %! total_number_of_steps(-Steps:nonneg) is det.
 
 total_number_of_steps(Steps):-
-  dh_agent_prefix(Prefix),
+  agent_prefix(Prefix),
   ask_thread_prefix(Prefix, number_of_steps, Stepss),
   sum_list(Stepss, Steps).
 
@@ -74,7 +74,7 @@ number_of_deduced_triples(Triples):-
     sum(Triples),
     (
       rdf_graph(Graph),
-      dh_agent_thread(Graph),
+      agent_thread(Graph),
       rdf_statistics(triples_by_graph(Graph,Triples))
     ),
     Triples
