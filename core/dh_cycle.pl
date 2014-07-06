@@ -59,7 +59,6 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
 
   % CHOICEPOINT.
   repeat,
-
   call_every_n(number_of_cycles, 100, print_number_of_cycles),
 
   % Navigate.
@@ -69,7 +68,6 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   call(Act, dir(From,Dir,Link,To)),
 
   % Communicate.
-gtrace,
   call(Com, dir(From,Dir,Link,To)),
 
   % Evaluate

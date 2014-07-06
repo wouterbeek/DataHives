@@ -72,8 +72,8 @@ search_action(Search, ResultsGraph, DirTriple):-
 
 search_result_found(instance_of(Class1), rdf(S,_,O)):-
   rdf_global_id(Class1, Class2),
-  cache_instance_path(S),
-  cache_instance_path(O),
+  %%%%cache_instance_path(S),
+  %%%%cache_instance_path(O),
   once((
     rdfs_individual_of(S, Class2)
   ;
