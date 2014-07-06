@@ -22,7 +22,7 @@ DataHives agents that implement RDFS 1.1 entailment.
 :- use_module(plRdf_ent(rdf_entailment_patterns)).
 
 :- use_module(dh_core(dh_cycle)).
-:- use_module(dh_core(dh_generic)).
+:- use_module(dh_core(dh_generics)).
 
 %! deductions(?Deductions:nonneg) is nondet.
 

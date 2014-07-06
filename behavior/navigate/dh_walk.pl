@@ -27,7 +27,7 @@ are not instances of walking.
 
 :- use_module(generics(flag_ext)).
 
-:- use_module(dh_core(dh_generic)).
+:- use_module(dh_core(dh_generics)).
 
 %! backtrack(?DirectedTriple:compound) is det.
 

@@ -21,7 +21,7 @@ The navigate-act-communicate cycle for agents in DataHives.
 :- use_module(dh_act(dh_act)). % Agent components.
 :- use_module(dh_agent(dh_agent_bee)). % Agent components
 :- use_module(dh_com(dh_edge_weight)). % Agent components.
-:- use_module(dh_core(dh_generic)).
+:- use_module(dh_core(dh_generics)).
 :- use_module(dh_core(dh_messages)).
 :- use_module(dh_com(dh_communicate)). % Agent components.
 :- use_module(dh_eval(dh_evaluate)). % Agent components.
@@ -87,6 +87,9 @@ gtrace,
 
   fail.
 
+
+%! number_of_cycles(-NumberOfCycles:nonneg) is det.
+% Returns the number of cycles for a specific agent thread.
 
 number_of_cycles(N):-
   thread_flag(number_of_cycles, N, N), !.

@@ -2,10 +2,11 @@
   dh_agent,
   [
     create_agent/2, % +Agent:atom
-                    % +Initialization:or([atom,compound])
+                    % +Initialization:compound
     create_agents/3, % +NumberOfAgents:positive_integer
                      % +Agent:atom
-                     % +Initialization:or([atom,compound])
+                     % +Initialization:compound
+    default_exit/1, % +Initialization:compound
     list_agents/0,
     number_of_agents/1, % -NumberOfAgents:nonneg
     rebirth/1 % +Type:atom
@@ -24,6 +25,7 @@ e.g. listing the currently loaded agent definitions.
 @version 2014/02, 2014/04, 2014/06-2014/07
 */
 
+:- use_module(library(lists)).
 :- use_module(library(predicate_options)).
 
 :- use_module(generics(flag_ext)).
@@ -40,20 +42,28 @@ e.g. listing the currently loaded agent definitions.
 
 
 
-%! create_agent(+Agent:atom, +Initialization:or([atom,compound])) is det.
+%! create_agent(+Agent:atom, +Initialization:compound) is det.
 
-create_agent(Agent, Init):-
+create_agent(Agent, Initialization):-
   dh:agent_definition(Agent, [Nav,Act,Com,Eva]), !,
-  create_agent([Nav,Act,Com,Eva], default_exit, Init).
-create_agent(Agent, Init):-
-  dh:agent_definition(Agent, [Nav,Act,Com,Eval,Exit]), !,
-  create_agent([Nav,Act,Com,Eval], Exit, Init).
+  create_agent([Nav,Act,Com,Eva], default_exit, Initialization).
+create_agent(Agent, Initialization):-
+  dh:agent_definition(Agent, [Nav,Act,Com,Eval,Exit1]), !,
+  
+  % Add the initialization argument to the exit predicate.
+  Exit1 =.. [Pred|Args1],
+  append(Args1, [Initialization], Args2),
+  Exit2 =.. [Pred|Args2],
+  
+  create_agent([Nav,Act,Com,Eval], Exit2, Initialization).
 
 %! create_agent(
 %!   +Predicates:list(atom),
 %!   :Exit,
 %!   +Initialization:or([atom,compound])
 %! ) is det.
+% @arg Initialization Either a graph, denoted by =|graph(+atom)|=
+%      or a triple, denoted by =|rdf(+subject,+predicate,+object)|=.
 
 % Initialize by graph.
 create_agent(Preds, Exit, graph(Graph)):- !,
@@ -70,11 +80,11 @@ create_agent(Preds, Exit, rdf(S,P,O)):-
 %!   +Options:list(nvpair)
 %! ) is det.
 
-create_agent(Preds, Exit, InitTriple, Options):-
+create_agent(Preds, Exit, InitialTriple, Options):-
   flag(agent, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
   thread_create(
-    dh_cycle(Preds, InitTriple, Options),
+    dh_cycle(Preds, InitialTriple, Options),
     _,
     [alias(Alias),detached(true),at_exit(Exit)]
   ).
@@ -86,11 +96,19 @@ create_agent(Preds, Exit, InitTriple, Options):-
 %!   +Initialization:or([atom,compound])
 %! ) is det.
 
-create_agents(N, Agent, Init):-
+create_agents(N, Agent, Initialization):-
   forall(
     between(1, N, _),
-    create_agent(Agent, Init)
+    create_agent(Agent, Initialization)
   ).
+
+
+%! default_exit(+Initialization:compound) is det.
+
+default_exit(_):-
+  retractall(backtrack(_)),
+  retractall(deductions(_)),
+  reset_thread_flag(number_of_cycles).
 
 
 %! list_agents is det.
@@ -120,16 +138,4 @@ print_behaviors([Prefix|T1], [Behavior|T2]):-
 
 number_of_agents(N):-
   flag(agents, N, N).
-
-
-%! default_exit is det.
-
-default_exit:-
-  retractall(backtrack(_)),
-  retractall(deductions(_)),
-  reset_thread_flag(number_of_cycles).
-
-rebirth(Type):-
-  sparql_random_triple(dbpedia, Resource),
-  create_agent(Type, Resource).
 
