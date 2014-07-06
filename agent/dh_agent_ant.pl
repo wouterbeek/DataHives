@@ -12,7 +12,7 @@
    dh:agent_definition(ant, [
      dh_weighted_walk,
      deductive_action,
-     update_edge_count(1),
+     update_edge_count,
      evaluate_entailment,
      create_agent(ant)
    ]).

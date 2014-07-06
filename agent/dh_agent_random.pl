@@ -13,7 +13,7 @@ Specification of a randomly traversing agent in DataHives.
    dh:agent_definition(random, [
      dh_random_walk,
      no_action,
-     update_edge_count(1),
+     update_edge_count,
      no_evaluation
    ]).
 

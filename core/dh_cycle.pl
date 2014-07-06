@@ -63,6 +63,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   call_every_n(number_of_cycles, 100, print_number_of_cycles),
 
   % Navigate.
+gtrace,
   call(Nav, dir(From,Dir,Link,To), Options),
 
   % Act.

@@ -6,6 +6,7 @@
     edge_weight/2, % ?Triple:compound
                    % -EdgeWeight:integer
     reset_edge_count/0,
+    update_edge_count/1, % +DirectedTripleOrTriple:compound
     update_edge_count/2 % +Update:integer
                         % +DirectedTripleOrTriple:compound
   ]
@@ -70,6 +71,12 @@ edge_weight(_, 0).
 reset_edge_count:-
   with_mutex(edge_count, retractall(edge_count0(_,_))).
 
+
+%! update_edge_count(+DirectedTripleOrTriple:compound) is det.
+% Wrapper around update_edge_count/2 updating the edge count by 1.
+
+update_edge_count(DirectedTripleOrTriple):-
+  update_edge_count(1, DirectedTripleOrTriple).
 
 %! update_edge_count(
 %!   +Update:integer,
