@@ -19,6 +19,7 @@ Defines the scout bee agent for use in DataHives.
 
 :- use_module(generics(flag_ext)).
 
+:- use_module(dh_act(dh_search)).
 :- use_module(dh_agent(dh_agent)).
 :- use_module(dh_agent(dh_agent_forager)).
 :- use_module(dh_core(dh_generics)).
@@ -45,7 +46,7 @@ Defines the scout bee agent for use in DataHives.
 %! spawn_foragers(+InterestLevel:nonneg, +DirectedTriple:compound) is det.
 
 spawn_foragers(InterestLevel, DirectedTriple):-
-  thread_flag(number_of_search_results, NumberOfSearchResults),
+  number_of_overall_search_results(NumberOfSearchResults),
   (
     NumberOfSearchResults >= InterestLevel
   ->
