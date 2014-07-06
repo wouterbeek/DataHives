@@ -16,8 +16,11 @@
 */
 
 :- use_module(library(aggregate)).
+:- use_module(library(apply)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
+
+:- use_module(lodCache(lod_cache)).
 
 :- use_module(dh_agent(dh_agent)).
 :- use_module(dh_core(dh_generics)).
@@ -69,9 +72,19 @@ search_action(Search, ResultsGraph, DirTriple):-
 
 search_result_found(instance_of(Class1), rdf(S,_,O)):-
   rdf_global_id(Class1, Class2),
-  (
+  cache_instance_path(S),
+  cache_instance_path(O),
+  once((
     rdfs_individual_of(S, Class2)
   ;
     rdfs_individual_of(O, Class2)
-  ), !.
+  )).
+
+
+
+% Helpers
+
+cache_instance_path(Resource):-
+  maplist(rdf_global_id, [owl:sameAs,rdfs:subClassOf,rdf:type], Terms),
+  lod_cache_assert(Resource, [term_filter(Terms)]).
 
