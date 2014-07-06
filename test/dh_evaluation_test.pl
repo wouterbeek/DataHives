@@ -1,7 +1,7 @@
 :- module(
   dh_evaluation_test,
   [
-       ant_evaluation/0 % Start an evaluation of the ant agents.
+    evaluation/2
   ]
 ).
 
@@ -11,17 +11,24 @@
 Evaluation / comparison of the different kind of agents
 
 @author Baudouin Duthoit
-@version 2014/06
+@author Wouter Beek
+@version 2014/06-2014/07
 */
 
-:-use_module(dh_test(dh_test)).
-:-use_module(dh_core(dh_population)).
-:-use_module(library(pce_config)).
+:- use_module(plSparql(sparql_random_triple)).
 
-% Start an evaluation of the ant agents.
+:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_agent(dh_agent_ant)). % Agent definition.
+:- use_module(dh_agent(dh_agent_bee)). % Agent definitions.
+:- use_module(dh_agent(dh_agent_random)). % Agent definition.
+:- use_module(dh_core(dh_population)).
 
-ant_evaluation:-
-  forall(between(1,10,_),dh_ant_test),
+% Start an evaluation of the agents.
+
+evaluation(Type,N):-
+  gtrace,
+  sparql_random_triple(dbpedia, X),
+  create_agents(N, Type,X),
   evaluation_loop.
 
 evaluation_loop:-
@@ -36,5 +43,4 @@ evaluation_loop:-
   format([bg(blue)],'~w','InTheFile'),
   close(Stream),
   evaluation_loop.
-
 

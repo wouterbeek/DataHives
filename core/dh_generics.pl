@@ -1,5 +1,5 @@
 :- module(
-  dh_generic,
+  dh_generics,
   [
     directed_triple/2, % ?DirectedTriple:compound
                        % ?Triple:compound

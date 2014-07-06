@@ -1,40 +1,46 @@
 :- module(
-  dh_navigate,
+  dh_walk,
   [
     backtrack/1, % ?DirectedTriple:compound
-    dh_navigate/3, % :Navigation,
-                   % ?DirectedTriple:compound
-                   % +Options:list(nvpair)
+    dh_walk/3, % :Navigation
+               % -DirectedTriple:compound
+               % +Options:list(nvpair)
     number_of_steps/1 % -NumberOfSteps:nonneg
   ]
 ).
 
-/** <module> DataHives navigation
+/** <module> DataHives walk
 
-Navigation predicates for agents in DataHives.
+Implements the general architecture for navigation strategies
+that employ some for of *walking*.
+We define walking as moving from a previous location
+to a location that is structurally connected to it.
+
+For example, navigation strategies that perfom jumps
+are not instances of walking.
 
 @author Wouter Beek
-@version 2014/02-2014/06
+@version 2014/02-2014/07
 */
 
 :- use_module(library(semweb/rdf_db)). % Declarations.
 
 :- use_module(generics(flag_ext)).
 
-:- use_module(dh_core(dh_generic)).
+:- use_module(dh_core(dh_generics)).
 
 %! backtrack(?DirectedTriple:compound) is det.
 
 :- thread_local(backtrack/1).
 
-:- meta_predicate(dh_navigate(3,?,+)).
 :- meta_predicate(dh_step(3,?,-)).
+:- meta_predicate(dh_walk(3,?,+)).
 
 
 
-%! dh_navigate(
+%! dh_walk(
 %!   :Navigation,
-%!   ?DirectedTriple:compound,
+%!   -DirectedTriple:compound,
 %!   +Options:list(nvpair)
 %! ) is det.
 % Walk from one location (called `From`) to a location (called `To`),
@@ -58,7 +64,7 @@ Navigation predicates for agents in DataHives.
 %
 % @tbd Backtracking is now very primitive.
 
-dh_navigate(Nav, dir(From,Dir,Link,To), Options):-
+dh_walk(Nav, dir(From,Dir,Link,To), Options):-
   backtrack(dir(_,_,_,From)),
   (
     dh_step(Nav, dir(From,Dir,Link,To), Options)
@@ -78,7 +84,7 @@ dh_navigate(Nav, dir(From,Dir,Link,To), Options):-
 
 %! dh_step(
 %!   :Navigation,
-%!   +DirectedTriple:compound,
+%!   -DirectedTriple:compound,
 %!   +Options:list(nvpair)
 %! ) is semidet.
 % Take a single step from one location (called `From`)

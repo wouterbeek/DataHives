@@ -1,7 +1,7 @@
 :- module(
   dh_weighted_lod_walk,
   [
-    dh_weighted_lod_walk/2 % +DirectedTriple:compound
+    dh_weighted_lod_walk/2 % -DirectedTriple:compound
                            % +Options:list(nvpair)
   ]
 ).
@@ -11,30 +11,30 @@
 A more informative navigation strategy for DataHives,
 using the Linked Open Data stepping paradigm.
 
-@author Baudouin Duthoit
 @author Wouter Beek
-@version 2014/05-2014/06
+@author Baudouin Duthoit
+@version 2014/05-2014/07
 */
 
 :- use_module(library(lists)).
 :- use_module(library(pairs)).
 :- use_module(library(random)).
 
+:- use_module(dh_act(dh_act)).
+:- use_module(dh_com(dh_communicate)).
 :- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_core(dh_act)).
-:- use_module(dh_core(dh_communicate)).
-:- use_module(dh_core(dh_navigate)).
 :- use_module(dh_nav(dh_step)).
+:- use_module(dh_nav(dh_walk)).
 
 
 
 %! dh_weighted_lod_walk(
-%!   +DirectedTriple:compound,
+%!   -DirectedTriple:compound,
 %!   +Options:list(nvpair)
 %! ) is det.
 
 dh_weighted_lod_walk(DirTriple, Options):-
-  dh_navigate(lod_weighted_step, DirTriple, Options).
+  dh_walk(lod_weighted_step, DirTriple, Options).
 
 %! lod_weighted_step(
 %!   +Resource:or([bnode,iri,literal]),

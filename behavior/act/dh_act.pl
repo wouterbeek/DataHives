@@ -21,7 +21,7 @@ Action predicates for agents in DataHives.
 
 :- use_module(plRdf(rdf_name)).
 
-:- use_module(dh_core(dh_generic)).
+:- use_module(dh_core(dh_generics)).
 
 
 

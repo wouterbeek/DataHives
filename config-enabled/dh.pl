@@ -4,9 +4,8 @@
 :- use_module(library(http/http_dispatch)).
 
 :- if(\+ current_module(load_project)).
-  :- ensure_loaded('../load').
+  :- ensure_loaded('../debug').
 :- endif.
-:- ensure_loaded('../debug').
 
 :- use_module(cliopatria(hooks)).
 
