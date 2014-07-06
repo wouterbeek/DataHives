@@ -21,6 +21,8 @@ Action predicates for agents in DataHives.
 
 :- use_module(plRdf(rdf_name)).
 
+:- reexport(dh_act(dh_entailment)).
+:- reexport(dh_act(dh_search)).
 :- use_module(dh_core(dh_generics)).
 
 

@@ -18,16 +18,10 @@ The navigate-act-communicate cycle for agents in DataHives.
 
 :- use_module(generics(flag_ext)).
 
-:- use_module(dh_act(dh_act)). % Agent components.
-:- use_module(dh_com(dh_edge_weight)). % Agent components.
+:- use_module(dh_beh(dh_beh)).
 :- use_module(dh_core(dh_generics)).
 :- use_module(dh_core(dh_messages)).
-:- use_module(dh_com(dh_communicate)). % Agent components.
-:- use_module(dh_eval(dh_evaluate)). % Agent components.
-:- use_module(dh_nav(dh_random_jump)). % Agent components.
-:- use_module(dh_nav(dh_random_walk)). % Agent components.
-:- use_module(dh_nav(dh_walk)). % Agent components.
-:- use_module(dh_nav(dh_weighted_walk)). % Agent components.
+:- use_module(dh_nav(dh_walk)).
 
 
 
@@ -59,7 +53,7 @@ The navigate-act-communicate cycle for agents in DataHives.
 dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   % Initialize the backtrack fact.
   directed_triple(InitDirTriple, InitTriple),
-  assert(backtrack(InitDirTriple)),
+  set_backtrack(InitDirTriple),
 
   reset_thread_flag(number_of_cycles),
 

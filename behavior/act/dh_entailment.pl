@@ -1,5 +1,5 @@
 :- module(
-  dh_agent_entailment,
+  dh_entailment,
   [
     deductions/1, % ?Deductions:nonneg
     deductive_action/1, % +DirectedTriple:compound
@@ -8,7 +8,7 @@
   ]
 ).
 
-/** <module> DataHives: entailment agents
+/** <module> DataHives entailment
 
 DataHives agents that implement RDFS 1.1 entailment.
 

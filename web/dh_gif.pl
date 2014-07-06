@@ -31,7 +31,7 @@ using the Graph Interchange Format.
 :- use_module(plRdf(rdf_name)). % Meta-DCG.
 
 :- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_com(dh_communicate)).
+:- use_module(dh_com(dh_com)).
 
 
 

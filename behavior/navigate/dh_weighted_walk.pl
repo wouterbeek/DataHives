@@ -21,7 +21,7 @@ that prefers edges with higher weights.
 :- use_module(library(random)).
 
 :- use_module(dh_act(dh_act)).
-:- use_module(dh_com(dh_communicate)).
+:- use_module(dh_com(dh_com)).
 :- use_module(dh_com(dh_edge_weight)).
 :- use_module(dh_nav(dh_step)).
 :- use_module(dh_nav(dh_walk)).

@@ -1,5 +1,5 @@
 :- module(
-  dh_evaluate,
+  dh_eval,
   [
     default_evaluation/0,
     no_evaluation/0
@@ -15,6 +15,8 @@ Evaluation predicates for DataHives agents.
 */
 
 :- use_module(library(random)).
+
+:- reexport(dh_eval(dh_aging)).
 
 
 

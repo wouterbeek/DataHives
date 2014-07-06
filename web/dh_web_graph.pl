@@ -26,7 +26,7 @@
 
 :- use_module(plGraphViz(gv_file)).
 
-:- use_module(dh_com(dh_communicate)).
+:- use_module(dh_com(dh_com)).
 :- use_module(dh_web(dh_gif)).
 
 :- html_resource(css('gv_interactive.css'), []).

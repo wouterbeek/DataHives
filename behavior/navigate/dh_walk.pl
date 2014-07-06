@@ -5,7 +5,8 @@
     dh_walk/3, % :Navigation
                % -DirectedTriple:compound
                % +Options:list(nvpair)
-    number_of_steps/1 % -NumberOfSteps:nonneg
+    number_of_steps/1, % -NumberOfSteps:nonneg
+    set_backtrack/1 % ?DirectedTriple:compound
   ]
 ).
 
@@ -128,4 +129,11 @@ dh_step(Nav, dir(From,Direction,Link,To), Options):-
 number_of_steps(N):-
   thread_flag(number_of_steps, N, N), !.
 number_of_steps(0).
+
+
+%! set_backtrack(?DirectedTriple:compound) is det.
+
+set_backtrack(DirTriple):-
+  retractall(backtrack(_)),
+  assert(backtrack(DirTriple)).
 

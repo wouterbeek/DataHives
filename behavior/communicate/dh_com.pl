@@ -1,5 +1,5 @@
 :- module(
-  dh_communicate,
+  dh_com,
   [
     no_communication/1, % ?DirectedTriple:compound
     forbide_path/1 % +From:or([bnode,iri,literal])
@@ -19,7 +19,7 @@ Communication predicates for agents in DataHives.
 :- use_module(library(apply)).
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(dh_com(dh_edge_weight)).
+:- reexport(dh_com(dh_edge_weight)).
 
 
 

@@ -13,10 +13,6 @@ Where message queue are being processed.
 @version 2014/06-2014/07
 */
 
-:- use_module(dh_core(dh_cycle)). % Meta-calls.
-:- use_module(dh_core(dh_population)). % Meta-calls.
-:- use_module(dh_nav(dh_walk)). % Meta-calls.
-
 :- meta_predicate(answer_question(1,+)).
 :- meta_predicate(execute_command(0)).
 

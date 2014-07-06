@@ -24,13 +24,11 @@ e.g. listing the currently loaded agent definitions.
 */
 
 :- use_module(library(lists)).
-:- use_module(library(predicate_options)).
+:- use_module(library(predicate_options)). % Declarations.
 
 :- use_module(generics(flag_ext)).
 
 :- use_module(plRdf(rdf_random)).
-
-:- use_module(plSparql(sparql_random)).
 
 :- use_module(dh_core(dh_cycle)).
 
@@ -52,7 +50,7 @@ create_agent(Agent, Initialization):-
   ),
   create_agent(
     [NavPred,ActPred,ComPred,EvalPred],
-    default_exit,
+    default_exit(Initialization),
     Initialization
   ).
 create_agent(Agent, Initialization):-
@@ -63,12 +61,12 @@ create_agent(Agent, Initialization):-
     [NavPred,ActPred,ComPred,EvalPred,ExitPred1],
     _
   ),
-  
+
   % Add the initialization argument to the exit predicate.
   ExitPred1 =.. [ExitPred0|ExitArgs1],
   append(ExitArgs1, [Initialization], ExitArgs2),
   ExitPred2 =.. [ExitPred0|ExitArgs2],
-  
+
   create_agent([NavPred,ActPred,ComPred,EvalPred], ExitPred2, Initialization).
 
 %! create_agent(
