@@ -11,10 +11,13 @@
 
 /** <module> DataHives: population
 
-Population statistics for DataHives
+Population management and statistics for DataHives.
+
+At the moment, at most one population can be formed.
+The population is the collection of all agent threads that are active.
 
 @author Wouter Beek
-@version 2014/06
+@version 2014/06-2014/07
 */
 
 :- use_module(library(aggregate)).
@@ -44,7 +47,8 @@ dh_agent_thread(Thread):-
 exit_population:-
   dh_agent_prefix(Prefix),
   command_thread_prefix(Prefix, thread_exit(true)),
-  reset_edge_count.
+  reset_edge_count,
+  flag(number_of_agents, _, 0).
 
 
 %! total_number_of_cycles(-Cycles:nonneg) is det.

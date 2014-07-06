@@ -1,15 +1,15 @@
 :- module(
-  dh_weighted_lod_walk,
+  dh_weighted_walk,
   [
-    dh_weighted_lod_walk/2 % -DirectedTriple:compound
-                           % +Options:list(nvpair)
+    dh_weighted_walk/2 % -DirectedTriple:compound
+                       % +Options:list(nvpair)
   ]
 ).
 
-/** <module> DataHives Linked Open Data walk supervised
+/** <module> DataHives weighted walk
 
-A more informative navigation strategy for DataHives,
-using the Linked Open Data stepping paradigm.
+A walking navigation strategy in DataHives
+that prefers edges with higher weights.
 
 @author Wouter Beek
 @author Baudouin Duthoit
@@ -28,12 +28,9 @@ using the Linked Open Data stepping paradigm.
 
 
 
-%! dh_weighted_lod_walk(
-%!   -DirectedTriple:compound,
-%!   +Options:list(nvpair)
-%! ) is det.
+%! dh_weighted_walk(-DirectedTriple:compound, +Options:list(nvpair)) is det.
 
-dh_weighted_lod_walk(DirTriple, Options):-
+dh_weighted_walk(DirTriple, Options):-
   dh_walk(lod_weighted_step, DirTriple, Options).
 
 %! lod_weighted_step(

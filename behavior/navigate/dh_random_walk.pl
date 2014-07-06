@@ -1,8 +1,8 @@
 :- module(
-  dh_random_lod_walk,
+  dh_random_walk,
   [
-    dh_random_lod_walk/2 % -DirectedTriple:compound
-                         % +Options:list(nvpair)
+    dh_random_walk/2 % -DirectedTriple:compound
+                     % +Options:list(nvpair)
   ]
 ).
 
@@ -22,9 +22,9 @@ that uses the LOD stepping paradigm.
 
 
 
-%! dh_random_lod_walk(-DirectedTriple:compound, +Options:list(nvpair)) is det.
+%! dh_random_walk(-DirectedTriple:compound, +Options:list(nvpair)) is det.
 
-dh_random_lod_walk(DirTriple, Options):-
+dh_random_walk(DirTriple, Options):-
   dh_walk(dh_random_step, DirTriple, Options).
 
 %! dh_random_step(

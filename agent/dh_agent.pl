@@ -7,9 +7,7 @@
                      % +Agent:atom
                      % +Initialization:compound
     default_exit/1, % +Initialization:compound
-    list_agents/0,
-    number_of_agents/1, % -NumberOfAgents:nonneg
-    rebirth/1 % +Type:atom
+    number_of_agents/1 % -NumberOfAgents:nonneg
   ]
 ).
 
@@ -45,17 +43,33 @@ e.g. listing the currently loaded agent definitions.
 %! create_agent(+Agent:atom, +Initialization:compound) is det.
 
 create_agent(Agent, Initialization):-
-  dh:agent_definition(Agent, [Nav,Act,Com,Eva]), !,
-  create_agent([Nav,Act,Com,Eva], default_exit, Initialization).
+  dh:agent_definition(Agent, [NavDef,ActDef,ComDef,EvalDef]), !,
+  maplist(
+    split_pred_doc,
+    [NavDef,ActDef,ComDef,EvalDef],
+    [NavPred,ActPred,ComPred,EvalPred],
+    _
+  ),
+  create_agent(
+    [NavPred,ActPred,ComPred,EvalPred],
+    default_exit,
+    Initialization
+  ).
 create_agent(Agent, Initialization):-
-  dh:agent_definition(Agent, [Nav,Act,Com,Eval,Exit1]), !,
+  dh:agent_definition(Agent, [NavDef,ActDef,ComDef,EvalDef,ExitDef]), !,
+  maplist(
+    split_pred_doc,
+    [NavDef,ActDef,ComDef,EvalDef,ExitDef],
+    [NavPred,ActPred,ComPred,EvalPred,ExitPred1],
+    _
+  ),
   
   % Add the initialization argument to the exit predicate.
-  Exit1 =.. [Pred|Args1],
-  append(Args1, [Initialization], Args2),
-  Exit2 =.. [Pred|Args2],
+  ExitPred1 =.. [ExitPred0|ExitArgs1],
+  append(ExitArgs1, [Initialization], ExitArgs2),
+  ExitPred2 =.. [ExitPred0|ExitArgs2],
   
-  create_agent([Nav,Act,Com,Eval], Exit2, Initialization).
+  create_agent([NavPred,ActPred,ComPred,EvalPred], ExitPred2, Initialization).
 
 %! create_agent(
 %!   +Predicates:list(atom),
@@ -80,13 +94,13 @@ create_agent(Preds, Exit, rdf(S,P,O)):-
 %!   +Options:list(nvpair)
 %! ) is det.
 
-create_agent(Preds, Exit, InitialTriple, Options):-
-  flag(agent, Id, Id + 1),
+create_agent(Preds, ExitPred, InitialTriple, Options):-
+  flag(number_of_agents, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
   thread_create(
     dh_cycle(Preds, InitialTriple, Options),
     _,
-    [alias(Alias),detached(true),at_exit(Exit)]
+    [alias(Alias),at_exit(ExitPred),detached(true)]
   ).
 
 
@@ -106,36 +120,22 @@ create_agents(N, Agent, Initialization):-
 %! default_exit(+Initialization:compound) is det.
 
 default_exit(_):-
+  % @tbd Move to navigate: walk.
   retractall(backtrack(_)),
+  % @tbd Move to act: decution.
   retractall(deductions(_)),
   reset_thread_flag(number_of_cycles).
-
-
-%! list_agents is det.
-% Lists all currently loaded agent definitions on current output.
-
-list_agents:-
-  forall(
-    dh:agent_definition(Name, Definition),
-    print_agent_definition(Name, Definition)
-  ).
-
-print_agent_definition(Name, Definition):-
-  format('AGENT DEFINITION: ~a\n', [Name]),
-  print_behaviors(
-    ['NAVIGATE','ACT','COMMUNICATE','EVALUATE','REPRODUCE'],
-    Definition
-  ),
-  format('\n').
-
-print_behaviors(_, []).
-print_behaviors([Prefix|T1], [Behavior|T2]):-
-  format('  * ~a: ~18+~w\n', [Prefix,Behavior]),
-  print_behaviors(T1, T2).
 
 
 %! number_of_agents(-NumberOfAgents:nonneg) is det.
 
 number_of_agents(N):-
-  flag(agents, N, N).
+  flag(number_of_agents, N, N).
+
+
+
+% Helpers
+
+split_pred_doc(Pred-Doc, Pred, Doc):- !.
+split_pred_doc(Pred, Pred, _).
 

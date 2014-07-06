@@ -25,9 +25,6 @@ Simple test predicates for running programs in DataHives.
 :- use_module(plSparql(sparql_random)).
 
 :- use_module(dh_agent(dh_agent)).
-:- use_module(dh_agent(dh_agent_ant)). % Agent definition.
-:- use_module(dh_agent(dh_agent_bee)). % Agent definitions.
-:- use_module(dh_agent(dh_agent_random)). % Agent definition.
 
 :- predicate_options(dh_test/3, 3, [
      pass_to(create_agent/3, 3)

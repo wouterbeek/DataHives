@@ -4,16 +4,16 @@
 
 @author Baudouin Duthoit
 @author Wouter Beek
-@version 2014/06
+@version 2014/06-2014/07
 */
 
 :- dynamic(dh:agent_definition/2).
 :- multifile(dh:agent_definition/2).
    dh:agent_definition(ant, [
-     dh_weighted_lod_walk,
+     dh_weighted_walk,
      deductive_action,
      update_edge_count(1),
      evaluate_entailment,
-     rebirth(ant)
+     create_agent(ant)
    ]).
 

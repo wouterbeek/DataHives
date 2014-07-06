@@ -1,10 +1,4 @@
-:- module(
-  dh_agent_forager,
-  [
-    evaluate_forager/0,
-    send_forager/0,
-  ]
-).
+:- module(dh_agent_forager, []).
 
 /** <module> DataHives agent forager
 
@@ -15,30 +9,14 @@ Defines the forager bee agent for use in DataHives.
 @version 2014/06-2014/07
 */
 
-:- use_module(generics(flag_ext)).
-
 :- use_module(dh_act(dh_search)).
-:- use_module(dh_core(dh_cycle)).
 
 :- dynamic(dh:agent_definition/2).
 :- multifile(dh:agent_definition/2).
    dh:agent_definition(forager, [
-     dh_random_lod_walk,
-     search_for_class_results(instance_of(foaf:'Person')),
-     update_edge_count(1),
-     no_evaluation,
-     report_results
+     dh_random_walk-'Walk around randomly. This ensures locality',
+     search_action(instance_of(foaf:'Person'), search_results)-'Search for instances of foaf:Person.',
+     update_edge_count(1)-'Communicate to the environment that a certain edge has been traversed.',
+     aging(10)-'A forager walks around for a set number of steps and then terminates.'
    ]).
-
-
-
-terminate_forager:-
-  number_of_cycles(Lifetime),
-  (
-    Lifetime > 10
-  ->
-    thread_exit(done)
-  ;
-    true
-  ).
 

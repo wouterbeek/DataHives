@@ -11,7 +11,7 @@ Specification of a randomly traversing agent in DataHives.
 :- dynamic(dh:agent_definition/2).
 :- multifile(dh:agent_definition/2).
    dh:agent_definition(random, [
-     dh_random_lod_walk,
+     dh_random_walk,
      no_action,
      update_edge_count(1),
      no_evaluation

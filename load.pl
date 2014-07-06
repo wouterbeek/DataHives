@@ -17,8 +17,13 @@
     plTabular
 ]).
 
-:- use_module(dh_test(dh_test)).
+% Load the agent definitions.
+:- ensure_loaded(dh_agent(dh_agent_init)).
 
-:- use_module(dh_agent(dh_agent)).
-:- initialization(list_agents).
+% Allow tests to be run from the top-level.
+:- user:use_module(dh_test(dh_test)).
+
+% List the loaded agent definitions.
+:- use_module(dh_agent(dh_agent_doc)).
+:- initialization(list_agent_definitions).
 

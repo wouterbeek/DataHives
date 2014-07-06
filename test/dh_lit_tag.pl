@@ -30,7 +30,7 @@ Count languages and datatypes used in literals.
 
 :- use_module(plRdfDev(rdf_html_table)).
 
-:- use_module(dh_nav(dh_random_lod_walk)).
+:- use_module(dh_nav(dh_random_walk)).
 
 :- dynamic(http:location/3).
 :- multifile(http:location/3).
@@ -104,7 +104,7 @@ dh_lit_tag_crawler(Url):-
   default_url(DefaultUrl),
   default(DefaultUrl, Url),
   init_agent(
-    dh_random_lod_walk,
+    dh_random_walk,
     literal_tag,
     default_action, %STUB
     Url

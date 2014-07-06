@@ -1,8 +1,9 @@
-:- use_module(
+:- module(
   dh_search,
   [
-    search_action/2, % +Class:iri
-                            % +DirectedTriple:compound
+    search_action/3 % +Search:compound
+                    % +ResultsGraph:atom
+                    % +DirectedTriple:compound
   ]
 ).
 
@@ -15,27 +16,26 @@
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
-:- use_module(generics(flag_ext)).
-
-:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_core(dh_generics)).
 
 
 
-report_search_results(Initialization):-
-  thread_flag(number_of_search_results, N),
-  default_exit(Initialization),
-  
+%! search_action(
+%!   +Search:compound,
+%!   +ResultsGraph:atom,
+%!   +DirectedTriple:compound
+%! ) is det.
 
-
-%! search_action(+Search:compound, +DirectedTriple:compound) is det.
-
-search_action(Search, DirectedTriple):-
+search_action(Search, ResultsGraph, DirTriple):-
   directed_triple(DirTriple, Triple),
   (
     search_result_found(Search, Triple)
   ->
-    thread_flag(number_of_search_results, N, N + 1)
+    thread_self(Me),
+    thread_property(Me, alias(MyName)),
+    Triple = rdf(S,P,O),
+    rdf_assert(S, P, O, MyName),
+    rdf_assert(S, P, O, ResultsGraph)
   ;
     true
   ).
