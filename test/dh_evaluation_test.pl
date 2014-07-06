@@ -27,7 +27,7 @@ Evaluation / comparison of the different kind of agents
 % Starts an evaluation of the agents.
 
 evaluation(Agent, N):-
-gtrace,
+gtrace, %DEB
   sparql_random_triple(dbpedia, Triple),
   create_agents(N, Agent, Triple),
   evaluation_loop.

@@ -83,8 +83,14 @@ search_result_found(instance_of(Class1), rdf(S,_,O)):-
 
 
 % Helpers
+% 001,555,611 <?s, rdf:type, foaf:Person>
+% 860,465,258 <?s, ?p, ?o>
 
 cache_instance_path(Resource):-
-  maplist(rdf_global_id, [owl:sameAs,rdfs:subClassOf,rdf:type], Terms),
+  maplist(
+    rdf_global_id,
+    [owl:equivalentClass,owl:sameAs,rdfs:subClassOf,rdf:type],
+    Terms
+  ),
   lod_cache_assert(Resource, [term_filter(Terms)]).
 
