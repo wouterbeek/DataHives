@@ -51,8 +51,8 @@ dh_web_graph_head -->
 
 dh_web_graph_body -->
   {
-    dh_graph(Gif),
-    graph_to_svg_dom([method(dot)], Gif, SvgDom)
+    dh_graph(Gif, []),
+    graph_to_svg_dom(Gif, SvgDom, [method(dot)])
   },
   html(\xml_dom_as_atom(SvgDom)).
 

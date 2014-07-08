@@ -193,7 +193,7 @@ connected_hives(_Request):-
     label('Overview of connected DataHives'),
     overlap(false)
   ],
-  graph_to_svg_dom([method(sfdp)], graph(Vs,Es,G_Attrs), SvgDom),
+  graph_to_svg_dom(graph(Vs,Es,G_Attrs), SvgDom, [method(sfdp)]),
   reply_html_page(
     app_style,
     title('DataHives - Network'),

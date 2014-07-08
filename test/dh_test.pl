@@ -12,8 +12,10 @@ Simple test predicates for running programs in DataHives.
 
 @author Wouter Beek
 @author Baudouin Duthoit
-@version 2013/09-2013/10, 2014/02, 2014/04-2014/06
+@version 2013/09-2013/10, 2014/02, 2014/04-2014/07
 */
+
+:- use_module(library(semweb/rdf_db)).
 
 :- use_module(generics(meta_ext)).
 
@@ -30,7 +32,13 @@ Simple test predicates for running programs in DataHives.
 % Options are passed on to create_agent/3.
 
 dh_test(Agent, graph(Graph)):-
-  default_goal(assert_visum, Graph),
+  (
+    var(Graph)
+  ->
+    assert_visum(Graph)
+  ;
+    rdf_graph(Graph)
+  ),
   rdf_graph_exclude_from_gc(Graph),
   create_agent(Agent, graph(Graph)).
 dh_test(Agent, rdf(S,P,O)):-
