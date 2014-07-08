@@ -23,6 +23,10 @@ The navigate-act-communicate cycle for agents in DataHives.
 :- use_module(dh_core(dh_messages)).
 :- use_module(dh_nav(dh_walk)).
 
+:- meta_predicate(call_every_n_cycles(+,1)).
+
+:- thread_local(number_of_cycles0/1).
+
 
 
 %! dh_cycle(
@@ -55,11 +59,11 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   directed_triple(InitDirTriple, InitTriple),
   set_backtrack(InitDirTriple),
 
-  reset_thread_flag(number_of_cycles),
+  reset_number_of_cycles,
 
   % CHOICEPOINT.
   repeat,
-  call_every_n(number_of_cycles, 100, print_number_of_cycles),
+  call_every_n_cycles(100, print_number_of_cycles),
 
   % Navigate.
   call(Nav, dir(From,Dir,Link,To), Options),
@@ -76,15 +80,49 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   % Process message queue.
   process_messages,
 
+  increment_number_of_cycles,
+
   fail.
+
+
+%! increment_number_of_cycles is det.
+
+increment_number_of_cycles:-
+  increment_number_of_cycles(1).
+
+%! increment_number_of_cycles(+Increment:integer) is det.
+
+increment_number_of_cycles(N2):-
+  retract(number_of_cycles0(N1)), !,
+  N3 is N1 + N2,
+  assert(number_of_cycles0(N3)).
+increment_number_of_cycles(N):-
+  assert(number_of_cycles0(N)).
 
 
 %! number_of_cycles(-NumberOfCycles:nonneg) is det.
 % Returns the number of cycles for a specific agent thread.
 
 number_of_cycles(N):-
-  thread_flag(number_of_cycles, N, N), !.
+  number_of_cycles0(N), !.
 number_of_cycles(0).
+
+
+%! reset_number_of_cycles is det.
+
+reset_number_of_cycles:-
+  retractall(number_of_cycles0(_)).
+
+
+
+% Helpers
+
+call_every_n_cycles(N, Goal):-
+  number_of_cycles(M),
+  M > 0,
+  M mod N =:= 0, !,
+  call(Goal, M).
+call_every_n_cycles(_, _).
 
 
 

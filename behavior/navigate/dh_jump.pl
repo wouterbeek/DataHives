@@ -22,6 +22,8 @@ to a location that need not be structurally related to the former.
 
 :- use_module(generics(flag_ext)).
 
+:- use_module(dh_nav(dh_nav)).
+
 :- meta_predicate(dh_jump(2,-,+)).
 
 :- predicate_options(dh_jump/3, 3, [
@@ -43,5 +45,5 @@ to a location that need not be structurally related to the former.
 
 dh_jump(Nav, dir(From,forward,Link,To), Options):-
   call(Nav, rdf(From,Link,To), Options),
-  thread_flag(number_of_steps, N, N + 1).
+  increment_number_of_steps.
 

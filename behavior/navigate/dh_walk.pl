@@ -5,7 +5,6 @@
     dh_walk/3, % :Navigation
                % -DirectedTriple:compound
                % +Options:list(nvpair)
-    number_of_steps/1, % -NumberOfSteps:nonneg
     set_backtrack/1 % ?DirectedTriple:compound
   ]
 ).
@@ -26,9 +25,9 @@ are not instances of walking.
 
 :- use_module(library(semweb/rdf_db)). % Declarations.
 
-:- use_module(generics(flag_ext)).
-
 :- use_module(dh_core(dh_generics)).
+
+:- use_module(dh_nav(dh_nav)).
 
 %! backtrack(?DirectedTriple:compound) is det.
 
@@ -80,7 +79,7 @@ dh_walk(Nav, dir(From,Dir,Link,To), Options):-
     invert_direction(InvDir, Dir),
     assert(backtrack(dir(From,Dir,Link,To)))
   ),
-  thread_flag(number_of_steps, N, N + 1).
+  increment_number_of_steps.
 
 
 %! dh_step(
@@ -122,13 +121,6 @@ dh_step(Nav, dir(From,Direction,Link,To), Options):-
   ->
     Direction = backward
   ).
-
-
-%! number_of_steps(-NumberOfSteps:nonneg) is det.
-
-number_of_steps(N):-
-  thread_flag(number_of_steps, N, N), !.
-number_of_steps(0).
 
 
 %! set_backtrack(?DirectedTriple:compound) is det.
