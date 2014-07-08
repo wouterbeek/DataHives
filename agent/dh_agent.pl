@@ -133,7 +133,7 @@ default_exit(_):-
   retractall(backtrack(_)),
   % @tbd Move to act: decution.
   retractall(deductions(_)),
-  reset_thread_flag(number_of_cycles).
+  dh_cycle:reset_number_of_cycles.
 
 
 %! number_of_agents(-NumberOfAgents:nonneg) is det.
