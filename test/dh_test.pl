@@ -1,8 +1,8 @@
 :- module(
   dh_test,
   [
-    dh_test/2 % +AgentName:atom
-              % +Initialization:or([atom,compound])
+    dh_test_agent/2 % +AgentName:atom
+                    % +Initialization:or([atom,compound])
   ]
 ).
 
@@ -16,11 +16,14 @@ Simple test predicates for running programs in DataHives.
 */
 
 :- use_module(library(semweb/rdf_db)).
+:- use_module(library(uri)).
 
 :- use_module(generics(meta_ext)).
 
 :- use_module(plRdf(rdf_gc)).
+:- use_module(plRdf(rdf_graph_name)).
 :- use_module(plRdf(rdf_script)).
+:- use_module(plRdf_ser(rdf_serial)).
 
 :- use_module(plSparql(sparql_random)).
 
@@ -28,10 +31,13 @@ Simple test predicates for running programs in DataHives.
 
 
 
-%! dh_test(+Agent:atom, +Initialization:or([atom,compound])) is det.
+%! dh_test_agent(+AgentName:atom, +Initialization:or([atom,compound])) is det.
 % Options are passed on to create_agent/3.
 
-dh_test(Agent, graph(Graph)):-
+dh_test_agent(AgentName, file(File)):- !,
+  ensure_file_is_loaded(File, Graph),
+  dh_test_agent(AgentName, graph(Graph)).
+dh_test_agent(AgentName, graph(Graph)):- !,
   (
     var(Graph)
   ->
@@ -40,8 +46,22 @@ dh_test(Agent, graph(Graph)):-
     rdf_graph(Graph)
   ),
   rdf_graph_exclude_from_gc(Graph),
-  create_agent(Agent, graph(Graph)).
-dh_test(Agent, rdf(S,P,O)):-
+  create_agent(AgentName, graph(Graph)).
+dh_test_agent(AgentName, rdf(S,P,O)):-
   default_goal(sparql_random_triple(dbpedia), rdf(S,P,O)),
-  create_agent(Agent, rdf(S,P,O)).
+  create_agent(AgentName, rdf(S,P,O)).
+
+
+
+% Helpers
+
+%! ensure_file_is_loaded(+File:atom, -Graph:atom) is det,
+
+% The file is already loaded. Return its graph.
+ensure_file_is_loaded(File, Graph):-
+  uri_file_name(Uri, File),
+  rdf_graph_property(Graph, source(Uri)), !.
+ensure_file_is_loaded(File, Graph):-
+  file_to_graph_name(File, Graph),
+  rdf_load_any(File, [graph(Graph)]).
 
