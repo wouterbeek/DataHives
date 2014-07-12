@@ -99,7 +99,7 @@
 		\end{itemh}
 
 \newpage
-\section{Agents details \& behaviour}
+\section{Approach}
 	\paragraph{}
 		Our work on the agents is based on this book \cite{Engelbrecht05}.
 		All the agents are implemented in the same way.
@@ -199,25 +199,29 @@
 			\paragraph{}
 			At the end of the thread we also ask for another agent to replace the bad one and keep sustainability in getting information.
 
-\section{Web UI}
-	\paragraph{}
-		This section will present to you what features already implemented in the project are in use.
-		What we have access in this interface to the graph the agents have been crawling.
-		It is a way of visualize the graph that as been created by the agents.
-		It has also been used as a debug tool: if the graph contained only one node with one edge where the agent passed 200 times,
-		that means that there is something fishy about the navigation strategy.
-		Another good example was with the bee algorithm, where a lot of nodes where alone, with no neighbours.
-		In that case, it meant that the communication or the evaluation was wrong (either calling forager or the fitness were bad).
-		\begin{figure}[!h]
-			\hspace{-2cm}
-			\includegraphics[width=1.4\textwidth]{../dh_graph}
-			\captionof{figure}{Sketch of the graph}
-		\end{figure}
+\section{Implementation}
+	\subsection{Developping tools}
+		\subsubsection{Prolog}
+			
+	\subsection{Debug tool}
 		\paragraph{}
-			This Web interface also enable show a table containing all the agents working at the moment on the graph with their status.
-			If one of the agent crash, it shows up and the reason why.
+			This section will present to you what features already implemented in the project are in use.
+			What we have access in this interface to the graph the agents have been crawling.
+			It is a way of visualize the graph that as been created by the agents.
+			It has also been used as a debug tool: if the graph contained only one node with one edge where the agent passed 200 times,
+			that means that there is something fishy about the navigation strategy.
+			Another good example was with the bee algorithm, where a lot of nodes where alone, with no neighbours.
+			In that case, it meant that the communication or the evaluation was wrong (either calling forager or the fitness were bad).
+			\begin{figure}[!h]
+				\hspace{-2cm}
+				\includegraphics[width=1.4\textwidth]{../dh_graph}
+				\captionof{figure}{Sketch of the graph}
+			\end{figure}
+			\paragraph{}
+				This Web interface also enable show a table containing all the agents working at the moment on the graph with their status.
+				If one of the agent crash, it shows up and the reason why.
 
-\section{Difference between the agents}
+\section{Evaluation}
 	\subsection{Quantitative Evaluation}
 		\paragraph{}
 			First, we want to compare the agents over the number of deductions over the time they are running.
@@ -261,7 +265,7 @@
 			\captionof{figure}{Betweenness centrality figures for random agents}
 		\end{figure}
 		
-\section{Main Problems faced}
+\section{Reflection}
 	\subsection{Dead end paths}
 		\paragraph{}
 			The LOD is a big graph on which it is really easy to get lost.
