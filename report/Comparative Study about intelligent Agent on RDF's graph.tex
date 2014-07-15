@@ -4,6 +4,7 @@
 \usepackage[english]{babel}
 \usepackage{enumitem}
 \usepackage{amssymb}
+\usepackage{amsmath}
 \usepackage{color}
 \usepackage[colorlinks,linkcolor=myorange, urlcolor=mygray, citecolor=mygreen, breaklinks, pagebackref]{hyperref}
 \usepackage{graphicx}
@@ -20,7 +21,7 @@
 \title{Comparative Study about intelligent agents on RDF's graphs\\
 	\textit{Bachelor Project in Semantic Web using bee and ant agents}}
 \author{	Baudouin Duthoit\\
-		Student number : 2540566
+		Student number: 2540566
 	\and
 		Wouter Beek
 	\and
@@ -50,7 +51,7 @@
 
 \section{Introduction}
 	%Introduction to RDF / Semantic Web
-	\paragraph{} % Global presentation of RDF : The semantic web \& RDF
+	\paragraph{} % Global presentation of RDF: The semantic web \& RDF
 		Since its creation, the web see its data increasing exponentially.
 		Those data are often unstructured and only human readable.
 		Facing those two problems, scientists invented the semantic web to aggregate data
@@ -66,24 +67,28 @@
 		Then we can send a query and get back some results that are in that database.
 		As for SQL, SPARQL could built some complicated queries.
 		The other common way of getting data is directly get files containing RDF in it (turtle, rdf, n3).
-		The last one is with deferenced data which is a mix of the two :
+		The last one is with deferenced data which is a mix of the two:
 		it ask the server for data about a resource and get a file containing the data.
 	\paragraph{}	%Introduction to other work
 		Last year, another bachelor student worked on a similar project.
 		His goal was to get back information from a search using agents acting like bees (in JavaScript) \cite{Kroes13,Kroes13-2}.
 		We used his code as inspiration for our own bees agents (that are programmed in prolog).
 		That work was based on a paper \cite{Gueret10} about Swarm computing.
-		The project repository is on GitHub\footnote{\url{https://github.com/wouterbeek/DataHives}},
-		it is mostly using SWI-Prolog\footnote{Official web-site: \url{http://swi-prolog.org/}} language.
+		The project repository is on GitHub\footnote{ \url{https://github.com/wouterbeek/DataHives}},
+		it is mostly using SWI-Prolog\footnote{ Official web-site: \url{http://swi-prolog.org/}} language.
 	%	\paragraph{}	%Introduction to DataHives subsection
 	%	\project{Hypothesis}
 		\begin{center}
 			\textit{
-			\textbf{Hypothesis :} In this project, we will compare the graphs induced by the bee walk,
+			\textbf{Hypothesis:} In this project, we will compare the graphs induced by the bee walk,
 				to the one obtain by the random agents and also the one induced by the ant walk.
 				We expect to have a high number of cluster of high betweenness centrality on the bee graph,
 				and a pagerank-like graph for the random agents.
-				The ants have a few components and a high connected one}
+				The ants have a few components\footnote{
+					A subgraph $H$ of $G$ is called a component of $G$ if $H$ is connected
+					and not contained in a connected subgraph of$G$with more vertices or edges.
+					The number of components of $G$ is denoted as $\omega(G)$}
+				and a high connected one}
 		\end{center}
 
 	%	\subsection{Evaluation}
@@ -100,38 +105,84 @@
 
 \newpage
 \section{Approach}
-	\paragraph{}
-		Our work on the agents is based on this book \cite{Engelbrecht05}.
-		All the agents are implemented in the same way.
-		They follow a cycle of events and repeat that cycle.
-		The cycle to follow is :
-	\begin{center}
-		Navigate / Act / Communicate / Evaluate
-	\end{center}
-	\paragraph{}
-		Navigation is the function that decide \textbf{where} the agent should go, depending on where it is already.
-		In facts, this predicate pick a proposition between all the possibilities,
-		those possibilities are all nodes that are neighbours to the one we are on.
-		The graph containing all the neighbours is called the ego-graph of the chosen node,
-		we assume it contains all the incoming and out going neighbours.
-		Unfortunately, those nodes could be literals and then we could get stuck on it because literals are linked to nothing.
-		To avoid that, we have a backtrack function that keeps in mind the last position we were on.
-	\paragraph{}
-		Acting is where the agent do what it is meant for when it is on his own.
-		In a clearer way it means that in this step the agent should work on the nodes it is on.
-		This step is a selfish one where the other agents don't matter at all.
-		The main action is only the deductive action of entailment.
-		The rules for that can be found on the W3C web page\footnote{\url{http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/\#rdfs-entailment}}.
-		We apply all of them to get some more information.
-		Because all agents will have the same action, we decide to describe it here.
-	\paragraph{}
-		Communication is the main point of those agents.
-		We try different kind of communication to see whether one is more efficient than the other
-		and then compare the different kind of agents.
-	\paragraph{}
-		The evaluation part decides whether an agent deserve to continue his job or not.
-		If it is judge inefficient then we throw it away using the exit function given at the creation of the agent.
-		It's here where the fitness function should act.
+	\subsection{Definitions}
+		\paragraph{}
+			Most of the definitions are from "Graph Theory and Complex Networks"\cite{Steen10}
+		\paragraph{Path}
+			Consider a graph $G$.
+			A $(v_0 , v_k)-walk$ in $G$ is an alternating sequence $[ v_0 , e_1 , v_1 , e_2 \dots v_{k-1} , e_k , v_k ]$ of vertices
+			and edges from $G$ with $e_i : <v_{i-1},v_i>$.
+			In a closed walk, $v_0 = v_k$ .
+			A trail is a walk in which all edges are distinct; a path is a trail in which also all vertices are distinct.
+			A cycle is a closed trail in which all vertices except $v_0$ and $v_k$ are distinct.
+		\paragraph{Connected}
+			Two distinct vertices $u$ and $v$ in graph $G$ are connected if there exists a $(u,v) - path$ in $G$.
+			$G$ is connected if all pairs of distinct vertices are connected.
+			A digraph $D$ is strongly connected if there exists a directed path between every pair of distinct vertices from $D$.
+			A digraph is weakly connected if its underlying graph is connected.
+		\paragraph{Clustering coefficient}
+			In the book of Maarten Van Steen it is written :
+			"We can express the existence of communities by means of a clustering coefficient"\cite{Steen10}
+			That gives the semantic meaning of this mathematical calculation below,
+			knowing that $n-v$ is the number of neighbours of $v$
+			and $m_v$ is the number of edges in the subgraph induced by $N(v)$.
+		\begin{align*}
+			cc(v) = \begin{cases}
+				m_v/ \binom{n_v}{2} = \frac{2*m_v}{n_v(n_v-1)} & if \delta(v) \ge 1 \\
+				undefined & otherwise
+			\end{cases}
+		\end{align*}
+		\paragraph{Betweenness centrality}
+			Let$G$be a simple, (strongly) connected graph.
+			Let $S(x,y)$ be the set of shortest paths between two vertices $x,y \in V(G)$,
+			and $S(x,u,y) \subseteq S(x,y)$ the ones that pass through vertex $u \in V (G)$.
+			The betweenness centrality $c_B (u)$ of vertex u is defined as
+		\begin{align*}
+			c_B (u) = \sum \frac{|S(x,u,y)|}{|S(x,y)|}
+		\end{align*}
+	\subsection{An agent?}
+		\paragraph{}
+			Our work on the agents is based on this book \cite{Engelbrecht05}.
+			Let's describe what is an agent.
+			An agent is a small program compute to do intelligence on his own.
+			In our case an agent would do research and entailment,
+			it is also part of a population.
+			It's behaviour is often based on an animal, we will use the bees and the ants for our study.
+		\paragraph{}
+			A population is a set of agents that work together to aim or reach a certain goal.
+			Even if the goal of this paper is to find the difference between the graphs generated by different agents,
+			the population aims to get information from entailments or to search for information.			
+		\paragraph{}
+			All the agents are implemented in the same way.
+			They follow a cycle of events and repeat that cycle.
+			The cycle to follow is:
+		\begin{center}
+			Navigate / Act / Communicate / Evaluate
+		\end{center}
+		\paragraph{}
+			Navigation is the function that decide \textbf{where} the agent should go, depending on where it is already.
+			In facts, this predicate pick a proposition between all the possibilities,
+			those possibilities are all nodes that are neighbours to the one we are on.
+			The graph containing all the neighbours is called the ego-graph of the chosen node,
+			we assume it contains all the incoming and out going neighbours.
+			Unfortunately, those nodes could be literals and then we could get stuck on it because literals are linked to nothing.
+			To avoid that, we have a backtrack function that keeps in mind the last position we were on.
+		\paragraph{}
+			Acting is where the agent do what it is meant for when it is on his own.
+			In a clearer way it means that in this step the agent should work on the nodes it is on.
+			This step is a selfish one where the other agents don't matter at all.
+			The main action is only the deductive action of entailment.
+			The rules for that can be found on the W3C web page\footnote{ \url{http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/\#rdfs-entailment}}.
+			We apply all of them to get some more information.
+			Because all agents will have the same action, we decide to describe it here.
+		\paragraph{}
+			Communication is the main point of those agents.
+			We try different kind of communication to see whether one is more efficient than the other
+			and then compare the different kind of agents.
+		\paragraph{}
+			The evaluation part decides whether an agent deserve to continue his job or not.
+			If it is judge inefficient then we throw it away using the exit function given at the creation of the agent.
+			It's here where the fitness function should act.
 	\subsection{Random Agent}
 		\subsubsection{Navigate}
 			\paragraph{}
@@ -139,6 +190,7 @@
 			It is initialized on a set of available URI where to begin.
 			Then it goes, following "links".
 			Those links are the predicates between 2 nodes of the Linked Open Data (LOD).
+			After his walk, his path is a connected graph of every places he has been.
 		\subsubsection{Communicate}
 			\paragraph{}
 			The communication is not implemented to stick a really basic agent attitude that will serve as reference for efficiency.
@@ -183,13 +235,14 @@
 		\subsubsection{Navigate}
 			\paragraph{}
 			A bee navigates randomly, whatever her role is.
-			It goes to a random place and then another random place, and keep going in doing this.
+			A scout jumps from one place to another one (that could be at the opposite side of the whole graph).
+			However a forager navigates like a random agent: following links.
 			The scouts are wandering around to try to find information.
 			When one succeed, it tells some others (called forager) to come and grab the "pollen" it has found.
 		\subsubsection{Communicate}
 			\paragraph{}
 			Here the communication is really simple.
-			It directly contact the other agent to tell them something : the information is not sustainable, it is not stored somewhere.
+			It directly contact the other agent to tell them something: the information is not sustainable, it is not stored somewhere.
 			The information send is used instantly (it makes it more easy to set up).
 		\subsubsection{Evaluate}
 			\paragraph{}
@@ -202,24 +255,36 @@
 \section{Implementation}
 	\subsection{Developping tools}
 		\subsubsection{Prolog}
-			
+			$Text about prolog found on the net$
+		\subsubsection{Emacs}
+			Emacs for Prolog has been used a lot.
+			The asset of this text editor was to put a semantic text coloration
+			or just simply show within the code if a specific module was necessary or not.
+			It was also used by the debugger, with the same text coloration (useful if you don't want to get lost).			
 	\subsection{Debug tool}
-		\paragraph{}
-			This section will present to you what features already implemented in the project are in use.
-			What we have access in this interface to the graph the agents have been crawling.
-			It is a way of visualize the graph that as been created by the agents.
-			It has also been used as a debug tool: if the graph contained only one node with one edge where the agent passed 200 times,
-			that means that there is something fishy about the navigation strategy.
-			Another good example was with the bee algorithm, where a lot of nodes where alone, with no neighbours.
-			In that case, it meant that the communication or the evaluation was wrong (either calling forager or the fitness were bad).
-			\begin{figure}[!h]
-				\hspace{-2cm}
-				\includegraphics[width=1.4\textwidth]{../dh_graph}
-				\captionof{figure}{Sketch of the graph}
-			\end{figure}
+		\subsubsection{Web UI}
 			\paragraph{}
-				This Web interface also enable show a table containing all the agents working at the moment on the graph with their status.
-				If one of the agent crash, it shows up and the reason why.
+				This section will present to you what features already implemented in the project are in use.
+				What we have access in this interface to the graph the agents have been crawling.
+				It is a way of visualize the graph that as been created by the agents.
+				It has also been used as a debug tool: if the graph contained only one node with one edge where the agent passed 200 times,
+				that means that there is something fishy about the navigation strategy.
+				Another good example was with the bee algorithm, where a lot of nodes where alone, with no neighbours.
+				In that case, it meant that the communication or the evaluation was wrong (either calling forager or the fitness were bad).
+				\begin{figure}[!h]
+					\hspace{-2cm}
+					\includegraphics[width=1.4\textwidth]{../dh_graph}
+					\captionof{figure}{Sketch of the graph}
+				\end{figure}
+				\paragraph{}
+					This Web interface also enable show a table containing all the agents working at the moment
+					on the graph with their status.
+					If one of the agent crash, it shows up and the reason why.
+		\subsubsection{Debugger}
+			\paragraph{}
+				The debugger was one of the main debug tool used.
+				It enable the developer to get step by step into the code.
+				It has been used to find how does the code works, because the project was already quite big when I started working on it.
 
 \section{Evaluation}
 	\subsection{Quantitative Evaluation}
@@ -233,11 +298,23 @@
 		\end{center}
 		\paragraph{}
 			Description of the graph and deductions
+	\subsection{Find the right size graph}
+		\paragraph{}
+			Several options were open for the agents evaluation.
+			First of all, testing the agents on the LOD cloud and then working on the results.
+			This try gave us trouble because finding a random triple on the LOD cloud is really slow,
+			thus, the tests about the bees agents are not feasible (using a random triple for each cycle).
+			In answer to this, taking a dataset from the data laundry was an interesting solution.
+			We tried a data set of size 1,001 triples, another of 1,003,529 triples and the biggest one of around 10,000,000 triples.
+			The first one was too small to execute relevant tests (each time all the graph was totally crawled several times).
+			The biggest one was the second try but gave too few results due to the huge size of it.
+			The last one gave the more encouraging results with a runtime of 30min.
 	\subsection{Graph figures comparison}
 		\paragraph{}
 			We formulate in the hypothesis that the crawled graph must differ between every kind of agents.
-			To prove this, we have been using Gephi
-			\footnote{Here is the software website \url{https://gephi.github.io/}} to dig out some figures of our graphs.
+			To prove this, we have been using Gephi\footnote{
+				Here is the software website \url{https://gephi.github.io/}
+			} to dig out some figures of our graphs.
 			The more representation figures were the betweenness centrality and the clustering coefficient.
 			The work on the graph is based on the content of the class "Networks ans graphs" followed this year,
 			which was referenced on this book \cite{Steen10}.
