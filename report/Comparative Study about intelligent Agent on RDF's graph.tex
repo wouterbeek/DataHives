@@ -14,6 +14,7 @@
 \definecolor{mygrey}{rgb}{0.5,0.5,0.5}
 \definecolor{myorange}{rgb}{0.9,0.5,0}
 \definecolor{mygreen}{rgb}{0.4,0.8,0}
+\setcounter{totalnumber}{5}
 \newenvironment{itemh}[0]{\begin{itemize}[font=\color{mygray} \small]}{\end{itemize}}
 \newenvironment{itemH}[0]{\begin{itemize}[font=\color{mygray} \large]}{\end{itemize}}
 
@@ -293,7 +294,7 @@ Stefan Schlobach
 				that means that there is something fishy about the navigation strategy.
 				Another good example was with the bee algorithm, where a lot of nodes where alone, with no neighbours.
 				In that case, it meant that the communication or the evaluation was wrong (either calling forager or the fitness were bad).
-			\begin{figure}[!h]
+			\begin{figure}[!h]\hspace{2cm}
 				\hspace{-2cm}
 				\includegraphics[width=1.4\textwidth]{../dh_graph}
 				\captionof{figure}{Sketch of the graph}
@@ -378,8 +379,8 @@ Stefan Schlobach
 			The only cases where a component is not created is if the scout is jumping on a node that already exists on one hand,
 			and, on the other hand, when a forager meets a node that have been visited by another agent before
 			(then the 2 components become one).
-		\begin{figure}[!h]
-			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_1_scout}
+		\begin{figure}[!h]\hspace{2cm}
+			\includegraphics[height=6cm]{dh_betweenness_centrality_1_scout}
 		\end{figure}
 		\paragraph{Test with 100 scouts and 10 steps for each}
 			To see if the number of agents is a significant factor, we executed a test with 100 scouts that only jump 10 times.
@@ -390,8 +391,8 @@ Stefan Schlobach
 			thus we get results faster.
 			The number of components is 196, quite close to 211.
 			So the number of agents is not a changing the behaviour of the population, in case of bee agents.
-		\begin{figure}[!h]
-			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_100_scouts}
+		\begin{figure}[!h]\hspace{2cm}
+			\includegraphics[height=6cm]{dh_betweenness_centrality_100_scouts}
 		\end{figure}
 		\paragraph{Test with 1 random agent and 1500 steps}
 			Here, we expect to find a low density graph, and that's what we have: $\rho = 0,004$.
@@ -399,8 +400,8 @@ Stefan Schlobach
 			That's much more than we got on the scouts plot about betweenness centrality.
 			Also, we can notice the small amount of edge nodes (106 over 881).
 			At last but not least, the density is null.
-		\begin{figure}[!h]
-			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_1_random_agent}
+		\begin{figure}[!h]\hspace{2cm}
+			\includegraphics[height=6cm]{dh_betweenness_centrality_1_random_agent}
 			\captionof{figure}{Betweenness centrality figures for random agents}
 		\end{figure}
 		\paragraph{Test with 100 random agents and 150 steps each}
@@ -408,8 +409,8 @@ Stefan Schlobach
 			That means that the 100 agents crossed each other path to form one component in the end
 			(because they started from random nodes).
 			Also, the number of steps/agents does not matter because the results are quite the same with only 1 agent.
-		\begin{figure}[!h]
-			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_100_random_agent}
+		\begin{figure}[!h]\hspace{2cm}
+			\includegraphics[height=6cm]{dh_betweenness_centrality_100_random_agent}
 			\captionof{figure}{Betweenness centrality figures for random agents}
 		\end{figure}
 		\paragraph{Test with 1 ant agent and 1500 steps}
@@ -419,18 +420,20 @@ Stefan Schlobach
 			We could imagine that those nodes are linked to a lot of other nodes and thus enable such quick path between 2 nodes.
 			However, we should have found such a node in the previous try as well.
 			We could suppose that the ant agent as created a main path and then get stuck on it because it gain some importance.
-			The density is not null,
+			The density is of 0.005,
 			so we could may be deduce that the component is more connected than the graph induced by the random agent.
-		\begin{figure}[!h]
-			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_1_ant}
+		\begin{figure}[!h]\hspace{2cm}
+			\includegraphics[height=6cm]{dh_betweenness_centrality_1_ant}
 			\captionof{figure}{Betweenness centrality figures for random agents}
 		\end{figure}
 		\paragraph{Test with 100 ant agents and 30 steps each}
 			As we already saw, the number of agents is not changing that much the results.
 			We can also say that the betweenness centrality of 0,5 was not fortunate because we have it again,
-			of course, t could be bias induced by the dataset, but it would have showed up for the previous agents as well.
-		\begin{figure}[!h]
-			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_100_ants}
+			of course, it could be a bias induced by the dataset,
+			but it would have showed up for the previous tests with different agents as well.
+			The only figure that is changing is the density value (equal to 0.002), but this may be due to the bigger size of the graph.
+		\begin{figure}[!h]\hspace{2cm}
+			\includegraphics[height=6cm]{dh_betweenness_centrality_100_ants}
 			\captionof{figure}{Betweenness centrality figures for random agents}
 		\end{figure}
 		
@@ -488,7 +491,25 @@ Stefan Schlobach
 \section{Conclusion}
 	\subsection{Results}
 		\paragraph{}
-			
+			After several tests over the populations of agents, we lead on conclusions.
+			First of all, about the population size.
+		\paragraph{}
+			Actually it seems that the number of agents is not a significant factor to evaluate a population
+			because we obtained figures that were quite alike independent in the number of agents.
+		\paragraph{}
+			The betweenness centrality value and its repartition over the whole group of nodes for each graph
+			shows a clear difference between the graph we obtained from the different kind of agents.
+			Also, the graph induced by the bee walk showed a high amount of components rather than clusters,
+			as stated in the hypothesis.
+		\paragraph{}
+			The pagerank like behaviour expected of the random agent is not obvious,
+			even if the betweenness centrality shows an exponential curve about the importance of the agents on a shortest path perspective,
+			we don't have the tools to know whether those nodes are important or not from another perspective
+			(a subjective one, for example).
+		\paragraph{}
+			The ant agents showed an interesting structure of a graph with only one component and a betweenness centrality of
+			0.5 for some special nodes.
+			For the next experimentations, we could try to visualise such a graph.
 	\subsection{Thanks}
 		\paragraph{}
 			I would like to thank the VU university from Amsterdam to makes me able to study here for this year.
