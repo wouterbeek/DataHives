@@ -380,31 +380,32 @@ Stefan Schlobach
 				(could be implemented later in the evaluation module).
 				\item Server initialization
 				\begin{itemh}
-					\item start the prolog application ($swipl run.pl$ in the console)
+					\item start the prolog application ($swipl\hspace{1mm} run.pl$ in the console)
 					\item load the test module
 					\item run $evaluation(X,Y).$ where X is the type of agent and Y is the number of it.
 				\end{itemh}
-				\item Check the agents runtime on the web UI
+				\item Check the agents runtime/state on the web UI
 				\item When all the agents are done, export the graph of what they have crawled
-				\item Reset / shut down the server
+				\item Reset/shut down the server
 			\end{itemH}
 		\paragraph{Test with 1 scout and 1000 steps}
 			The graph we got from such a configuration contains 1209 nodes and 998 edges.
-			The plot below is showing the curve of the nodes where the betweenness centrality is higher than 0
+			The plot below is showing the nodes where the betweenness centrality is higher than 0
 			(1120 nodes have a null value for betweenness centrality, they are not represented here for more readability).
-			The null betweenness centrality means that no shortest path go through that specific node,
+			A null betweenness centrality means that no shortest path go through that specific node,
 			in our case, it concerns all the nodes on the edge of the graph which explain such a high value
 			(the $random_jump$ predicate creates a lot of those nodes because it creates a
 			lot of components where the scout may not call the foragers).
 			The clustering coefficient is almost always equal to zero.
 			It means that there are no triangles in the graph.
-			What is surprising is the number of components: the scout is supposed to jump from places to places 1000 times
+			A surprising fact is the number of components: the scout is supposed to jump from places to places 1000 times
 			but create only 211 components.
-			The only cases where a component is not created is if the scout is jumping on a node that already exists on one hand,
-			and, on the other hand, when a forager meets a node that have been visited by another agent before
+			The only cases where a component is not created is if a scout is jumping on a node that already exists on one hand,
+			or on the other hand, when a forager meets a node that have been visited by another agent before
 			(then the 2 components become one).
 		\begin{figure}[!h]\hspace{2cm}
 			\includegraphics[height=6cm]{dh_betweenness_centrality_1_scout}
+			\captionof{figure}{Betweenness centrality figures for 1 scout agent}
 		\end{figure}
 		\paragraph{Test with 100 scouts and 10 steps for each}
 			To see if the number of agents is a significant factor, we executed a test with 100 scouts that only jump 10 times.
@@ -417,16 +418,17 @@ Stefan Schlobach
 			So the number of agents is not a changing the behaviour of the population, in case of bee agents.
 		\begin{figure}[!h]\hspace{2cm}
 			\includegraphics[height=6cm]{dh_betweenness_centrality_100_scouts}
+			\captionof{figure}{Betweenness centrality figures for 100 scout agents}
 		\end{figure}
 		\paragraph{Test with 1 random agent and 1500 steps}
-			Here, we expect to find a low density graph, and that's what we have: $\rho = 0,004$.
+			Here, we expect to find a low density graph, and that's what we have: $\rho = 0,004$ (a complete graph density is equal to 1).
 			The graph below show that over 881 nodes, some are on more than 30\% of all the shortest paths between every nodes.
 			That's much more than we got on the scouts plot about betweenness centrality.
 			Also, we can notice the small amount of edge nodes (106 over 881).
 			At last but not least, the density is null.
 		\begin{figure}[!h]\hspace{2cm}
 			\includegraphics[height=6cm]{dh_betweenness_centrality_1_random_agent}
-			\captionof{figure}{Betweenness centrality figures for random agents}
+			\captionof{figure}{Betweenness centrality figures for 1 random agent}
 		\end{figure}
 		\paragraph{Test with 100 random agents and 150 steps each}
 			Here, we have done 15 000 steps in total and we have only one component.
@@ -435,7 +437,7 @@ Stefan Schlobach
 			Also, the number of steps/agents does not matter because the results are quite the same with only 1 agent.
 		\begin{figure}[!h]\hspace{2cm}
 			\includegraphics[height=6cm]{dh_betweenness_centrality_100_random_agent}
-			\captionof{figure}{Betweenness centrality figures for random agents}
+			\captionof{figure}{Betweenness centrality figures for 100 random agents}
 		\end{figure}
 		\paragraph{Test with 1 ant agent and 1500 steps}
 			The ant agent show some surprising results.
@@ -448,7 +450,7 @@ Stefan Schlobach
 			so we could may be deduce that the component is more connected than the graph induced by the random agent.
 		\begin{figure}[!h]\hspace{2cm}
 			\includegraphics[height=6cm]{dh_betweenness_centrality_1_ant}
-			\captionof{figure}{Betweenness centrality figures for random agents}
+			\captionof{figure}{Betweenness centrality figures for 1 ant agent}
 		\end{figure}
 		\paragraph{Test with 100 ant agents and 30 steps each}
 			As we already saw, the number of agents is not changing that much the results.
@@ -458,7 +460,7 @@ Stefan Schlobach
 			The only figure that is changing is the density value (equal to 0.002), but this may be due to the bigger size of the graph.
 		\begin{figure}[!h]\hspace{2cm}
 			\includegraphics[height=6cm]{dh_betweenness_centrality_100_ants}
-			\captionof{figure}{Betweenness centrality figures for random agents}
+			\captionof{figure}{Betweenness centrality figures for 100 ant agents}
 		\end{figure}
 		
 \section{Reflection}
