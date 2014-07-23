@@ -50,65 +50,69 @@ Stefan Schlobach
 \newpage
 
 \section{Introduction}
-	%Introduction to RDF / Semantic Web
-	\paragraph{} % Global presentation of RDF: The semantic web \& RDF
-		Since its creation, the web see its data increasing exponentially.
-		Those data are often unstructured and only human readable.
-		Facing those two problems, scientists invented the semantic web to aggregate data
-		and make it easy to access for humans and computers.\cite{Grigoris12}
-		Those meta-data are structured in triples that are stored online in a lot of different places in RDF
-		(Resource Description Framework).
-		Each triple is made of a subject, a predicate and an object.
-		We can see it as 2 nodes and an arc (predicate) from the subject to the object, thus we get a directed graph.
-		However, it is getting a little bit more complex because predicates could also be nodes in some cases.
-		an RDF graph $G$ is a triple $\langle V, E, R \rangle$ consisting of a set of vertices $V$, a set of edges $E$,
-		and an incidence function $R$ that maps edges onto pairs of vertices.
-		Notice that an edge according to the latter definition is not an arc,
-		because it is not a pair of vertices but mere associated with such a pair.\footnote{
-			This latter property allows $V$ and $E$ to have a non-empty intersection
-		}
-		Also, there are several ways to store this data online.
-	\paragraph{} % Data format
-		The most common one is to put the data on a database and query it via SPARQL,
-		which is language that look like SQL but for RDF.
-		Then we can send a query and get back some results that are in that database.
-		As for SQL, SPARQL could build some complicated queries.
-		The other common way of getting data is directly get files containing RDF in it
-		(RDF/XML, Turtle, Trig, N-Triples, N-Quads, JSON-LD, RDFa, ...).
-		The last one is with deferenced data which is a mix of the two:
-		it asks the server for data about a resource and get a file containing the data.
-	\paragraph{} %Introduction to other work
-		Last year, another bachelor student worked on a similar project.
-		His goal was to get back information from a search using agents acting like bees (in JavaScript) \cite{Kroes13,Kroes13-2}.
-		We used his code as inspiration for our own bees agents (that are programmed in prolog).
-		That work was based on a paper \cite{Gueret10} about Swarm computing.
-		The project repository is on GitHub\footnote{ \url{https://github.com/wouterbeek/DataHives}},
-		it is mostly using SWI-Prolog\footnote{ Official website: \url{http://swi-prolog.org/}} language.
-	\paragraph{} %Related work
-		As said in the abstract, we already have a code prepared for the bee agents.
-		This code come from a side project form Pepijn Kroes who's been working on it for his Bachelor thesis last year.
-		Our project is also linked to Kathrin Dentler, Christophe Gu\'eret and Stefan Schlobach's work \cite{Gueret10}.
-		A swarm of other bachelor students is also working on Semantic web applications.
-	\begin{center}
-		\textit{
-		\textbf{Hypothesis:} In this project, we will compare the graphs induced by the bee walk,
-		to the ones obtained by the random agents and also the one induced by the ant walk.
-		We expect to have a high number of clusters with high betweenness centrality in the graph induced by the bee walk,
-		and a pagerank-like graph for the random agents.
-		The graphs induced by the walking behaviour of ants are expected to have a few components and a high connected one}
-	\end{center}
+	\subsection{Presentation of the Semantic Web and RDF}
+		%Introduction to RDF / Semantic Web
+		\paragraph{} % Global presentation of RDF: The semantic web \& RDF
+			Since its creation, the web see its data increasing exponentially.
+			Those data are often unstructured and only human readable.
+			Facing those two problems, scientists invented the semantic web to aggregate data
+			and make it easy to access for humans and computers.\cite{Grigoris12}
+			Those meta-data are structured in triples that are stored online in a lot of different places in RDF
+			(Resource Description Framework).
+			Each triple is made of a subject, a predicate and an object.
+			A simple vision of the RDF graph could be to see it as a directed graph where a triple is a set of 2 nodes and an arc
+			(predicate) from the subject to the object, thus we get a directed graph.
+			However, the truth is a little bit more complex because predicates could also be nodes in some cases,
+			and edges could be used several times.
+			An RDF graph $G$ is a triple $\langle V, E, R \rangle$ consisting of a set of vertices $V$, a set of edges $E$,
+			and an incidence function $R$ that maps edges onto pairs of vertices\footnote{
+				Notice that an edge according to the latter definition is not an arc,
+				because it is not a pair of vertices but mere associated with such a pair.
+				This latter property allows $V$ and $E$ to have a non-empty intersection
+			}.
+			Also, there are several ways to store this data online.
+		\paragraph{} % Data format
+			The most common one is to put the data on a database and query it via SPARQL,
+			which is language that look like SQL but for RDF.
+			Then we can send a query and get back some results that are in that database.
+			As for SQL, SPARQL could build some complicated queries.
+			The other common way of getting data is directly get files containing RDF in it
+			(RDF/XML, Turtle, Trig, N-Triples, N-Quads, JSON-LD, RDFa, ...).
+			The last one is with deferenced data which is a mix of the two:
+			it asks the server for data about a resource and get a file containing the data.
+	\subsection{Related work}
+		\paragraph{}
+			The project repository is on GitHub\footnote{ \url{https://github.com/wouterbeek/DataHives}},
+			it is mostly using SWI-Prolog\footnote{ Official website: \url{http://swi-prolog.org/}} language.
+		\paragraph{} %Introduction to other work
+			Last year, another bachelor student worked on a similar project.
+			His goal was to get back information from a search using agents acting like bees (in JavaScript) \cite{Kroes13,Kroes13-2}.
+			We used his code as inspiration for our own bee agents (that are programmed in prolog).
+		\paragraph{} %Related work
+			Our project is also linked to Kathrin Dentler, Christophe Gu\'eret and Stefan Schlobach's work
+			about swarm computing\cite{Gueret10}.
+			A swarm of other bachelor students is also working on Semantic web applications.
+	\subsection{Hypothesis}
+		\begin{center}
+			\textit{
+			In this project, we will compare the graphs induced by the bee walk,
+			to the ones obtained by the random agents and also the one induced by the ant walk.
+			We expect to have a high number of clusters with high betweenness centrality in the graph induced by the bee walk,
+			and a pagerank-like graph for the random agents.
+			The graphs induced by the walking behaviour of ants are expected to have a few components and a high connected one}
+		\end{center}
 
-	% \subsection{Evaluation}
-	\paragraph{Evaluation:}
-		We will verify the hypothesis via different criteria.
-		We'll make them work for a certain time and then compute the betweenness centrality and the clustering coefficient.
-		We will also vary the number of agents to see if there are some big variations or not (saturation ?).
-		Those two methods will be used to compare 3 kinds of agents:
-	\begin{itemh}
-		\item Random (basic)
-		\item Bee (translated from JavaScript)
-		\item Ant (Implemented from scratch)
-	\end{itemh}
+	\subsection{Evaluation}
+		\paragraph{}
+			We will verify the hypothesis via different criteria.
+			We'll make them work for a certain time and then compute the betweenness centrality and the clustering coefficient.
+			We will also vary the number of agents to see if there are some big variations or not (saturation ?).
+			Those two methods will be used to compare 3 kinds of agents:
+		\begin{itemh}
+			\item Random (basic)
+			\item Bee (translated from JavaScript)
+			\item Ant (Implemented from scratch)
+		\end{itemh}
 
 \newpage
 \section{Approach}
@@ -129,17 +133,18 @@ Stefan Schlobach
 		\paragraph{Connected}
 			Two distinct vertices $u$ and $v$ in graph $G$ are connected if there exists a $\langle u, v \rangle - path$ in $G$.
 			$G$ is connected if all pairs of distinct vertices are connected.
-			A digraph $D$ is strongly connected if there exists a directed path between every pair of distinct vertices from $D$.
+			A digraph (directed graph) $D$ is strongly connected if there exists
+			a directed path between every pair of distinct vertices from $D$.
 			A digraph is weakly connected if its underlying graph is connected.
 		\paragraph{Component}
 			A sub-graph $H$ of $G$ is called a component of $G$ if $H$ is connected
-			and not contained in a connected sub-graph of$G$with more vertices or edges.
+			and is not contained in a connected sub-graph of$G$with more vertices or edges.
 			The number of components of $G$ is denoted as $\omega(G)$
 		\paragraph{Clustering coefficient}
 			In the book of Maarten Van Steen it is written :
 			``We can express the existence of communities by means of a clustering coefficient''\cite{Steen10}
 			That gives the semantic meaning of this mathematical calculation below,
-			knowing that $n-v$ is the number of neighbours of $v$
+			knowing that $n_v$ is the number of neighbours of $v$
 			and $m_v$ is the number of edges in the sub-graph induced by $N(v)$.
 		\begin{align*}
 			cc(v) = \begin{cases}
@@ -162,7 +167,7 @@ Stefan Schlobach
 		\paragraph{}
 			Our work on the agents is based on this book \cite{Engelbrecht05}.
 			An agent is a small program computed to do intelligence on his own.
-			In our case an agent would do research and entailment,
+			In our case an agent would do research and/or entailment,
 			it is also part of a population.
 			Its behaviour is often based on an animal, we will use the bees and the ants for our study.
 		\paragraph{}
@@ -179,14 +184,15 @@ Stefan Schlobach
 		\paragraph{}
 			Navigation is the function that decide \textbf{where} the agent should go, depending on where it is already.
 			In facts, this predicate pick a proposition between all the possibilities,
-			those possibilities are all nodes that are neighbours to the one we are on.
+			those possibilities could be, for example, all nodes that are neighbours to the one we are on.
+			The kind of agents define what are the several possibilities.
 			The graph containing all the neighbours is called the ego-graph of the chosen node,
 			we assume it contains all the incoming and out going neighbours.
 			Unfortunately, those nodes could be literals and then we could get stuck on it because literals are linked to nothing.
 			To avoid that, we have a backtrack function that keeps in mind the last position we were on.
 		\paragraph{}
 			Acting is where the agent do what it is meant for when it is on his own.
-			In a clearer way it means that in this step the agent should work on the nodes it is on.
+			In a clearer way it means that in this step the agent should work on the node it is on.
 			This step is a selfish one where the other agents don't matter at all.
 			The main action is only the deductive action of entailment.
 			The rules for that can be found on the W3C web page\footnote{
@@ -200,56 +206,65 @@ Stefan Schlobach
 			and then compare the different kind of agents.
 		\paragraph{}
 			The evaluation part decides whether an agent deserve to continue his job or not.
-			If it is judge inefficient then we throw it away using the exit function given at the creation of the agent.
+			If it is judged inefficient then we throw it away using the exit function given at the creation of the agent.
 			It's here where the fitness function should act.
 	\subsection{Random Agent}
 		\subsubsection{Navigate}
 			\paragraph{}
 				The random agent is implemented to go randomly.
 				It is initialized on a set of available URI where to begin.
+				This set of available URI could be all the possible random URI of dbpedia reachable by the random jump function,
+				as it could be a hand written list of URI's in the code.
 				Then it goes, following ``links''.
 				Those links are the predicates between 2 nodes of the Linked Open Data (LOD).
 				After his walk, his path is a connected graph of every places he has been.
 		\subsubsection{Communicate}
 			\paragraph{}
-				The communication is not implemented to stick a really basic agent attitude that will serve as reference for efficiency.
+				The communication is not implemented to stick to a really basic agent attitude that will serve as reference for efficiency.
 		\subsubsection{Evaluate}
 			\paragraph{}
 				The evaluation function is not set for this kind of agent that keep going whatever happens.
 		\subsubsection{At exit}
 			\paragraph{}
-				This predicate is not used because it is really bound to the evaluation that we discarded.
+				This predicate is not used because it is really bound to the evaluation of the agent (previous step) that we discarded.
 	\subsection{Ant Agent}
 		\subsubsection{Navigate}
 			\paragraph{}
 				The ant navigation is based on randomness but a weighted one.
 				Like an ordinary ant, our agent has to pick a path, depending on the pheromones left on it.
-				On the virtual web of the LOD, the pheromones are coefficient left on edges from one node to the other.
-				If another ant went here before, the path get more value.
+				On the virtual web of the LOD cloud, the pheromones are coefficients left on edges from one node to the another.
+				If another ant went here before, the path get more value, and has more chance to be choosen.
 		\subsubsection{Communicate}
 			\paragraph{}
 				As said above, an ant leave pheromones wisely.
-				The insect is looking for food (= information) outside (= on the LOD).
+				The insect is looking for food (= information) outside (= on the LOD cloud or on a sub-graph of it).
 				When it has found something, it goes back to the anthill and leave pheromones on its way back as well.
 				The main idea here is to up value a path which leads to food and devalue one that leads nowhere (ie dead-end path).
-				To represent this virtually here was our main ideas $c \in \mathbb{R}$:
+				To represent this virtually here was our main ideas with $c \in \mathbb{N}$:
 			\begin{itemh}
 			\item Devalue dead end path, using SPARQL queries to go back and degrade the weight of the path of $c$
 			\item Adding $c$ to all the travelled path for each information deduced
 			\item Adding the agent's current fitness to the current edge
 			\end{itemh}
 			\paragraph{}
-				All those ideas needs to be evaluated and tried to see which one is the more efficient and if we could cross them.
+				All those ideas needs to be tried and evaluated to see which one is the more efficient and if we could cross them.
 		\subsubsection{Evaluate}
 			\paragraph{}
-				The evaluation is where the fitness function enter in the game.
-				For the ants, the fitness function is quantitative,
+				The evaluation is where the fitness function is used.
+				For ants, the fitness function is quantitative,
 				counting the number of triples discovered via deduction and dividing it by the number of steps taken.
 				If that number is bigger than 0.5, the agent can live, otherwise it dies launching the exit function.
 		\subsubsection{At exit}
 			\paragraph{}
 				When the time comes for an agent to kill himself, it is decided that it must launch another agent to replace him.
 				And so, the agent launch another agent that will work to get more information that the previous one if possible.
+			\paragraph{}
+				For the test we've made on ant agents,
+				we decided to let this function empty to let the agent get killed after a certain number of steps,
+				otherwise, the evaluation would have never stop, creating agents after agents.
+				Another asset we could obtain doing so is that we get a maximum number of steps that we could state from the beginning
+				(it enable the possibility of choosing a graph's size).
+				This infinite loop of agent is on purpose because we want this to work without any end.
 	\subsection{Bee Agent}
 		\subsubsection{Navigate}
 			\paragraph{}
@@ -264,13 +279,17 @@ Stefan Schlobach
 				It directly contacts the other agent to tell them something:
 				the information is not sustainable, it is not stored somewhere.
 				The information send is used instantly (it makes it more easy to set up).
+			\paragraph{}
+				In our case, the ``communication'' is not really a communication between agents:
+				it creates the agents that should receive the message to go work next to the discovered node.
 		\subsubsection{Evaluate}
 			\paragraph{}
 				The evaluation is based on the same criteria of the one for the ants but here it triggers an action.
-				If the fitness is big enough we send some foragers helping the scout, but if it is too low ... the agent get killed.
+				If the fitness is big enough we send some foragers helping the scout, but if it is too low \dots the agent get killed.
 		\subsubsection{At exit}
 			\paragraph{}
-				At the end of the thread we also ask for another agent to replace the bad one and keep sustainability in getting information.
+				At the end of the thread it also asks for another agent to replace himself and keep sustainability in getting information.
+				As for the ants, this function is left empty for the evaluation.
 
 \section{Implementation}
 	\subsection{Developing tools}
@@ -284,68 +303,73 @@ Stefan Schlobach
 			The asset of this text editor was to put a semantic text colouration
 			or just simply show within the code if a specific module was necessary or not.
 			It was also used by the debugger, with the same text colouration (useful if you don't want to get lost).
+		\subsubsection{\LaTeX}
+			\LaTeX \hspace{1mm}has been used to write this report in a scientific way.
 	\subsection{Debug tool}
 		\subsubsection{Web UI}
 			\paragraph{}
-				This section will present to you what features already implemented in the project are in use.
+				This section will present what features already implemented in the project are in use.
 				What we have access in this interface to the graph the agents have been crawling.
-				It is a way of visualize the graph that as been created by the agents.
-				It has also been used as a debug tool: if the graph contained only one node with one edge where the agent passed 200 times,
+				It is a way to visualize the graph that as been created by the agents.
+				It has also been used as a debug tool: if the graph contains only one node with one edge where the agent passed 200 times,
 				that means that there is something fishy about the navigation strategy.
 				Another good example was with the bee algorithm, where a lot of nodes where alone, with no neighbours.
 				In that case, it meant that the communication or the evaluation was wrong (either calling forager or the fitness were bad).
-			\begin{figure}[!h]\hspace{2cm}
+			\begin{figure}[!h]
 				\hspace{-2cm}
 				\includegraphics[width=1.4\textwidth]{../dh_graph}
 				\captionof{figure}{Sketch of the graph}
 			\end{figure}
 			\paragraph{}
 				This Web interface also enable show a table containing all the agents working at the moment
-				on the graph with their status.
+				on the graph with their status (running / exited / \dots).
 				If one of the agent crash, it shows up and the reason why.
 		\subsubsection{Debugger}
 			\paragraph{}
 				The debugger was one of the main debug tool used.
 				It enables the developer to get step by step into the code.
-				It has been used to find how does the code works, because the project was already quite big when I started working on it.
+				It has been used to find how does the code works, because the project was already quite big when I started working on it,
+				and also why it didn't work when some new functions were implemented.
 
 \section{Evaluation}
-	\subsection{Quantitative Evaluation}
-		\paragraph{}
-			First, we want to compare the agents over the number of deductions over the time they are running.
-			It is something simple to count and objective, but it may be not relevant (if we look at the semantic part).
-			To be more accurate, we have used 100 agents of each category, and run them for a certain time.
-			Of course, it is running on the same machine to have the same environment as much as possible.
-		\begin{center}
-			\textit{Place for a future graph, comparing agents x = time, y = deductions}
-		\end{center}
-		\paragraph{}
-			Description of the graph and deductions
+%	\subsection{Quantitative Evaluation}
+%		\paragraph{}
+%			First, we want to compare the agents over the number of deductions over the time they are running.
+%			It is something simple to count and objective, but it may be not relevant (if we look at the semantic part).
+%			To be more accurate, we have used 100 agents of each category, and run them for a certain time.
+%			Of course, it is running on the same machine to have the same environment as much as possible.
+%		\begin{center}
+%			\textit{Place for a future graph, comparing agents x = time, y = deductions}
+%		\end{center}
+%		\paragraph{}
+%			Description of the graph and deductions
 	\subsection{Find the right size graph}
 		\paragraph{}
 			Several options were open for the agents' evaluation.
 			First of all, testing the agents on the LOD cloud and then working on the results.
-			This try gave us trouble because finding a random triple for the ``random\_jump'' used by the scout agent)
+			This try gave us trouble because finding a random triple for the ``random\_jump'' used by the scout agent
 			on the LOD cloud is really slow, because the LOD cloud is really big.
 			We need to know all the available triples at the time of the request before choosing one randomly in that list,
 			if a server goes down between 2 steps (between 2 random jumps), we have to refresh that list,
-			thus, the tests about the bees agents are not feasible (using a random triple for each cycle).
+			thus, the tests about the bee agents are not feasible (using a random triple for each cycle).
 			A first solution was to find a random triple from dbpedia using a dictionary.
 			A dictionary containing 40 000 words, we tried to get the equivalent resource
 			(if it didn't exist, we would have picked another one),
-			then we choose a random node linked to that one (multiplying by 100 the diversity) we obtain a ``random'' node from dbpedia.
-			On the other hand, taking a dataset from the data laundry was an interesting solution.
+			then we choose a random node linked to that one (multiplying by 100 the diversity) we obtain a ``random'' node from dbpedia
+			(which some times get down as well).
+			On the other hand, taking a dataset from the data laundry was an interesting solution
+			(we are sure to get a fix data set for all the tests, and the dataset is clean of mistakes).
 			We tried a data set of size 1,001 triples, another of 1,003,529 triples and the biggest one of around 10,000,000 triples.
 			The first one was too small to execute relevant tests (each time all the graph was totally crawled several times).
 			The biggest one was the second try but gave too few results due to the huge size of it.
 			The last one gave the more encouraging results with a runtime of 30min, for all the agents to fulfil their tasks
-			(a total of 10 000 steps for all the agents).
+			(a total of about 10 000 steps for all the agents).
 	\subsection{Graph figures comparison}
 		\paragraph{}
 			We formulate in the hypothesis that the crawled graph must differ between every kind of agents.
 			To prove this, we have been using Gephi\footnote{
 				Here is the software website \url{https://gephi.github.io/}
-			} to dig out some figures of our graphs.
+			} to dig out some figures from our graphs.
 			The more representation figures were the betweenness centrality and the number of components.
 			The work on the graph is based on the content of the class ``Networks ans graphs'' followed this year,
 			which was referenced on this book \cite{Steen10}.\\
