@@ -14,12 +14,11 @@
 \definecolor{mygrey}{rgb}{0.5,0.5,0.5}
 \definecolor{myorange}{rgb}{0.9,0.5,0}
 \definecolor{mygreen}{rgb}{0.4,0.8,0}
-\newenvironment{itemh}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{mygray} \small]}{\end{itemize}}
-\newenvironment{itemH}[0]{\begin{itemize}[label=$\heartsuit$, font=\color{mygray} \large]}{\end{itemize}}
+\newenvironment{itemh}[0]{\begin{itemize}[font=\color{mygray} \small]}{\end{itemize}}
+\newenvironment{itemH}[0]{\begin{itemize}[font=\color{mygray} \large]}{\end{itemize}}
 
 \begin{document}
-\title{Comparative Study about intelligent agents on RDF's graphs\\
-\textit{Bachelor Project in Semantic Web using bee and ant agents}}
+\title{Comparative Study about reasonning agents on RDF graphs using swarm computing}
 \author{Baudouin Duthoit\\
 Student number: 2540566
 \and
@@ -38,9 +37,9 @@ Stefan Schlobach
 	making the reasoning over the graph really complex and the more complex it is,
 	the more we need efficient agents to increase performances.
 	Our goal is to create agents that performs that reasoning base on the ants' behaviour
-	and compare them to the bee agents we already have, created last year by Christophe Guéret.
-	Those agents are coded in JavaScript and perform as a Web application that any client can use,
-	an example of the pre-existing project can be found here \url{http://wouterblog.com/} .
+	and compare them to the bee agents we already have.
+	We'll evaluate those agents empirically with tests on a sub-graph of the LOD.
+	More information at \url{http://wouterblog.com/}.
 }
 
 \newpage
@@ -52,83 +51,98 @@ Stefan Schlobach
 \section{Introduction}
 	%Introduction to RDF / Semantic Web
 	\paragraph{} % Global presentation of RDF: The semantic web \& RDF
-	Since its creation, the web see its data increasing exponentially.
-	Those data are often unstructured and only human readable.
-	Facing those two problems, scientists invented the semantic web to aggregate data
-	and make it easy to access for humans and computers.\cite{Grigoris12}
-	Those meta-data are structured in triples that are stored online in a lot of different places in RDF
-	(Resource Description Framework).
-	Each triple is made of a subject, a predicate and an object.
-	We can see it as 2 nodes and an arc (predicate) from the subject to the object, thus we get an oriented graph.
-	Also, there are several ways to store this data online.
+		Since its creation, the web see its data increasing exponentially.
+		Those data are often unstructured and only human readable.
+		Facing those two problems, scientists invented the semantic web to aggregate data
+		and make it easy to access for humans and computers.\cite{Grigoris12}
+		Those meta-data are structured in triples that are stored online in a lot of different places in RDF
+		(Resource Description Framework).
+		Each triple is made of a subject, a predicate and an object.
+		We can see it as 2 nodes and an arc (predicate) from the subject to the object, thus we get a directed graph.
+		However, it is getting a little bit more complex because predicates could also be nodes in some cases.
+		an RDF graph $G$ is a triple $\langle V, E, R \rangle$ consisting of a set of vertices $V$, a set of edges $E$,
+		and an incidence function $R$ that maps edges onto pairs of vertices.
+		Notice that an edge according to the latter definition is not an arc,
+		because it is not a pair of vertices but mere associated with such a pair.\footnote{
+			This latter property allows $V$ and $E$ to have a non-empty intersection
+		}
+		Also, there are several ways to store this data online.
 	\paragraph{} % Data format
-	The most common one is to put the data on a database and query it via SPARQL,
-	which is language that look like SQL but for RDF.
-	Then we can send a query and get back some results that are in that database.
-	As for SQL, SPARQL could build some complicated queries.
-	The other common way of getting data is directly get files containing RDF in it (turtle, rdf, n3).
-	The last one is with deferenced data which is a mix of the two:
-	it asks the server for data about a resource and get a file containing the data.
+		The most common one is to put the data on a database and query it via SPARQL,
+		which is language that look like SQL but for RDF.
+		Then we can send a query and get back some results that are in that database.
+		As for SQL, SPARQL could build some complicated queries.
+		The other common way of getting data is directly get files containing RDF in it
+		(RDF/XML, Turtle, Trig, N-Triples, N-Quads, JSON-LD, RDFa, ...).
+		The last one is with deferenced data which is a mix of the two:
+		it asks the server for data about a resource and get a file containing the data.
 	\paragraph{} %Introduction to other work
-	Last year, another bachelor student worked on a similar project.
-	His goal was to get back information from a search using agents acting like bees (in JavaScript) \cite{Kroes13,Kroes13-2}.
-	We used his code as inspiration for our own bees agents (that are programmed in prolog).
-	That work was based on a paper \cite{Gueret10} about Swarm computing.
-	The project repository is on GitHub\footnote{ \url{https://github.com/wouterbeek/DataHives}},
-	it is mostly using SWI-Prolog\footnote{ Official website: \url{http://swi-prolog.org/}} language.
-	% \paragraph{} %Introduction to DataHives subsection
-	% \project{Hypothesis}
+		Last year, another bachelor student worked on a similar project.
+		His goal was to get back information from a search using agents acting like bees (in JavaScript) \cite{Kroes13,Kroes13-2}.
+		We used his code as inspiration for our own bees agents (that are programmed in prolog).
+		That work was based on a paper \cite{Gueret10} about Swarm computing.
+		The project repository is on GitHub\footnote{ \url{https://github.com/wouterbeek/DataHives}},
+		it is mostly using SWI-Prolog\footnote{ Official website: \url{http://swi-prolog.org/}} language.
+	\paragraph{} %Related work
+		As said in the abstract, we already have a code prepared for the bee agents.
+		This code come from a side project form Pepijn Kroes who's been working on it for his Bachelor thesis last year.
+		Our project is also linked to Kathrin Dentler, Christophe Gu\'eret and Stefan Schlobach's work \cite{Gueret10}.
+		A swarm of other bachelor students is also working on Semantic web applications.
 	\begin{center}
-	\textit{
-	\textbf{Hypothesis:} In this project, we will compare the graphs induced by the bee walk,
-	to the one obtain by the random agents and also the one induced by the ant walk.
-	We expect to have a high number of cluster of high betweenness centrality on the bee graph,
-	and a pagerank-like graph for the random agents.
-	The ants have a few components and a high connected one}
+		\textit{
+		\textbf{Hypothesis:} In this project, we will compare the graphs induced by the bee walk,
+		to the ones obtained by the random agents and also the one induced by the ant walk.
+		We expect to have a high number of clusters with high betweenness centrality in the graph induced by the bee walk,
+		and a pagerank-like graph for the random agents.
+		The graphs induced by the walking behaviour of ants are expected to have a few components and a high connected one}
 	\end{center}
 
 	% \subsection{Evaluation}
 	\paragraph{Evaluation:}
-	We will verify the hypothesis via different criteria.
-	We'll make them work for a certain time and then compute the betweenness centrality and the clustering coefficient.
-	We will also variate the number of agents to see if there are some big variations or not (saturation ?).
-	Those two methods will be used to compare 3 kinds of agents:
+		We will verify the hypothesis via different criteria.
+		We'll make them work for a certain time and then compute the betweenness centrality and the clustering coefficient.
+		We will also vary the number of agents to see if there are some big variations or not (saturation ?).
+		Those two methods will be used to compare 3 kinds of agents:
 	\begin{itemh}
-	\item Random (basic)
-	\item Bee (translated from JavaScript)
-	\item Ant (Implemented from scratch)
+		\item Random (basic)
+		\item Bee (translated from JavaScript)
+		\item Ant (Implemented from scratch)
 	\end{itemh}
 
 \newpage
 \section{Approach}
+	\paragraph{}
+		In this section, we'll talk about how did we choose to solve the problem that was stated in the introduction.
+		First, we'll give definitions that we'll use latter where we'll present what an agent is.
 	\subsection{Definitions}
 		\paragraph{}
-			Most of the definitions are from "Graph Theory and Complex Networks"\cite{Steen10}
+			Most of the definitions are from ``Graph Theory and Complex Networks''\cite{Steen10}
 		\paragraph{Path}
 			Consider a graph $G$.
-			A $(v_0 , v_k)-walk$ in $G$ is an alternating sequence $[ v_0 , e_1 , v_1 , e_2 \dots v_{k-1} , e_k , v_k ]$ of vertices
-			and edges from $G$ with $e_i : <v_{i-1},v_i>$.
+			A $\langle v_0 , v_k\rangle-walk$ in $G$ is an alternating sequence $\langle v_0 , e_1 , v_1 , e_2 \dots
+			v_{k-1} , e_k , v_k \rangle$ of vertices
+			and edges from $G$ with $e_i : \langle v_{i-1},v_i \rangle$.
 			In a closed walk, $v_0 = v_k$ .
 			A trail is a walk in which all edges are distinct; a path is a trail in which also all vertices are distinct.
 			A cycle is a closed trail in which all vertices except $v_0$ and $v_k$ are distinct.
 		\paragraph{Connected}
-			Two distinct vertices $u$ and $v$ in graph $G$ are connected if there exists a $(u, v) - path$ in $G$.
+			Two distinct vertices $u$ and $v$ in graph $G$ are connected if there exists a $\langle u, v \rangle - path$ in $G$.
 			$G$ is connected if all pairs of distinct vertices are connected.
 			A digraph $D$ is strongly connected if there exists a directed path between every pair of distinct vertices from $D$.
 			A digraph is weakly connected if its underlying graph is connected.
 		\paragraph{Component}
-			A subgraph $H$ of $G$ is called a component of $G$ if $H$ is connected
-			and not contained in a connected subgraph of$G$with more vertices or edges.
+			A sub-graph $H$ of $G$ is called a component of $G$ if $H$ is connected
+			and not contained in a connected sub-graph of$G$with more vertices or edges.
 			The number of components of $G$ is denoted as $\omega(G)$
 		\paragraph{Clustering coefficient}
 			In the book of Maarten Van Steen it is written :
-			"We can express the existence of communities by means of a clustering coefficient"\cite{Steen10}
+			``We can express the existence of communities by means of a clustering coefficient''\cite{Steen10}
 			That gives the semantic meaning of this mathematical calculation below,
 			knowing that $n-v$ is the number of neighbours of $v$
-			and $m_v$ is the number of edges in the subgraph induced by $N(v)$.
+			and $m_v$ is the number of edges in the sub-graph induced by $N(v)$.
 		\begin{align*}
 			cc(v) = \begin{cases}
-				m_v/ \binom{n_v}{2} = \frac{2*m_v}{n_v(n_v-1)} & if \delta(v) \ge 1 \\
+				m_v/ \binom{n_v}{2} = \frac{2*m_v}{n_v(n_v-1)} & \text{if } \delta(v) \ge 1 \\
 				undefined & otherwise
 			\end{cases}
 		\end{align*}
@@ -136,7 +150,7 @@ Stefan Schlobach
 			Let $G$ be a simple, (strongly) connected graph.
 			Let $S(x, y)$ be the set of the shortest paths between two vertices $x, y \in V(G)$,
 			and $S(x, u, y) \subseteq S(x, y)$ the ones that pass through vertex $u \in V (G)$.
-			The betweenness centrality $c_B (u)$ of vertex u is defined as
+			The betweenness centrality $c_B (u)$ of vertex $u$ is defined as
 		\begin{align*}
 			c_B (u) = \sum \frac{|S(x,u,y)|}{|S(x,y)|}
 		\end{align*}
@@ -146,11 +160,10 @@ Stefan Schlobach
 	\subsection{An agent?}
 		\paragraph{}
 			Our work on the agents is based on this book \cite{Engelbrecht05}.
-			Let's describe what is an agent.
 			An agent is a small program computed to do intelligence on his own.
 			In our case an agent would do research and entailment,
 			it is also part of a population.
-			It's behaviour is often based on an animal, we will use the bees and the ants for our study.
+			Its behaviour is often based on an animal, we will use the bees and the ants for our study.
 		\paragraph{}
 			A population is a set of agents that work together to aim or reach a certain goal.
 			Even if the goal of this paper is to find the difference between the graphs generated by different agents,
@@ -193,7 +206,7 @@ Stefan Schlobach
 			\paragraph{}
 				The random agent is implemented to go randomly.
 				It is initialized on a set of available URI where to begin.
-				Then it goes, following "links".
+				Then it goes, following ``links''.
 				Those links are the predicates between 2 nodes of the Linked Open Data (LOD).
 				After his walk, his path is a connected graph of every places he has been.
 		\subsubsection{Communicate}
@@ -243,7 +256,7 @@ Stefan Schlobach
 				A scout jumps from one place to another one (that could be at the opposite side of the whole graph).
 				However, a forager navigates like a random agent: following links.
 				The scouts are wandering around to try to find information.
-				When one succeed, it tells some others (called forager) to come and grab the "pollen" it has found.
+				When one succeed, it tells some others (called forager) to come and grab the ``pollen'' it has found.
 		\subsubsection{Communicate}
 			\paragraph{}
 				Here the communication is really simple.
@@ -311,50 +324,77 @@ Stefan Schlobach
 		\paragraph{}
 			Several options were open for the agents' evaluation.
 			First of all, testing the agents on the LOD cloud and then working on the results.
-			This try gave us trouble because finding a random triple on the LOD cloud is really slow,
+			This try gave us trouble because finding a random triple for the ``random\_jump'' used by the scout agent)
+			on the LOD cloud is really slow, because the LOD cloud is really big.
+			We need to know all the available triples at the time of the request before choosing one randomly in that list,
+			if a server goes down between 2 steps (between 2 random jumps), we have to refresh that list,
 			thus, the tests about the bees agents are not feasible (using a random triple for each cycle).
-			In answer to this, taking a dataset from the data laundry was an interesting solution.
+			A first solution was to find a random triple from dbpedia using a dictionary.
+			A dictionary containing 40 000 words, we tried to get the equivalent resource
+			(if it didn't exist, we would have picked another one),
+			then we choose a random node linked to that one (multiplying by 100 the diversity) we obtain a ``random'' node from dbpedia.
+			On the other hand, taking a dataset from the data laundry was an interesting solution.
 			We tried a data set of size 1,001 triples, another of 1,003,529 triples and the biggest one of around 10,000,000 triples.
 			The first one was too small to execute relevant tests (each time all the graph was totally crawled several times).
 			The biggest one was the second try but gave too few results due to the huge size of it.
-			The last one gave the more encouraging results with a runtime of 30min.
+			The last one gave the more encouraging results with a runtime of 30min, for all the agents to fulfil their tasks
+			(a total of 10 000 steps for all the agents).
 	\subsection{Graph figures comparison}
 		\paragraph{}
 			We formulate in the hypothesis that the crawled graph must differ between every kind of agents.
 			To prove this, we have been using Gephi\footnote{
-			Here is the software website \url{https://gephi.github.io/}
+				Here is the software website \url{https://gephi.github.io/}
 			} to dig out some figures of our graphs.
-			The more representation figures were the betweenness centrality and the clustering coefficient.
-			The work on the graph is based on the content of the class "Networks ans graphs" followed this year,
-			which was referenced on this book \cite{Steen10}.
+			The more representation figures were the betweenness centrality and the number of components.
+			The work on the graph is based on the content of the class ``Networks ans graphs'' followed this year,
+			which was referenced on this book \cite{Steen10}.\\
+		\newline
+			To be more clear about the test, here is the followed protocol:
+			\begin{itemH}
+				\item Changing the number of steps before death for an agent in the code
+				(could be implemented later in the evaluation module).
+				\item Server initialization
+				\begin{itemh}
+					\item start the prolog application ($swipl run.pl$ in the console)
+					\item load the test module
+					\item run $evaluation(X,Y).$ where X is the type of agent and Y is the number of it.
+				\end{itemh}
+				\item Check the agents runtime on the web UI
+				\item When all the agents are done, export the graph of what they have crawled
+				\item Reset / shut down the server
+			\end{itemH}
 		\paragraph{Test with 1 scout and 1000 steps}
 			The graph we got from such a configuration contains 1209 nodes and 998 edges.
-			The plot below is showing the curve of the nodes where the betweenness centrality is higher than 0.
-			1120 nodes have a null value for betweenness centrality, they are not represented here for more readability.
+			The plot below is showing the curve of the nodes where the betweenness centrality is higher than 0
+			(1120 nodes have a null value for betweenness centrality, they are not represented here for more readability).
 			The null betweenness centrality means that no shortest path go through that specific node,
-			In our case, it concerns all the nodes on the edge of the graph which explain such a high value
-			(jumping around creates a lot of those nodes because it creates a lot of components).
+			in our case, it concerns all the nodes on the edge of the graph which explain such a high value
+			(the $random_jump$ predicate creates a lot of those nodes because it creates a
+			lot of components where the scout may not call the foragers).
 			The clustering coefficient is almost always equal to zero.
-			It means that when a scout finds information on a node, the path of the foragers is not crossing the path of the other foragers.
+			It means that there are no triangles in the graph.
 			What is surprising is the number of components: the scout is supposed to jump from places to places 1000 times
 			but create only 211 components.
 			The only cases where a component is not created is if the scout is jumping on a node that already exists on one hand,
-			and when a forager meets a node that have been visited by another scout (then the 2 components become one).
+			and, on the other hand, when a forager meets a node that have been visited by another agent before
+			(then the 2 components become one).
 		\begin{figure}[!h]
 			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_1_scout}
 		\end{figure}
 		\paragraph{Test with 100 scouts and 10 steps for each}
 			To see if the number of agents is a significant factor, we executed a test with 100 scouts that only jump 10 times.
 			The total number of steps stays the same and because the 100 agents are jumping randomly over the graph,
-			we could expect the same results as the one we got with one agent crawling over 1000 nodes.
+			we could expect the same results as the one we got with one agent crawling over 1000 nodes
+			(and that's what we got).
 			The only difference is in the speed of the evaluation because 100 agents are easier to execute in parallel than one,
 			thus we get results faster.
 			The number of components is 196, quite close to 211.
+			So the number of agents is not a changing the behaviour of the population, in case of bee agents.
 		\begin{figure}[!h]
 			\includegraphics[width=1\textwidth]{dh_betweenness_centrality_100_scouts}
 		\end{figure}
 		\paragraph{Test with 1 random agent and 1500 steps}
-			Here, we expect to find a full connected graph that is almost a tree (a cycle may occur, but unlikely).
+			Here, we expect to find a low density graph, and that's what we have: $\rho = 0,004$.
 			The graph below show that over 881 nodes, some are on more than 30\% of all the shortest paths between every nodes.
 			That's much more than we got on the scouts plot about betweenness centrality.
 			Also, we can notice the small amount of edge nodes (106 over 881).
@@ -395,10 +435,15 @@ Stefan Schlobach
 		\end{figure}
 		
 \section{Reflection}
+	\paragraph{}
+		This section introduce what problems have been faced and did we react to them.
+		It is showing some hidden problems that slowed the project or some other more obvious that we solved (or tried to).
 	\subsection{Dead end paths}
 		\paragraph{}
 			The LOD is a big graph on which it is really easy to get lost.
-			Especially in some dead end path, because the graph is oriented and going back is not easy.
+			Especially in some dead end path, because the graph is directed, going back is not easy.
+			In fact, the agent only memorize the last step he has done (to optimize memory usage),
+			because the graph is directed, the links between the nodes are one way only and don't appear on the last link they've been on.
 			We have a backtrack function in case of which we would have arrived on a literal (special case),
 			But this backtrack function is only limited to go one step backward.
 			Storing the whole path would be memory inefficient.
@@ -417,27 +462,33 @@ Stefan Schlobach
 			Sometimes, it is also because the server where we try to grab information from is down.
 			Some of them, like dbpedia have a live version of it which is sometime replacing the other one,
 			so we just try all different access point we know to get data from.
-	\subsection{Difficult tests}
+	\subsection{Difficult tests} %Be more accurate
 		\paragraph{}
-			At the beginning, the agents used to go really often in dead en alley
-			or find information that is not in the right format and crashed.
-			That made the testing quite complicated, because the data we got from those agents was too diverse to be relevant.
+			At the beginning, the ant agents used to go really often in dead end alley
+			or find information that did not follow one of the standardized grammars for RDF serialization and crashed,
+			and after a crash, we launch another ant from another random place on he graph.
+			That made the testing quite complicated, because the data we got from the whole population was too diverse to be relevant.
 			The agents were to often far apart from each other (and the communication was quite useless then).
-		\subsection{Keep as minimum the communication between threads}
+	\subsection{Keep as minimum the communication between threads} %
 		\paragraph{}
 			Even if we want the agents to communicate with each other, it is better if their communication remain light,
 			otherwise, they spend too much time waiting for each other and the efficiency becomes bad.
 			For example, the system we work on don't have a kind of mother-ship that give orders.
 			Each agent is working on his own and has is own independent functions.
+			Also, the agents communicate with each other only is they are told to.
+			Ants are leaving their communication on the trail and thus don't really use a communication system.
+			Bees are creating forager on the spot rather than calling some that would have been working somewhere else.
+			So in the end, the thread communication is not used for our system.
 		\paragraph{}
 			A necessary communication that has been established between threads is a message system to get information about the thread,
 			like the number of steps taken.
+			This system is to take information about the population and is also as light as possible to don't get the mother-ship problem.
 
 \newpage
 \section{Conclusion}
 	\subsection{Results}
 		\paragraph{}
-			???
+			
 	\subsection{Thanks}
 		\paragraph{}
 			I would like to thank the VU university from Amsterdam to makes me able to study here for this year.
