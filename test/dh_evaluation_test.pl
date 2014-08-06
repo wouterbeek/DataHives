@@ -16,10 +16,7 @@ Evaluation / comparison of the different kind of agents
 @version 2014/06-2014/07
 */
 
-:- use_module(plSparql(sparql_random_triple)).
-
-:- use_module(dh_agent(dh_agent)).
-:- use_module(dh_core(dh_population)).
+:- use_module(dh_test(dh_test)).
 
 
 
@@ -27,21 +24,11 @@ Evaluation / comparison of the different kind of agents
 % Starts an evaluation of the agents.
 
 evaluation(Agent, N):-
-gtrace, %DEB
-  sparql_random_triple(dbpedia, Triple),
-  create_agents(N, Agent, Triple),
-  evaluation_loop.
+  gtrace, %DEB
+  absolute_file_name(data('myMediumDB.nt'), File, [access(read)]),
+  forall(
+  	between(1,N,_),
+  	dh_test_agent(Agent, file(File))
+  ).
 
-evaluation_loop:-
-  open('data/data.csv', append, Stream),
-  sleep(500),
-  get_time(T),
-  number_of_deduced_triples(D),
-  write(Stream, T),
-  write(Stream, ';'),
-  write(Stream, D),
-  nl(Stream),
-  format([bg(blue)], '~w', 'InTheFile'),
-  close(Stream),
-  evaluation_loop.
 
