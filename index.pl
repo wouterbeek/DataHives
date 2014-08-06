@@ -1,4 +1,5 @@
 % Index for the DataHives project.
+% File search path `dh` has to set for this.
 
 user:file_search_path(dh_agent, dh(agent)).
 user:file_search_path(dh_beh,   dh(behavior)).

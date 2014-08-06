@@ -11,6 +11,7 @@
     plc-'Prolog-Library-Collection',
     plHtml,
     plSparql,
+    plGraph,
     plRdf,
     plDev,
     plGraphViz,

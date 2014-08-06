@@ -4,7 +4,11 @@
 :- use_module(library(http/http_dispatch)).
 
 :- if(\+ current_module(load_project)).
-  :- ensure_loaded('../debug').
+  :- if(current_prolog_flag(argv, ['--debug'])).
+    :- ensure_loaded('../debug').
+  :- else.
+    :- ensure_loaded('../load').
+  :- endif.
 :- endif.
 
 :- use_module(cliopatria(hooks)).

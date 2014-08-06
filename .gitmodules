@@ -25,3 +25,6 @@
 [submodule "plSparql"]
 	path = plSparql
 	url = https://github.com/wouterbeek/plSparql.git
+[submodule "plGraph"]
+	path = plGraph
+	url = https://github.com/wouterbeek/plGraph.git
