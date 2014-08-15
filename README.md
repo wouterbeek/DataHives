@@ -35,17 +35,20 @@ $ swipl run.pl
 
 The following creates a single agent that randomly traverses the LOD cloud
 using forward links.
+It starts at a triple that is randomly chosen from DBpedia.
 
 ~~~
-?- dh_test(X).
-X = <URL-AT-WHICH-THE-AGENT-STARTED>
+?- dh_test_agent(random, rdf(S,P,O)).
+S = Blank node or IRI
+P = IRI
+O = Blank node or literal or IRI
 ~~~
 
-This can be repeated to add more agents.
-The following adds multiple (e.g., 100) agents at once:
+The above can be repeated to add more random agents.
+The following adds multiple (e.g., 100) random agents at once:
 
 ~~~{.pl}
-?- forall(between(1, 100, _), dh_test(_)).
+?- forall(between(1, 100, _), dh_test(random, rdf(_,_,_))).
 ~~~
 
 ## Navigate-Act-Communicate

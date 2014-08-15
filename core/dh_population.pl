@@ -35,7 +35,9 @@ agent_prefix(agent_).
 
 
 %! agent_thread(+Thread:atom) is semidet.
+% Succeeds if the given thread denotes an agent.
 %! agent_thread(-Thread:atom) is nondet.
+% Enumerates the currently running threads that denote agents.
 
 agent_thread(Thread):-
   agent_prefix(Prefix),

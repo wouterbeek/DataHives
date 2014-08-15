@@ -25,9 +25,9 @@ Defines the scout bee agent for use in DataHives.
 :- dynamic(dh:agent_definition/2).
 :- multifile(dh:agent_definition/2).
    dh:agent_definition(scout, [
-     dh_random_jump-'Jump to random locations in the LOD cloud time and again.',
-     search_action(instance_of(foaf:'Person'), search_results)-'Search for instances of foaf:Person.',
-     spawn_foragers(1, 10)-'Communicate to the pool of foragers whether something has been found or not.',
+     dh_random_jump-"Jump to random locations in the LOD cloud time and again.",
+     search_action(instance_of(foaf:'Person'), search_results)-"Search for instances of foaf:Person.",
+     spawn_foragers(1, 10)-"Communicate to the pool of foragers whether something has been found or not.",
      no_evaluation,
      create_agent(scout)
    ]).

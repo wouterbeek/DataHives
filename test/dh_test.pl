@@ -1,7 +1,7 @@
 :- module(
   dh_test,
   [
-    dh_test_agent/2 % +AgentName:atom
+    dh_test_agent/2 % +Kind:atom
                     % +Initialization:or([atom,compound])
   ]
 ).
@@ -31,13 +31,13 @@ Simple test predicates for running programs in DataHives.
 
 
 
-%! dh_test_agent(+AgentName:atom, +Initialization:or([atom,compound])) is det.
+%! dh_test_agent(+Kind:atom, +Initialization:or([atom,compound])) is det.
 % Options are passed on to create_agent/3.
 
-dh_test_agent(AgentName, file(File)):- !,
+dh_test_agent(Kind, file(File)):- !,
   ensure_file_is_loaded(File, Graph),
-  dh_test_agent(AgentName, graph(Graph)).
-dh_test_agent(AgentName, graph(Graph)):- !,
+  dh_test_agent(Kind, graph(Graph)).
+dh_test_agent(Kind, graph(Graph)):- !,
   (
     var(Graph)
   ->
@@ -46,10 +46,10 @@ dh_test_agent(AgentName, graph(Graph)):- !,
     rdf_graph(Graph)
   ),
   rdf_graph_exclude_from_gc(Graph),
-  create_agent(AgentName, graph(Graph)).
-dh_test_agent(AgentName, rdf(S,P,O)):-
+  create_agent(Kind, graph(Graph)).
+dh_test_agent(Kind, rdf(S,P,O)):-
   default_goal(sparql_random_triple(dbpedia), rdf(S,P,O)),
-  create_agent(AgentName, rdf(S,P,O)).
+  create_agent(Kind, rdf(S,P,O)).
 
 
 
