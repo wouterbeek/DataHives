@@ -3,8 +3,8 @@
   [
     directed_triple/2, % ?DirectedTriple:compound
                        % ?Triple:compound
-    direction_translation/2, % ?Direction1:oneof([backward,forward])
-                             % ?Direction2:oneof([left,right])
+    direction/2, % +DirectedTriple:compound
+                 % +Direction:oneof([backward,forward])
     ensure_triple/2, % +DirectedTripleOrTriple:compound
                      % -Triple:compound
     forward_directed_triple/2, % +DirectedTriple:compound
@@ -21,7 +21,7 @@
 Generic predicates that are used in DataHives.
 
 @author Wouter Beek
-@version 2014/06
+@version 2014/06, 2014/08
 */
 
 
@@ -43,21 +43,10 @@ directed_triple0(dir(S,forward,P,O), rdf(S,P,O)).
 directed_triple0(dir(O,backward,P,S), rdf(S,P,O)).
 
 
-%! direction_translation(
-%!   +Direction:oneof([backward,forward]),
-%!   +Direction2:oneof([left,right])
-%! ) is semidet.
-%! direction_translation(
-%!   +Direction:oneof([backward,forward]),
-%!   -Direction2:oneof([left,right])
-%! ) is det.
-%! direction_translation(
-%!   -Direction:oneof([backward,forward]),
-%!   +Direction2:oneof([left,right])
-%! ) is det.
+%! direction(+DirectedTriple:compound, +Direction) is semidet.
+%! direction(+DirectedTriple:compound, -Direction) is det.
 
-direction_translation(backward, left).
-direction_translation(forward, right).
+direction(dir(_,Direction,_,_), Direction).
 
 
 %! ensure_triple(

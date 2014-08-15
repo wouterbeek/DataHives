@@ -9,11 +9,10 @@
 :- load_project([
     lodCache,
     plc-'Prolog-Library-Collection',
-    plHtml,
-    plSparql,
     plGraph,
     plRdf,
-    plDev,
+    plHtml,
+    plSparql,
     plGraphViz,
     plTabular
 ]).

@@ -11,7 +11,7 @@
 Action predicates for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/02, 2014/04, 2014/06
+@version 2014/02, 2014/04, 2014/06, 2014/08
 */
 
 :- use_module(library(debug)).
@@ -27,11 +27,21 @@ Action predicates for agents in DataHives.
 
 
 
-default_action(dir(From,Dir,Link,To)):-
-  direction_translation(Dir, Orient),
-  dcg_with_output_to(atom(Arrow), arrow(Orient, 4)),
-  dcg_with_output_to(atom(Triple), rdf_triple_name(From, Link, To)),
-  debug(dh, '~w\t~w', [Arrow,Triple]).
+default_action(DirectedTriple):-
+  % The direction label.
+  direction(DirectedTriple, Direction),
+  direction_translation(Direction, Orientation),
+  dcg_with_output_to(atom(Arrow), arrow(Orientation, 4)),
+  
+  % The triple label.
+  directed_triple(DirectedTriple, Triple),
+  dcg_with_output_to(atom(TripleName), rdf_triple_name(Triple)),
+  
+  % Emit the direction+triple labels.
+  debug(dh, '~w\t~w', [Arrow,TripleName]).
+
+direction_translation(backward, left).
+direction_translation(forward, right).
 
 
 no_action(dir(_,_,_,_)).

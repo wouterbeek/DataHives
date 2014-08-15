@@ -66,7 +66,7 @@ rdf_assert_entailment(rdf(U1,V,W)):-
   (
     rdf_is_literal(U1)
   ->
-    r2b(user, U1, U2)
+    term_to_bnode(user, U1, U2)
   ;
     U2 = U1
   ),
@@ -100,7 +100,7 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
   % to replace literals with their blank node proxy.
   (
     rdf_is_literal(U1),
-    has_r2b(user, U1, U2)
+    term_to_bnode(user, U1, U2)
   ->
     true
   ;

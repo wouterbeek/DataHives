@@ -26,7 +26,7 @@ Support for random RDF triples coming from DBpedia.
 :- use_module(nlp(dictionary)).
 :- use_module(xml(xml_namespace)).
 
-:- use_module(plRdf(rdf_namespaces)). % Namespace declarations.
+:- use_module(plRdf(rdf_prefixes)). % Namespace declarations.
 
 :- use_module(lodCache(lod_cache_egograph)).
 
