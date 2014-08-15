@@ -91,7 +91,7 @@ dh_lit_tag(_Request):-
     Rows
   ),
   reply_html_page(
-    app_style,
+    plServer_style,
     title('DataHives - Language tags'),
     \rdf_html_table(
       [header_column(true),header_row(true),location(dh_literal_tag)],

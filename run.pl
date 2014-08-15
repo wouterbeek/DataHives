@@ -36,7 +36,7 @@
    user:web_module('plTabular', rdf_tabular).
 
 rdf_tabular(Request):-
-  rdf_tabular(Request, app_style).
+  rdf_tabular(Request, plServer_style).
 
 :- html_resource(plTabular, [requires([css('plTabular.css')]),virtual(true)]).
 
@@ -65,7 +65,7 @@ user:web_module('DH Agent', dh_web_agent).
 :- http_handler(dh_web(agent), dh_web_agent, []).
 
 dh_web_agent(Request):-
-  dh_web_agent(Request, app_style).
+  dh_web_agent(Request, plServer_style).
 
 
 % DataHives: Graph.
@@ -77,5 +77,5 @@ user:web_module('DH Graph', dh_web_graph).
 :- http_handler(dh_web(graph), dh_web_graph, []).
 
 dh_web_graph(Request):-
-  dh_web_graph(Request, app_style).
+  dh_web_graph(Request, plServer_style).
 

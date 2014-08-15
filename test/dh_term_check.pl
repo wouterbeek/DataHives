@@ -56,7 +56,7 @@ suspicious_terms(Terms):-
 suspicious_terms_web(_Request):-
   suspicious_terms(Terms),
   reply_html_page(
-    app_style,
+    plServer_style,
     title('DataHives - Term check'),
     html(
       \rdf_html_table(

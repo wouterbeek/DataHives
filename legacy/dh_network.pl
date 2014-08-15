@@ -195,7 +195,7 @@ connected_hives(_Request):-
   ],
   gif_to_svg_dom(graph(Vs,Es,G_Attrs), SvgDom, [method(sfdp)]),
   reply_html_page(
-    app_style,
+    plServer_style,
     title('DataHives - Network'),
     html([
       \rdf_html_table(

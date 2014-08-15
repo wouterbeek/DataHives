@@ -71,7 +71,7 @@ top_triples_web(_Request, N):-
     Rows
   ),
   reply_html_page(
-    app_style,
+    plServer_style,
     title('DataHives - TripleCount'),
     html(
       \rdf_html_table(
