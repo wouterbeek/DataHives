@@ -1,34 +1,35 @@
-# To do list
+TODO
+====
 
-## Caption
 
-- already done
-@ work in progress
-+ to be add
+Action
+------
 
-## Nav :
-  - Pick a random link
-  @ Pick a link based on weighted random
-    + Discards to high pheromon nodes (cf Template)
-    + Discards hubs ?
-    + Find a way to discard irelevant nodes (heuristic)
 
-## Act :
-  - Display path
-  - Apply http://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#rdfs-entailment to find some more triples
+Navigation
+----------
 
-## Com :
-  + Leave pheromons
-    + Depending on the relevance of the path (based on found information ?)
-      + Closeness to a certain node (start node ?)
-        + Distance
-        + Number of paths between them (too expensive ?)
-        + Language label (and other labels)
-      + Importance of a node
-        + How many in-going / out-going links
-        + Seens a lot or not
-  - Play with bactrack function to optimize efficiency
-    - single alley predicate
-    - rebirth of a dead agent.
-    - devaluation with death of an agent
+
+Cleanup
+-------
+
+  [ ] Clean up legacy modules.
+  [ ] Update most of the test modules.
+      These are mostly specific configurations of
+      populations / collections of agents.
+      Maybe build an architecture for defining and running
+      population specifications?
+
+
+Communication
+-------------
+
+  [ ] Ants leave pheromons.
+
+
+Visualization
+-------------
+
+  [ ] Display the paths of agents in the GraphViz-generated SVG,
+      using a different color for each agent.
 

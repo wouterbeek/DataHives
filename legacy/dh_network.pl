@@ -37,10 +37,11 @@
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(dcg(dcg_generic)).
 :- use_module(generics(db_ext)).
 :- use_module(generics(list_ext)).
 :- use_module(xml(xml_dom)).
+
+:- use_module(plDcg(dcg_generic)).
 
 :- use_module(plHtml(html_table)).
 
@@ -56,7 +57,9 @@
 
 :- use_module(plRdfDev(rdf_html_table)).
 
-http:location(dh, root(dh), []).
+:- dynamic(http:location/3).
+:- multifile(http:location/3).
+   http:location(dh, root(dh), []).
 :- http_handler(dh(connected_hives), connected_hives, []).
 
 user:web_module('DH Network', connected_hives).

@@ -69,7 +69,7 @@ forward_directed_triple(
   dir(From,backward,Link,To),
   dir(To,forward,Link,From)
 ):- !.
-forward_directed_triple(DirTriple, DirTriple).
+  forward_directed_triple(DirTriple, DirTriple).
 
 
 %! invert_directed_triple(

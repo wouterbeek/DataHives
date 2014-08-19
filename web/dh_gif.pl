@@ -23,12 +23,13 @@ using the Graph Interchange Format.
 :- use_module(library(predicate_options)). % Declarations.
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(dcg(dcg_generic)).
 :- use_module(generics(list_ext)).
 :- use_module(generics(typecheck)).
 :- use_module(generics(uri_ext)).
 :- use_module(http(http_download)).
 :- use_module(os(image_ext)).
+
+:- use_module(plDcg(dcg_generic)).
 
 :- use_module(plRdf(rdf_name)). % Meta-DCG.
 

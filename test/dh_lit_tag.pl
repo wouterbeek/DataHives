@@ -19,8 +19,9 @@ Count languages and datatypes used in literals.
 :- use_module(library(lists)).
 :- use_module(library(pairs)).
 
-:- use_module(dcg(dcg_generic)).
 :- use_module(generics(meta_ext)).
+
+:- use_module(plDcg(dcg_generic)).
 
 :- use_module(plHtml(html_table)).
 

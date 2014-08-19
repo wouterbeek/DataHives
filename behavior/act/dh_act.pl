@@ -16,8 +16,8 @@ Action predicates for agents in DataHives.
 
 :- use_module(library(debug)).
 
-:- use_module(dcg(dcg_content)).
-:- use_module(dcg(dcg_generic)).
+:- use_module(plDcg(dcg_content)).
+:- use_module(plDcg(dcg_generic)).
 
 :- use_module(plRdf(rdf_name)).
 

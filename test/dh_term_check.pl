@@ -26,7 +26,10 @@ Program that checks RDF terms and that runs on the DataHives architecture.
 
 :- use_module(plRdfDev(rdf_html_table)).
 
-http:location(dh, root(dh), []).
+:- dynamic(http:location/3).
+:- multifile(http:location/3).
+   http:location(dh, root(dh), []).
+
 :- http_handler(dh(termcheck), suspicious_terms_web, []).
 
 user:web_module('DH TermCheck', suspicious_terms_web).

@@ -26,7 +26,6 @@ are not instances of walking.
 :- use_module(library(semweb/rdf_db)). % Declarations.
 
 :- use_module(dh_core(dh_generics)).
-
 :- use_module(dh_nav(dh_nav)).
 
 %! backtrack(?DirectedTriple:compound) is det.
