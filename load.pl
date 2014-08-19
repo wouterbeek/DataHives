@@ -7,14 +7,14 @@
 
 :- use_module(load_project).
 :- load_project([
-    lodCache,
-    plc-'Prolog-Library-Collection',
-    plGraph,
-    plRdf,
-    plHtml,
-    plSparql,
-    plGraphViz,
-    plTabular
+     plc-'Prolog-Library-Collection',
+     lodCache,
+     plGraph,
+     plRdf,
+     plHtml,
+     plSparql,
+     plGraphViz,
+     plTabular
 ]).
 
 % Load the agent definitions.
