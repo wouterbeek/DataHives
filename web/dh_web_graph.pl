@@ -14,19 +14,11 @@
 
 :- use_module(library(http/html_head)).
 :- use_module(library(http/html_write)).
-:- use_module(library(http/http_dispatch)).
 
-:- use_module(generics(list_ext)).
 :- use_module(xml(xml_dom)).
-
-:- use_module(plHtml(html_pl_term)).
-
-:- use_module(plTabular(rdf_html_table)).
-:- use_module(plTabular(rdf_tabular)).
 
 :- use_module(plGraphViz(gv_file)).
 
-:- use_module(dh_com(dh_com)).
 :- use_module(dh_web(dh_gif)).
 
 :- html_resource(css('gv_interactive.css'), []).
@@ -55,4 +47,11 @@ dh_web_graph_body -->
     gif_to_svg_dom(Gif, SvgDom, [method(dot)])
   },
   html(\xml_dom_as_atom(SvgDom)).
+
+
+
+
+
+
+
 
