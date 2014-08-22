@@ -108,7 +108,7 @@ dh_step(_, Resource, _, _):-
 % Remote LOD lookup: IRI.
 dh_step(TripleSelection, Resource, Triple, Options):-
   % First we assert all triples that describe the given resource
-  % (i.e., the depth-1 description or copmplete ego-graph).
+  % (i.e., the depth-1 description or complete ego-graph).
   lod_cache_egograph(Resource, Triples, Options),
   
   % Then we pick one of those triples according to some method.

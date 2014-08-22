@@ -131,8 +131,7 @@ call_every_n_cycles(_, _).
 :- multifile(prolog:message//1).
 
 print_number_of_cycles(N):-
-%  gtrace, %DEB
-  thread_exit(done),
+  %gtrace, %DEB
   print_message(informational, number_of_cycles(N)).
 
 prolog:message(number_of_cycles(N)) -->
