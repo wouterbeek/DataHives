@@ -64,7 +64,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   % CHOICEPOINT.
   repeat,
   call_every_n_cycles(100, print_number_of_cycles),
-
+  
   % Navigate.
   call(Nav, dir(From,Dir,Link,To), Options),
 
