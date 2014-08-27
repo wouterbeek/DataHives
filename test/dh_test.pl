@@ -25,7 +25,7 @@ Simple test predicates for running programs in DataHives.
 :- use_module(plRdf(rdf_script)).
 :- use_module(plRdf_ser(rdf_serial)).
 
-:- use_module(plSparql(sparql_random)).
+:- use_module(plSparql_query(sparql_query_random)).
 
 :- use_module(dh_agent(dh_agent)).
 
@@ -48,7 +48,7 @@ dh_test_agent(Kind, graph(Graph)):- !,
   rdf_graph_exclude_from_gc(Graph),
   create_agent(Kind, graph(Graph)).
 dh_test_agent(Kind, rdf(S,P,O)):-
-  default_goal(sparql_random_triple(dbpedia), rdf(S,P,O)),
+  default_goal(sparql_query_random_triple(dbpedia), rdf(S,P,O)),
   create_agent(Kind, rdf(S,P,O)).
 
 

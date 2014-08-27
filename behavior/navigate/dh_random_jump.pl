@@ -17,7 +17,7 @@
 
 :- use_module(plRdf(rdf_random)).
 
-:- use_module(plSparql(sparql_random)).
+:- use_module(plSparql_query(sparql_query_random)).
 
 :- use_module(dh_nav(dh_jump)).
 
@@ -40,5 +40,5 @@ dh_random_jump_triple(Triple, Options):-
 % The randomly chosen triples must come from the LOD cloud.
 % For convenience, we take a random triple from DBpedia instead.
 dh_random_jump_triple(Triple, _):-
-  sparql_random_triple(dbpedia, Triple).
+  sparql_query_random_triple(dbpedia, Triple).
 
