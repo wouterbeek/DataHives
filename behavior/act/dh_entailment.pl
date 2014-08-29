@@ -1,10 +1,11 @@
 :- module(
   dh_entailment,
   [
-    deductions/1, % ?Deductions:nonneg
     deductive_action/1, % +DirectedTriple:compound
+    deductive_exit/1, % +Initialization:compound
     evaluate_entailment/0,
-    increment_deductions/1
+% Statistics
+    dh_agent_deductions/1 % ?NumberOfDeductions:nonneg
   ]
 ).
 
@@ -13,7 +14,7 @@
 DataHives agents that implement RDFS 1.1 entailment.
 
 @author Wouter Beek
-@version 2014/06-2014/07
+@version 2014/06-2014/08
 */
 
 :- use_module(library(semweb/rdf_db)).
@@ -25,9 +26,9 @@ DataHives agents that implement RDFS 1.1 entailment.
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_generics)).
 
-%! deductions(?Deductions:nonneg) is nondet.
+%! number_of_deductions(?Deductions:nonneg) is nondet.
 
-:- thread_local(deductions/1).
+:- thread_local(number_of_deductions/1).
 
 
 
@@ -41,9 +42,16 @@ deductive_action(DirTriple):-
   ).
 
 
+%! deductive_exit(+Initialization:compound) is det.
+% @tbd Test of agent definition-specific exit conditions.
+
+deductive_exit(Init):-
+  default_exit(Init).
+
+
 evaluate_entailment:-
-  deductions(Deductions),
-  number_of_cycles(Lifetime),
+  number_of_deductions(Deductions),
+  dh_agent_cycles(Lifetime),
   Fitness is Deductions / Lifetime,
   (
     Fitness < 0.5
@@ -111,6 +119,16 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
   \+ rdf(U2, V, W).
 
 
+
+% Statistics
+
+%! dh_agent_deductions(-NumberOfDeductions:nonneg) is det.
+
+dh_agent_deductions(N):-
+  number_of_deductions(N), !.
+dh_agent_deductions(0).
+
+
 %! increment_deductions is det.
 % Increments the number of deductions produced by an agent.
 
@@ -119,12 +137,19 @@ increment_deductions:-
 
 increment_deductions(N):-
   (
-    retract(deductions(N1)), !
+    retract(number_of_deductions(N1)), !
   ;
     N1 = 0
   ),
   N2 is N1 + N,
-  assert(deductions(N2)).
+  assert(number_of_deductions(N2)).
+
+
+%! reset_number_of_deductions is det.
+
+reset_number_of_deductions:-
+  retractall(number_of_deductions(_)),
+  assert(number_of_deductions(0)).
 
 
 

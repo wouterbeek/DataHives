@@ -21,7 +21,7 @@ has not been exceeded yet.
 %! aging(+MaxAge:positive_integer) is det.
 
 aging(MaxAge):-
-  number_of_cycles(Age),
+  dh_agent_cycles(Age),
   (
     Age == MaxAge
   ->

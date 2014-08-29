@@ -4,7 +4,8 @@
     dh_cycle/3, % +Predicates:list(atom)
                 % +InitialTriple:compound
                 % +Options:list(nvpair)
-    number_of_cycles/1 % -Cycles:nonneg
+% Statistics
+    dh_agent_cycles/1 % -NumberOfCycles:nonneg
   ]
 ).
 
@@ -13,7 +14,7 @@
 The navigate-act-communicate cycle for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/04-2014/07
+@version 2014/04-2014/08
 */
 
 :- use_module(generics(flag_ext)).
@@ -25,7 +26,7 @@ The navigate-act-communicate cycle for agents in DataHives.
 
 :- meta_predicate(call_every_n_cycles(+,1)).
 
-:- thread_local(number_of_cycles0/1).
+:- thread_local(number_of_cycles/1).
 
 
 
@@ -85,6 +86,28 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   fail.
 
 
+
+% Helpers
+
+call_every_n_cycles(N, Goal):-
+  dh_agent_cycles(M),
+  M > 0,
+  M mod N =:= 0, !,
+  call(Goal, M).
+call_every_n_cycles(_, _).
+
+
+
+% Statistics
+
+%! dh_agent_cycles(-NumberOfCycles:nonneg) is det.
+% Returns the number of cycles for a specific agent thread.
+
+dh_agent_cycles(N):-
+  number_of_cycles(N), !.
+dh_agent_cycles(0).
+
+
 %! increment_number_of_cycles is det.
 
 increment_number_of_cycles:-
@@ -93,36 +116,17 @@ increment_number_of_cycles:-
 %! increment_number_of_cycles(+Increment:integer) is det.
 
 increment_number_of_cycles(N2):-
-  retract(number_of_cycles0(N1)), !,
+  retract(number_of_cycles(N1)), !,
   N3 is N1 + N2,
-  assert(number_of_cycles0(N3)).
+  assert(number_of_cycles(N3)).
 increment_number_of_cycles(N):-
-  assert(number_of_cycles0(N)).
-
-
-%! number_of_cycles(-NumberOfCycles:nonneg) is det.
-% Returns the number of cycles for a specific agent thread.
-
-number_of_cycles(N):-
-  number_of_cycles0(N), !.
-number_of_cycles(0).
+  assert(number_of_cycles(N)).
 
 
 %! reset_number_of_cycles is det.
 
 reset_number_of_cycles:-
-  retractall(number_of_cycles0(_)).
-
-
-
-% Helpers
-
-call_every_n_cycles(N, Goal):-
-  number_of_cycles(M),
-  M > 0,
-  M mod N =:= 0, !,
-  call(Goal, M).
-call_every_n_cycles(_, _).
+  retractall(number_of_cycles(_)).
 
 
 
@@ -132,8 +136,8 @@ call_every_n_cycles(_, _).
 
 print_number_of_cycles(N):-
   %gtrace, %DEB
-  print_message(informational, number_of_cycles(N)).
+  print_message(informational, dh_agent_cycles(N)).
 
-prolog:message(number_of_cycles(N)) -->
+prolog:message(dh_agent_cycles(N)) -->
   ['~D cycles.'-[N]].
 

@@ -8,7 +8,8 @@
                      % +Agent:atom
                      % +Initialization:compound
     default_exit/1, % +Initialization:compound
-    number_of_agents/1 % -NumberOfAgents:nonneg
+% Statistics
+    dh_agent_creation/1 % -Creation:integer
   ]
 ).
 
@@ -43,6 +44,10 @@ which is used for storing beliefs the agent has.
 
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_population)).
+
+%! dh_agent_creation(-DateTime:integer) is nondet.
+
+:- thread_local(dh_agent_creation/1).
 
 :- predicate_options(create_agent/4, 4, [
      pass_to(dh_cycle/3, 3)
@@ -164,8 +169,15 @@ create_agent(Preds, Exit, rdf(S,P,O)):-
 %! ) is det.
 
 create_agent(Preds, ExitPred, InitialTriple, Options):-
+  % Construct the agent thread name.
   flag(number_of_agents, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
+  
+  % Store the creation datetime.
+  get_time(Creation),
+  assert(dh_agent_creation(Creation)),
+  
+  % Start the thread.
   thread_create(
     dh_cycle(Preds, InitialTriple, Options),
     _,
@@ -190,16 +202,7 @@ create_agents(N, Agent, Initialization):-
 
 default_exit(_):-
   % @tbd Move to navigate: walk.
-  retractall(backtrack(_)),
-  % @tbd Move to act: decution.
-  retractall(deductions(_)),
-  dh_cycle:reset_number_of_cycles.
-
-
-%! number_of_agents(-NumberOfAgents:nonneg) is det.
-
-number_of_agents(N):-
-  flag(number_of_agents, N, N).
+  retractall(backtrack(_)).
 
 
 

@@ -3,6 +3,7 @@
   [
     agent_thread/1, % ?Thread:atom
     exit_population/0,
+    number_of_agents/1, % -NumberOfAgents:nonneg
     number_of_deduced_triples/1, % -TotaNumberOfDeducedTriples:nonneg
     total_number_of_cycles/1, % -Cycles:nonneg
     total_number_of_steps/1 % -Steps:nonneg
@@ -17,7 +18,7 @@ At the moment, at most one population can be formed.
 The population is the collection of all agent threads that are active.
 
 @author Wouter Beek
-@version 2014/06-2014/07
+@version 2014/06-2014/08
 */
 
 :- use_module(library(aggregate)).
@@ -49,15 +50,23 @@ agent_thread(Thread):-
 exit_population:-
   agent_prefix(Prefix),
   command_thread_prefix(Prefix, thread_exit(true)),
-  reset_edge_count,
-  flag(number_of_agents, _, 0).
+  reset_edge_count.
+
+%! number_of_agents(-NumberOfAgents:nonneg) is det.
+
+number_of_agents(N):-
+  aggregate_all(
+    count,
+    agent_thread(_),
+    N
+  ).
 
 
 %! total_number_of_cycles(-Cycles:nonneg) is det.
 
 total_number_of_cycles(Cycles):-
   agent_prefix(Prefix),
-  ask_thread_prefix(Prefix, number_of_cycles, Cycless),
+  ask_thread_prefix(Prefix, dh_agent_cycles, Cycless),
   sum_list(Cycless, Cycles).
 
 
@@ -65,7 +74,7 @@ total_number_of_cycles(Cycles):-
 
 total_number_of_steps(Steps):-
   agent_prefix(Prefix),
-  ask_thread_prefix(Prefix, number_of_steps, Stepss),
+  ask_thread_prefix(Prefix, dh_agent_steps, Stepss),
   sum_list(Stepss, Steps).
 
 
