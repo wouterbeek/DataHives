@@ -56,7 +56,7 @@ direction(dir(_,Direction,_,_), Direction).
 
 ensure_triple(rdf(S,P,O), rdf(S,P,O)):- !.
 ensure_triple(DirTriple, Triple):-
-  directed_triple(DirTriple, Triple).
+  directed_triple(DirTriple, Triple), !.
 
 
 %! forward_directed_triple(

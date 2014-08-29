@@ -20,10 +20,12 @@ For example, navigation strategies that perfom jumps
 are not instances of walking.
 
 @author Wouter Beek
-@version 2014/02-2014/07
+@version 2014/02-2014/08
 */
 
 :- use_module(library(semweb/rdf_db)). % Declarations.
+
+:- use_module(pl(pl_log)).
 
 :- use_module(dh_core(dh_generics)).
 :- use_module(dh_nav(dh_nav)).
@@ -107,8 +109,9 @@ dh_walk(Nav, dir(From,Dir,Link,To), Options):-
 dh_step(Nav, dir(From,Direction,Link,To), Options):-
   % The nativation goal produces a single proposition,
   % where location `From` appears as either the subject or the object term.
-  call(Nav, From, Triple, Options),
-
+  
+  run_print_messages(call(Nav, From, Triple, Options)),
+  
   % Find the direction of movement,
   % prefering forward movement in the case of symmetric links.
   (

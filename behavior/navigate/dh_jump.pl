@@ -15,12 +15,13 @@ We define jumping as navigating from a previous location
 to a location that need not be structurally related to the former.
 
 @author Wouter Beek
-@version 2014/07
+@version 2014/07-2014/08
 */
 
 :- use_module(library(predicate_options)). % Declarations.
 
 :- use_module(generics(flag_ext)).
+:- use_module(pl(pl_log)).
 
 :- use_module(dh_nav(dh_nav)).
 
@@ -44,6 +45,6 @@ to a location that need not be structurally related to the former.
 %   * =|direction(+oneof([backward,both,forward]))|=
 
 dh_jump(Nav, dir(From,forward,Link,To), Options):-
-  call(Nav, rdf(From,Link,To), Options),
+  run_print_messages(call(Nav, rdf(From,Link,To), Options)),
   increment_number_of_steps.
 

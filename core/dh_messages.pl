@@ -10,8 +10,13 @@
 Where message queue are being processed.
 
 @author Wouter Beek
-@version 2014/06-2014/07
+@version 2014/06-2014/08
 */
+
+:- use_module(dh_act(dh_entailment)).
+:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_core(dh_cycle)).
+:- use_module(dh_nav(dh_nav)).
 
 :- meta_predicate(answer_question(1,+)).
 :- meta_predicate(execute_command(0)).

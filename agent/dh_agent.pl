@@ -7,9 +7,7 @@
     create_agents/3, % +NumberOfAgents:positive_integer
                      % +Agent:atom
                      % +Initialization:compound
-    default_exit/1, % +Initialization:compound
-% Statistics
-    dh_agent_creation/1 % -Creation:integer
+    default_exit/1 % +Initialization:compound
   ]
 ).
 
@@ -37,6 +35,7 @@ which is used for storing beliefs the agent has.
 @version 2014/02, 2014/04, 2014/06-2014/08
 */
 
+:- use_module(library(error)).
 :- use_module(library(lists)).
 :- use_module(library(predicate_options)). % Declarations.
 
@@ -44,10 +43,6 @@ which is used for storing beliefs the agent has.
 
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_population)).
-
-%! dh_agent_creation(-DateTime:integer) is nondet.
-
-:- thread_local(dh_agent_creation/1).
 
 :- predicate_options(create_agent/4, 4, [
      pass_to(dh_cycle/3, 3)
@@ -65,10 +60,10 @@ which is used for storing beliefs the agent has.
 
 agent_self_graph(Graph):-
   thread_self(Me),
-  
+
   % Make sure the current thread denotes an agent.
   agent_thread(Me),
-  
+
   % We use the assumption that the alias of an agent
   % is also the name of the RDF graph of an agent.
   thread_property(Me, alias(Graph)).
@@ -77,7 +72,7 @@ agent_self_graph(Graph):-
 %! create_agent(+Kind:atom, +Initialization:compound) is det.
 % Kind
 % ====
-% 
+%
 % The kind of agent that is created.
 % This is the name of an agent definition as specified
 % by the dynamic and multifile statements dh:agent_definition/2.
@@ -172,11 +167,7 @@ create_agent(Preds, ExitPred, InitialTriple, Options):-
   % Construct the agent thread name.
   flag(number_of_agents, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
-  
-  % Store the creation datetime.
-  get_time(Creation),
-  assert(dh_agent_creation(Creation)),
-  
+
   % Start the thread.
   thread_create(
     dh_cycle(Preds, InitialTriple, Options),

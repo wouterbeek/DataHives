@@ -5,6 +5,7 @@
                 % +InitialTriple:compound
                 % +Options:list(nvpair)
 % Statistics
+    dh_agent_creation/1, % -Creation:float
     dh_agent_cycles/1 % -NumberOfCycles:nonneg
   ]
 ).
@@ -24,9 +25,15 @@ The navigate-act-communicate cycle for agents in DataHives.
 :- use_module(dh_core(dh_messages)).
 :- use_module(dh_nav(dh_walk)).
 
-:- meta_predicate(call_every_n_cycles(+,1)).
+%! creation(-DateTime:integer) is semidet.
+
+:- thread_local(creation/1).
+
+%! number_of_cycles(-NumberOfCycles:nonneg) is semidet.
 
 :- thread_local(number_of_cycles/1).
+
+:- meta_predicate(call_every_n_cycles(+,1)).
 
 
 
@@ -60,7 +67,9 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   directed_triple(InitDirTriple, InitTriple),
   set_backtrack(InitDirTriple),
 
-  reset_number_of_cycles,
+  % Store the creation datetime.
+  get_time(Creation),
+  assert(creation(Creation)),
 
   % CHOICEPOINT.
   repeat,
@@ -100,6 +109,12 @@ call_every_n_cycles(_, _).
 
 % Statistics
 
+dh_agent_creation(Creation):-
+  creation(Creation), !.
+dh_agent_creation(Creation):-
+  existence_error(integer, Creation).
+
+
 %! dh_agent_cycles(-NumberOfCycles:nonneg) is det.
 % Returns the number of cycles for a specific agent thread.
 
@@ -121,12 +136,6 @@ increment_number_of_cycles(N2):-
   assert(number_of_cycles(N3)).
 increment_number_of_cycles(N):-
   assert(number_of_cycles(N)).
-
-
-%! reset_number_of_cycles is det.
-
-reset_number_of_cycles:-
-  retractall(number_of_cycles(_)).
 
 
 

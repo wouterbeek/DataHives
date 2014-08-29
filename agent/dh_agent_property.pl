@@ -1,8 +1,8 @@
 :- module(
   dh_agent_property,
   [
-    dh_agent_age/2, % ?Agent:atom
-                    % ?Seconds:nonneg
+    dh_agent_age/2, % +Agent:atom
+                    % -Age:float
     dh_agent_cycles/2, % +Agent:atom
                        % -NumberOfCycles:nonneg
     dh_agent_deductions/2, % +Agent:atom
@@ -29,7 +29,7 @@ Access to the properties of individual agents.
 
 
 
-%! dh_agent_age(+Agent:atom, -Age:nonneg) is det.
+%! dh_agent_age(+Agent:atom, -Age:float) is det.
 
 dh_agent_age(Agent, Age):-
   get_time(Now),
