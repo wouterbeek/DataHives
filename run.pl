@@ -42,7 +42,7 @@ rdf_tabular(Request):-
 
 
 
-% DataHives
+% DataHives: home.
 
 :- multifile(http:location/3).
 :- dynamic(http:location/3).
@@ -55,20 +55,41 @@ rdf_tabular(Request):-
 :- dynamic(user:web_module/2).
 :- multifile(user:web_module/2).
 
+:- use_module(dh_web(dh_web)).
 
-% DataHives: Agents.
+user:web_module('DH Home', dh_web).
 
-:- use_module(dh_web(dh_web_agent)).
+:- http_handler(root(dh), dh_web, [id(dh),prefix,priority(-1)]).
 
-user:web_module('DH Agent', dh_web_agent).
-
-:- http_handler(dh_web(agent), dh_web_agent, []).
-
-dh_web_agent(Request):-
-  dh_web_agent(Request, plServer_style).
+dh_web(Request):-
+  dh_web(Request, plServer_style).
 
 
-% DataHives: Graph.
+% DataHives: agent definitions.
+
+:- use_module(dh_web(dh_web_agent_defs)).
+
+user:web_module('DH Agent defs', dh_web_agent_defs).
+
+:- http_handler(dh_web(agent_defs), dh_web_agent_defs, []).
+
+dh_web_agent_defs(Request):-
+  dh_web_agent_defs(Request, plServer_style).
+
+
+% DataHives: agents.
+
+:- use_module(dh_web(dh_web_agents)).
+
+user:web_module('DH Agents', dh_web_agents).
+
+:- http_handler(dh_web(agents), dh_web_agents, []).
+
+dh_web_agents(Request):-
+  dh_web_agents(Request, plServer_style).
+
+
+% DataHives: graph.
 
 :- use_module(dh_web(dh_web_graph)).
 

@@ -1,22 +1,22 @@
 :- module(
-  dh_agent_doc,
+  dh_agent_defs,
   [
-    list_agent_definitions/0
+    list_agent_defs/0
   ]
 ).
 
 /** <module> DataHives agent documentation
 
 @author Wouter Beek
-@version 2014/07
+@version 2014/07, 2014/09
 */
 
 
 
-%! list_agent_definitions is det.
+%! list_agent_defs is det.
 % Lists all currently loaded agent definitions on current output.
 
-list_agent_definitions:-
+list_agent_defs:-
   forall(
     dh:agent_definition(Name, Definition),
     print_agent_definition(Name, Definition)

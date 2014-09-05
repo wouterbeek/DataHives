@@ -2,10 +2,10 @@
   dh_agent,
   [
     agent_self_graph/1, % -Graph:atom
-    create_agent/2, % +Agent:atom
+    create_agent/2, % +Agent
                     % +Initialization:compound
     create_agents/3, % +NumberOfAgents:positive_integer
-                     % +Agent:atom
+                     % +Agent
                      % +Initialization:compound
     default_exit/1 % +Initialization:compound
   ]
@@ -178,7 +178,7 @@ create_agent(Preds, ExitPred, InitialTriple, Options):-
 
 %! create_agents(
 %!   +NumberOfAgents:positive_integer,
-%!   +Agent:atom,
+%!   +Agent,
 %!   +Initialization:or([atom,compound])
 %! ) is det.
 

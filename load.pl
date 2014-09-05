@@ -26,6 +26,7 @@
 :- user:use_module(dh_test(dh_test)).
 
 % List the loaded agent definitions.
-:- use_module(dh_agent(dh_agent_doc)).
-:- initialization(list_agent_definitions).
+:- use_module(dh_agent(dh_agent_defs)).
+
+:- initialization(list_agent_defs).
 

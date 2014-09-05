@@ -35,8 +35,8 @@ Count languages and datatypes used in literals.
 
 :- dynamic(http:location/3).
 :- multifile(http:location/3).
-   http:location(dh, root(dh), []).
-:- http_handler(dh(literal_tag), dh_lit_tag, []).
+   http:location(dh_web, root(dh), []).
+:- http_handler(dh_web(literal_tag), dh_lit_tag, []).
 
 user:web_module('DH LitTag', dh_lit_tag).
 

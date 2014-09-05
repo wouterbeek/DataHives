@@ -19,3 +19,8 @@
 % Allow DataHives graphs and resources to be exported to file.
 :- use_module(dh_debug(dh_export)).
 
+
+:- dynamic(user:debug_mode/0).
+:- multifile(user:debug_mode/0).
+:- assert(user:debug_mode).
+

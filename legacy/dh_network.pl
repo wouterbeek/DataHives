@@ -59,8 +59,8 @@
 
 :- dynamic(http:location/3).
 :- multifile(http:location/3).
-   http:location(dh, root(dh), []).
-:- http_handler(dh(connected_hives), connected_hives, []).
+   http:location(dh_web, root(dh_web), []).
+:- http_handler(dh_web(connected_hives), connected_hives, []).
 
 user:web_module('DH Network', connected_hives).
 
