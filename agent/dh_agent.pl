@@ -2,10 +2,10 @@
   dh_agent,
   [
     agent_self_graph/1, % -Graph:atom
-    create_agent/2, % +Agent
+    dh_create_agent/2, % +AgentDefinitionName:atom
                     % +Initialization:compound
-    create_agents/3, % +NumberOfAgents:positive_integer
-                     % +Agent
+    dh_create_agents/3, % +NumberOfAgents:positive_integer
+                     % +AgentDefinitionName:atom
                      % +Initialization:compound
     default_exit/1 % +Initialization:compound
   ]
@@ -35,7 +35,6 @@ which is used for storing beliefs the agent has.
 @version 2014/02, 2014/04, 2014/06-2014/08
 */
 
-:- use_module(library(error)).
 :- use_module(library(lists)).
 :- use_module(library(predicate_options)). % Declarations.
 
@@ -44,7 +43,7 @@ which is used for storing beliefs the agent has.
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_core(dh_population)).
 
-:- predicate_options(create_agent/4, 4, [
+:- predicate_options(dh_create_agent/4, 4, [
      pass_to(dh_cycle/3, 3)
    ]).
 
@@ -69,7 +68,7 @@ agent_self_graph(Graph):-
   thread_property(Me, alias(Graph)).
 
 
-%! create_agent(+Kind:atom, +Initialization:compound) is det.
+%! dh_create_agent(+Kind:atom, +Initialization:compound) is det.
 % Kind
 % ====
 %
@@ -111,20 +110,20 @@ agent_self_graph(Graph):-
 % and that randomly chosen triple will be the initial triple for the agent.
 
 % An agent definition that does not specific a special exit predicate.
-create_agent(Kind, Initialization):-
+dh_create_agent(Kind, Initialization):-
   dh:agent_definition(Kind, [NavDef,ActDef,ComDef,EvalDef]), !,
   maplist(
     pred_from_predspec,
     [NavDef,ActDef,ComDef,EvalDef],
     [NavPred,ActPred,ComPred,EvalPred]
   ),
-  create_agent(
+  dh_create_agent(
     [NavPred,ActPred,ComPred,EvalPred],
     default_exit(Initialization),
     Initialization
   ).
 % An agent definition that specifies a special exit predicate.
-create_agent(Kind, Initialization):-
+dh_create_agent(Kind, Initialization):-
   dh:agent_definition(Kind, [NavDef,ActDef,ComDef,EvalDef,ExitDef]), !,
   maplist(
     pred_from_predspec,
@@ -137,10 +136,10 @@ create_agent(Kind, Initialization):-
   append(ExitArgs1, [Initialization], ExitArgs2),
   ExitPred2 =.. [ExitPred0|ExitArgs2],
 
-  create_agent([NavPred,ActPred,ComPred,EvalPred], ExitPred2, Initialization).
+  dh_create_agent([NavPred,ActPred,ComPred,EvalPred], ExitPred2, Initialization).
 
 
-%! create_agent(
+%! dh_create_agent(
 %!   +Predicates:list(atom),
 %!   :Exit,
 %!   +Initialization:or([atom,compound])
@@ -149,21 +148,21 @@ create_agent(Kind, Initialization):-
 %      or a triple, denoted by =|rdf(+subject,+predicate,+object)|=.
 
 % Initialize by graph.
-create_agent(Preds, Exit, graph(Graph)):- !,
+dh_create_agent(Preds, Exit, graph(Graph)):- !,
   rdf_random_triple(S, P, O, Graph),
-  create_agent(Preds, Exit, rdf(S,P,O), [graph(Graph)]).
+  dh_create_agent(Preds, Exit, rdf(S,P,O), [graph(Graph)]).
 % Initialize by triple.
-create_agent(Preds, Exit, rdf(S,P,O)):-
-  create_agent(Preds, Exit, rdf(S,P,O), []).
+dh_create_agent(Preds, Exit, rdf(S,P,O)):-
+  dh_create_agent(Preds, Exit, rdf(S,P,O), []).
 
-%! create_agent(
+%! dh_create_agent(
 %!   +Predicates:list(atom),
 %!   :Exit,
 %!   +InitialTriple:compound,
 %!   +Options:list(nvpair)
 %! ) is det.
 
-create_agent(Preds, ExitPred, InitialTriple, Options):-
+dh_create_agent(Preds, ExitPred, InitialTriple, Options):-
   % Construct the agent thread name.
   flag(number_of_agents, Id, Id + 1),
   format(atom(Alias), 'agent_~d', [Id]),
@@ -176,16 +175,16 @@ create_agent(Preds, ExitPred, InitialTriple, Options):-
   ).
 
 
-%! create_agents(
+%! dh_create_agents(
 %!   +NumberOfAgents:positive_integer,
 %!   +Agent,
 %!   +Initialization:or([atom,compound])
 %! ) is det.
 
-create_agents(N, Agent, Initialization):-
+dh_create_agents(N, Agent, Initialization):-
   forall(
     between(1, N, _),
-    create_agent(Agent, Initialization)
+    dh_create_agent(Agent, Initialization)
   ).
 
 

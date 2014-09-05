@@ -29,7 +29,7 @@ Defines the scout bee agent for use in DataHives.
      search_action(instance_of(foaf:'Person'), search_results)-"Search for instances of foaf:Person.",
      spawn_foragers(1, 10)-"Communicate to the pool of foragers whether something has been found or not.",
      no_evaluation,
-     create_agent(scout)
+     dh_create_agent(scout)
    ]).
 
 
@@ -49,7 +49,7 @@ spawn_foragers(InterestLevel, NumberOfForagers, DirectedTriple):-
     directed_triple(DirectedTriple, Triple),
     forall(
       between(1, NumberOfForagers, _),
-      create_agent(forager, Triple)
+      dh_create_agent(forager, Triple)
     )
   ;
     true

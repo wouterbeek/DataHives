@@ -15,38 +15,39 @@ Web-based interface to agents in DataHives.
 @version 2013/09-2013/10, 2014/02, 2014/04, 2014/06, 2014/08-2014/09
 */
 
-:- use_module(library(dcg/basics)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
-:- use_module(library(http/http_header)).
 :- use_module(library(http/http_json)).
 
 :- use_module(plHtml(html_pl_term)).
 :- use_module(plHtml(html_table)).
 
+:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_agent(dh_agent_property)).
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_web(dh_web_generics)).
 
-% /agent
 :- http_handler(dh_web(agents), dh_web_agents, [prefix]).
 
 
 
+% POST
 dh_web_agents(Request, _):-
   memberchk(method(post), Request), !,
-  gtrace,
+
   % Extract the agent definition value.
   catch(
     (
       http_read_json_dict(Request, D),
-      atom_string(AgentDefinition, D.agentDefinition)
+      atom_string(AgentDefinitionName, D.agentDefName)
     ),
     E,
     throw(http_reply(bad_request(E)))
   ),
+  dh_create_agent(AgentDefinitionName, graph(visum)),
 
   reply_json(json{}, [status(200)]).
+% GET
 dh_web_agents(_, HtmlStyle):-
   reply_html_page(
     HtmlStyle,

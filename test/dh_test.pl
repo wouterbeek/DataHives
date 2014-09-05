@@ -32,24 +32,21 @@ Simple test predicates for running programs in DataHives.
 
 
 %! dh_test_agent(+Kind:atom, +Initialization:or([atom,compound])) is det.
-% Options are passed on to create_agent/3.
+% Options are passed on to dh_create_agent/3.
 
 dh_test_agent(Kind, file(File)):- !,
   ensure_file_is_loaded(File, Graph),
   dh_test_agent(Kind, graph(Graph)).
 dh_test_agent(Kind, graph(Graph)):- !,
-  (
-    var(Graph)
-  ->
-    assert_visum(Graph)
-  ;
-    rdf_graph(Graph)
+  (   var(Graph)
+  ->  assert_visum(Graph)
+  ;   rdf_graph(Graph)
   ),
   rdf_graph_exclude_from_gc(Graph),
-  create_agent(Kind, graph(Graph)).
+  dh_create_agent(Kind, graph(Graph)).
 dh_test_agent(Kind, rdf(S,P,O)):-
   default_goal(sparql_query_random_triple(dbpedia), rdf(S,P,O)),
-  create_agent(Kind, rdf(S,P,O)).
+  dh_create_agent(Kind, rdf(S,P,O)).
 
 
 

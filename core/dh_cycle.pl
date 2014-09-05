@@ -144,7 +144,7 @@ increment_number_of_cycles(N):-
 :- multifile(prolog:message//1).
 
 print_number_of_cycles(N):-
-  gtrace, %DEB
+  sleep(60), %DEB
   print_message(informational, dh_agent_cycles(N)).
 
 prolog:message(dh_agent_cycles(N)) -->

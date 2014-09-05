@@ -24,3 +24,13 @@
 :- multifile(user:debug_mode/0).
 :- assert(user:debug_mode).
 
+
+:- use_module(plRdf(rdf_gc)).
+:- use_module(plRdf(rdf_script)).
+
+:- initialization(dh_deb_init).
+
+dh_deb_init:-
+  assert_visum(Graph),
+  rdf_graph_exclude_from_gc(Graph).
+

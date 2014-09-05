@@ -14,6 +14,6 @@
      deductive_action,
      update_edge_count,
      evaluate_entailment,
-     create_agent(ant)
+     dh_create_agent(ant)
    ]).
 
