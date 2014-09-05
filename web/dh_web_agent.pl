@@ -2,7 +2,7 @@
   dh_web_agent,
   [
     dh_web_agent/2 % +Request:list(nvpair)
-                   % +Style:atom
+                   % +Style
   ]
 ).
 
@@ -27,9 +27,9 @@ Web-based interface to agents in DataHives.
 
 dh_web_agent(_, Style):-
   findall(
-    [Alias,Id,Status,CPU_Time,Cycles,Steps,Effectiveness],
+    [Alias,Agent,Status,CPU_Time,Cycles,Steps,Effectiveness],
     (
-      agent_thread(Agent),
+      dh_agent_thread(Agent),
       thread_property(Agent, alias(Alias)),
       thread_property(Agent, status(Status)),
       dh_agent_age(Agent, Age),
@@ -41,7 +41,7 @@ dh_web_agent(_, Style):-
       ->
         CPU_Time = 0
       ;
-        thread_statistics(Id, cputime, CPU_Time)
+        thread_statistics(Agent, cputime, CPU_Time)
       )
     ),
     Rows
@@ -57,7 +57,7 @@ dh_web_agent(_, Style):-
           \html_pl_term(dh, N),
           ' currently running agents in DataHives.'
         ]),
-        [['Alias','Id','Status','CPU time','Cycles','Steps','Effectiveness']|Rows],
+        [['Alias','ThreadId','Status','CPU time','Cycles','Steps','Effectiveness']|Rows],
         [header_row(true),index(true)]
       )
     )

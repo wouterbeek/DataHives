@@ -1,7 +1,7 @@
 :- module(
   dh_population,
   [
-    agent_thread/1, % ?Thread:atom
+    dh_agent_thread/1, % ?Thread:atom
     exit_population/0,
     number_of_agents/1, % -NumberOfAgents:nonneg
     number_of_deduced_triples/1, % -TotaNumberOfDeducedTriples:nonneg
@@ -35,12 +35,12 @@ The population is the collection of all agent threads that are active.
 agent_prefix(agent_).
 
 
-%! agent_thread(+Thread:atom) is semidet.
+%! dh_agent_thread(+Thread:atom) is semidet.
 % Succeeds if the given thread denotes an agent.
-%! agent_thread(-Thread:atom) is nondet.
+%! dh_agent_thread(-Thread:atom) is nondet.
 % Enumerates the currently running threads that denote agents.
 
-agent_thread(Thread):-
+dh_agent_thread(Thread):-
   agent_prefix(Prefix),
   thread_prefix(Prefix, Thread).
 
@@ -57,7 +57,7 @@ exit_population:-
 number_of_agents(N):-
   aggregate_all(
     count,
-    agent_thread(_),
+    dh_agent_thread(_),
     N
   ).
 
@@ -85,7 +85,7 @@ number_of_deduced_triples(Triples):-
     sum(Triples),
     (
       rdf_graph(Graph),
-      agent_thread(Graph),
+      dh_agent_thread(Graph),
       rdf_statistics(triples_by_graph(Graph,Triples))
     ),
     Triples

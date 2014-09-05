@@ -74,7 +74,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   % CHOICEPOINT.
   repeat,
   call_every_n_cycles(100, print_number_of_cycles),
-  
+
   % Navigate.
   call(Nav, dir(From,Dir,Link,To), Options),
 
@@ -144,7 +144,7 @@ increment_number_of_cycles(N):-
 :- multifile(prolog:message//1).
 
 print_number_of_cycles(N):-
-  %gtrace, %DEB
+  gtrace, %DEB
   print_message(informational, dh_agent_cycles(N)).
 
 prolog:message(dh_agent_cycles(N)) -->

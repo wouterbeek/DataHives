@@ -22,7 +22,7 @@ e.g. listing the currently loaded agent definitions.
 
 We assume that every agent is represented by and implemented with
 a Linux thread. These threads can be recognized (and enumerated)
-by agent_thread/1 in [dh_population].
+by dh_agent_thread/1 in [dh_population].
 
 We also assume that the thread alias of an agent
 is the same as the name of the agent's RDF graph,
@@ -62,7 +62,7 @@ agent_self_graph(Graph):-
   thread_self(Me),
 
   % Make sure the current thread denotes an agent.
-  agent_thread(Me),
+  dh_agent_thread(Me),
 
   % We use the assumption that the alias of an agent
   % is also the name of the RDF graph of an agent.
