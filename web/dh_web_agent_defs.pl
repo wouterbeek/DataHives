@@ -17,13 +17,11 @@ Web-based interface to agents in DataHives.
 :- use_module(library(aggregate)).
 :- use_module(library(http/html_head)).
 :- use_module(library(http/html_write)).
+:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_json)).
 :- use_module(library(http/js_write)).
 
 :- use_module(generics(request_ext)).
-
-:- use_module(plHtml(html_listbox)).
-:- use_module(plHtml(html_list)).
-:- use_module(plHtml(html_pl_term)).
 
 :- use_module(dh_web(dh_web_generics)).
 
@@ -40,67 +38,135 @@ Web-based interface to agents in DataHives.
      ).
 :- endif.
 
+:- http_handler(dh_web(agentDefList), agentDefList, []).
 
 
-dh_web_agent_defs(Request, HtmlStyle):-
-  request_query_nvpair(Request, agentDefName, Selection, _NoAlias),
+
+%! agentDefList(+Request:list(nvpair)) is det.
+% Returns type/label pairs in JSON format.
+%
+% This can be used to populate a <select> element in HTML.
+
+agentDefList(_):-
+  aggregate_all(
+    set(Alias-Alias),
+    dh:agent_definition(Alias, _),
+    Pairs
+  ),
+  dict_create(Dict, agentDefs, Pairs),
+  reply_json_dict(Dict).
+
+
+dh_web_agent_defs(_, HtmlStyle):-
   reply_html_page(
     HtmlStyle,
     \dh_web_head(['Agent definitions']),
-    \dh_agent_defs_table(Selection)
+    \dh_agent_defs_body
   ).
 
-
-%! dh_agent_defs_table(?Selection)// is det.
-
-dh_agent_defs_table(Selection) -->
+dh_agent_defs_body -->
   {
-    aggregate_all(
-      set(Alias-AgentDef),
-      dh:agent_definition(Alias, AgentDef),
-      Pairs
-    ),
-    pairs_keys(Pairs, AgentDefNames),
+    http_location_by_id(agentDefList, ListLocation)
+  },
+  html([
+    \html_requires(js(jquery)),
+    div(id=agentDefList, []),
+    \js_script({|javascript(ListLocation)||
+      function populateList(data) {
+        var select = $("<select></select>").appendTo("#agentDefList");
+        $.each(data, function(key, value) {
+          select.append(
+              $("<option value=" + key + ">" + value + "</option>")
+          );
+        });
+      }
+      $(document).ready(function() {
+        $.ajax({ //getJSON
+          "dataType": "json",
+          "fail": function(data) {
+              console.log("Failed to populate agent definition list.", data);
+            },
+          "success": populateList,
+          "url" :ListLocation
+        });
+      });
+    |})
+  ]).
 
-    % Make sure the agent alias exists, if given.
-    (   nonvar(Selection)
-    ->  memberchk(Selection-SelectionDef, Pairs)
-    ;   SelectionDef = []
-    ),
-
+/*
+dh_agent_defs_body -->
+  {
     % Retrieve the location of the processor for this form's contents.
-    http_location_by_id(dh_web_agent_defs, Location)
+    http_location_by_id(agentDefList, Location)
   },
   html([
     % @see Post HTML form data using JSON:
     %      http://stackoverflow.com/questions/1184624/convert-form-data-to-js-object-with-jquery
     \html_requires(js(jquery)),
-    \js_script({|javascript(Location)||
-      function changeAgentDefName() {
-        $.ajax({
-          "data": {
-              "agentDefName": $("#agentDefName option:selected").text()
-          },
-          "type": "get",
-          "url": Location
-        });
-      }
-      $(function() {
-        var form = $("#agentDefs");
-        form.submit(function(e) {
-          e.preventDefault(); // Keep the form from submitting
-          $.ajax({
-            "contentType": "application/json",
-            "data": JSON.stringify({
-                "agentDefName": $("#agentDefName option:selected").text()
-            }),
-            "dataType": "json",
-            "type": "post",
-            "url": form.attr('action')
-          });
-        });
+    \js_script({|javascript(AgentDefList)||
+// When the DOM loads we insert a listbox of agent definitions,
+// and we register the behavior of making a selection in that list.
+$(document).ready(function() {
+  $("#agentDefList").html(listBox($.ajax({
+    "accept": "application/json",
+    "type": "get",
+    "url": AgentDefList
+  })));
+  ("#agentDefList select").change(function() {
+    var btn = $("#agentDefBtn");
+    btn.disabled = false;
+    btn.html("Add a/an " + $(this).text() + "agent");
+    $("#agentDefContainer").html(agentDefBox($.ajax({
+      "accept": "application/json",
+      "data": JSON.stringify({ "agentDef": $(this).attr("value") }), // jQuery will add this as the URL query string.
+      "type": "get",
+      "url": // REST access to agent definition.
+    })));
+  });
+});
+function listBox(content) {
+}
+// Replace the outdated HTML5 <form> encoding practice with a modern
+// REST+JSON approach.
+$(function() {
+  var form = $("#agentDefs");
+  form.submit(function(e) {
+    e.preventDefault(); // Keep the form from submitting
+    $.ajax({
+      "contentType": "application/json",
+      "data": JSON.stringify({
+          "agentDef": $("#agentDef option:selected").attr("value")
+      }),
+      "dataType": "json",
+      "type": form.attr("method")   // Reuse <form> attribute.
+      "url": form.attr("action")   // Reuse <form> attribute.
+    });
+  });
+  function changeAgentDefName() {
+    $.ajax({
+      "data": {
+          "agentDefName": $("#agentDefName option:selected").text()
+      },
+      "type": "get",
+      "url": Location
+    });
+  }
+  $(function() {
+    var form = $("#agentDefs");
+    form.submit(function(e) {
+      e.preventDefault(); // Keep the form from submitting
+      $.ajax({
+        "contentType": "application/json",
+        "data": JSON.stringify({
+            "agentDefName": $("#agentDefName option:selected").text()
+        }),
+        "dataType": "json",
+        "type": "post",
+        "url": form.attr('action')
       });
-    |}),
+    });
+  });
+|}),
     form(
       [
         action=Location,
@@ -111,73 +177,21 @@ dh_agent_defs_table(Selection) -->
       fieldset([
         legend('Agent definitions'),
         div(class='pure-g', [
-          div(class=['pure-u-1','pure-u-md-1-3'],
-            \agent_def_list(Selection, AgentDefNames)
-          ),
-          div(class=['pure-u-1','pure-u-md-1-3'],
-            \agent_def_descr(SelectionDef)
-          )
+          div([class=['pure-u-1','pure-u-md-1-3'],id=agentDefList], []),
+          div([class=['pure-u-1','pure-u-md-1-3'],id=agentDefDescr], [])
         ]),
         div(class=['pure-u-1','pure-u-md-1-3'],
-          \agent_def_create(Selection)
+          button(
+            [
+              class=['pure-button','pure-button-primary'],
+              disabled=true,
+              id=agentDefBtn,
+              type=submit
+            ],
+            'Create an agent'
+          )
         )
       ])
     )
   ]).
-
-
-%! agent_def_create(+AgentDefinitionName:atom) -->
-
-agent_def_create(AgentDefName) -->
-  {var(AgentDefName)}, !,
-  agent_def_create('Create an agent', true).
-agent_def_create(AgentDefName) -->
-  {format(atom(Label), 'Create a ~a agent', [AgentDefName])},
-  agent_def_create(Label, false).
-
-agent_def_create(Label, Disabled) -->
-  html(
-    button(
-      [
-        class=['pure-button','pure-button-primary'],
-	disabled=Disabled,
-        name=createAgent,
-        type=submit
-      ],
-      Label
-    )
-  ).
-
-
-%! agent_def_descr(+AgentDef:list)// is det.
-
-agent_def_descr(Preds) -->
-  html(
-    div(name=agentDefinitionDescription,
-      \html_list(Preds, agent_pred, [ordered(false)])
-    )
-  ).
-
-
-%! agent_def_list(?Selection, +AgentDefNames:list(atom))// is det.
-
-agent_def_list(Selection, AgentDefNames) -->
-  % Construct the `Selections` argument.
-  {(  var(Selection)
-  ->  Selections = []
-  ;   Selections = [Selection]
-  )},
-  html_listbox(
-    Selections,
-    AgentDefNames,
-    [class='pure-input-1-3',id=agentDefName,onChange='changeAgentDefName();']
-  ).
-
-
-%! agent_pred(+Pred)// is det.
-
-agent_pred(Pred-Doc) --> !,
-  html([\html_pl_term(dh,Pred),': ',Doc]).
-agent_pred(Pred) -->
-  html(\html_pl_term(dh,Pred)).
-
+*/
