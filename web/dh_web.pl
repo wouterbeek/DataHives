@@ -17,7 +17,8 @@ The Web API for DataHives.
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 
-:- use_module(dh_web(dh_web_agents)).
+:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_agent(dh_agent_definition)).
 :- use_module(dh_web(dh_web_generics)).
 
 % /stats
@@ -28,13 +29,14 @@ The Web API for DataHives.
 dh_web(_, HtmlStyle):-
   reply_html_page(
     HtmlStyle,
-    \dh_web_head(['Home']),
+    \dh_head(['Home']),
     \dh_web_body
   ).
 
 
 dh_web_body -->
   html([
-    \agents_table
+    \(dh_web_agent:dh_web_agent_body),
+    \(dh_web_agentDef:dh_web_agentDef_body)
   ]).
 

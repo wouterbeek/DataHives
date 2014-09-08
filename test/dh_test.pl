@@ -1,7 +1,7 @@
 :- module(
   dh_test,
   [
-    dh_test_agent/2 % +Kind:atom
+    dh_test_agent/2 % +AgentDefinition:url
                     % +Initialization:or([atom,compound])
   ]
 ).
@@ -27,26 +27,29 @@ Simple test predicates for running programs in DataHives.
 
 :- use_module(plSparql_query(sparql_query_random)).
 
-:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_agent(dh_agent_create)).
 
 
 
-%! dh_test_agent(+Kind:atom, +Initialization:or([atom,compound])) is det.
-% Options are passed on to dh_create_agent/3.
+%! dh_test_agent(
+%!   +AgentDefinition:url,
+%!   +Initialization:or([atom,compound])
+%! ) is det.
+% Options are passed on to dh_agent_create/3.
 
-dh_test_agent(Kind, file(File)):- !,
+dh_test_agent(AgentDefinition, file(File)):- !,
   ensure_file_is_loaded(File, Graph),
-  dh_test_agent(Kind, graph(Graph)).
-dh_test_agent(Kind, graph(Graph)):- !,
+  dh_test_agent(AgentDefinition, graph(Graph)).
+dh_test_agent(AgentDefinition, graph(Graph)):- !,
   (   var(Graph)
   ->  assert_visum(Graph)
   ;   rdf_graph(Graph)
   ),
   rdf_graph_exclude_from_gc(Graph),
-  dh_create_agent(Kind, graph(Graph)).
-dh_test_agent(Kind, rdf(S,P,O)):-
+  dh_agent_create(AgentDefinition, graph(Graph)).
+dh_test_agent(AgentDefinition, rdf(S,P,O)):-
   default_goal(sparql_query_random_triple(dbpedia), rdf(S,P,O)),
-  dh_create_agent(Kind, rdf(S,P,O)).
+  dh_agent_create(AgentDefinition, rdf(S,P,O)).
 
 
 

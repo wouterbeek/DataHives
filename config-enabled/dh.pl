@@ -45,14 +45,14 @@ dh_web_agents(Request):-
 
 % DataHives: graph.
 
-:- use_module(dh_web(dh_web_graph)).
+:- use_module(dh_web(dh_agent_graph)).
 
 cliopatria:menu_item(700=dh/graph, 'DH Graph').
 
-:- http_handler(dh_web(graph), dh_web_graph, [id(graph)]).
+:- http_handler(dh_web(graph), dh_agent_graph, [id(graph)]).
 
-dh_web_graph(Request):-
-  dh_web_graph(Request, cliopatria(default)).
+dh_agent_graph(Request):-
+  dh_agent_graph(Request, cliopatria(default)).
 
 
 % plTabular

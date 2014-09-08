@@ -1,12 +1,12 @@
 :- module(
-  dh_web_graph,
+  dh_agent_graph,
   [
-    dh_web_graph/2 % +Request:list(nvpair)
-                   % +Style:atom
+    dh_agent_graph/2 % +Request:list(nvpair)
+                     % +Style:atom
   ]
 ).
 
-/** <module> DataHives graph
+/** <module> DataHives Agent: Graph
 
 @author Wouter Beek
 @version 2014/04
@@ -26,32 +26,25 @@
 
 
 
-dh_web_graph(_, Style):-
+dh_agent_graph(_, Style):-
   reply_html_page(
     Style,
     % Auto-update HTML: `meta([content(1),'http-equiv'(refresh)], [])`
-    html(\dh_web_graph_head),
-    html(\dh_web_graph_body)
+    html(\dh_agent_graph_head),
+    html(\dh_agent_graph_body)
   ).
 
-dh_web_graph_head -->
+dh_agent_graph_head -->
   html([
     title('DataHives - Graph'),
     \html_requires(css('gv_interactive.css')),
     \html_requires(js('gv_interactive.js'))
   ]).
 
-dh_web_graph_body -->
+dh_agent_graph_body -->
   {
     dh_graph(Gif, []),
     gif_to_svg_dom(Gif, SvgDom, [method(dot)])
   },
   html(\xml_dom_as_atom(SvgDom)).
-
-
-
-
-
-
-
 

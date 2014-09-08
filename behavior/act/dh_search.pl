@@ -22,7 +22,7 @@
 
 :- use_module(lodCache(lod_cache)).
 
-:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_agent(dh_agent_property)).
 :- use_module(dh_core(dh_generics)).
 
 
@@ -40,7 +40,7 @@ number_of_overall_search_results(N):-
 %! number_of_self_search_results(-NumberOfSearchResults:nonneg) is det.
 
 number_of_self_search_results(N):-
-  agent_self_graph(MyGraph),
+  dh_agent_graph(MyGraph),
   aggregate_all(
     count,
     rdf(_, _, _, MyGraph),
@@ -60,7 +60,7 @@ search_action(Search, ResultsGraph, DirTriple):-
     search_result_found(Search, Triple)
   ->
     Triple = rdf(S,P,O),
-    agent_self_graph(MyGraph),
+    dh_agent_graph(MyGraph),
     rdf_assert(S, P, O, MyGraph),
     rdf_assert(S, P, O, ResultsGraph)
   ;

@@ -14,7 +14,6 @@ Where message queue are being processed.
 */
 
 :- use_module(dh_act(dh_entailment)).
-:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_nav(dh_nav)).
 

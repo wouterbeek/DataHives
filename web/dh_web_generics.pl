@@ -1,7 +1,7 @@
 :- module(
   dh_web_generics,
   [
-    dh_web_head//1 % :Subtitle
+    dh_head//1 % :Subtitle
   ]
 ).
 
@@ -18,10 +18,10 @@ that implement the DataHives Web-based front-end.
 
 :- use_module(plDcg(dcg_meta)).
 
-:- html_meta(dh_web_head(html,?,?)).
+:- html_meta(dh_head(html,?,?)).
 
 
 
-dh_web_head(Subtitle) -->
+dh_head(Subtitle) -->
   html(title(['DataHives - '|Subtitle])).
 
