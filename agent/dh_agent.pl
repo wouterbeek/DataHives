@@ -15,8 +15,9 @@ Interface to agents in DataHives.
 */
 
 :- use_module(library(http/html_write)).
-:- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_cors)).
 :- use_module(library(http/http_json)).
+:- use_module(library(http/http_path)).
 :- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(request_ext)).
@@ -34,7 +35,9 @@ Interface to agents in DataHives.
 
 % GET html PATH
 dh_agent(Request, HtmlStyle):-
-  request_filter(Request, get, _/html, Agent, _-_), !,
+  cors_enable,
+  request_filter(Request, get, _/html, Agent),
+  \+ http_absolute_uri(dh_agent(.), Agent), !,
   findall(
     [Name,Value],
     dh_agent_property(Agent, Name, Value),
@@ -54,6 +57,7 @@ dh_agent(Request, HtmlStyle):-
   ).
 % GET html *
 dh_agent(Request, HtmlStyle):-
+  cors_enable,
   request_filter(Request, get, _/html, _), !,
   findall(
     [Alias,Agent,Status,CPU_Time,Cycles,Steps,Effectiveness],
@@ -90,7 +94,8 @@ dh_agent(Request, HtmlStyle):-
   ).
 % POST json PATH
 dh_agent(Request, _):-
-  request_filter(Request, post, _-json, AgentDefinition, _-_), !,
+  cors_enable,
+  request_filter(Request, post, _-json, AgentDefinition), !,
   dh_agent_create(AgentDefinition, graph(visum)),
   reply_json_dict(json{}).
 

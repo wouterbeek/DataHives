@@ -20,8 +20,10 @@ Implements agent definitions in DataHives.
 :- use_module(library(apply)).
 :- use_module(library(http/html_head)).
 :- use_module(library(http/html_write)).
+:- use_module(library(http/http_cors)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
+:- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
 :- use_module(library(semweb/rdfs)).
 
@@ -37,7 +39,9 @@ Implements agent definitions in DataHives.
 
 % GET text/html PATH
 dh_agent_definition(Request, HtmlStyle):-
-  request_filter(Request, get, _-html, AgentDefinition), !,
+  cors_enable,
+  request_filter(Request, get, _/html, AgentDefinition),
+  \+ http_absolute_uri(dh_agent_definition(.), AgentDefinition), !,
   rdfs_label(AgentDefinition, Label),
   reply_html_page(
     HtmlStyle,
@@ -65,12 +69,13 @@ $(document).ready(function() {
   ).
 % GET text/html *
 dh_agent_definition(Request, HtmlStyle):-
-  request_filter(Request, get, _-html, _), !,
-  http_location_by_id(dh_agent, AgentLocation),
-  http_location_by_id(dh_agent_definition, AgentDefinitionLocation),
+  cors_enable,
+  request_filter(Request, get, _/html, _), !,
+  http_absolute_uri(dh_agent(.), AgentLocation),
+  http_absolute_uri(dh_agent_definition(.), AgentDefinitionLocation),
   reply_html_page(
     HtmlStyle,
-    \dh_agent_definition_head([]),
+    \dh_agent_definition_head(html('')),
     html([
       \html_requires(js(jquery)),
       div(id=agentDefinitionsContainer, []),
@@ -126,7 +131,8 @@ $("#createBtn").click(function() {
 % Returns type/label pairs in JSON format.
 % This can e.g. be used to populate a <select> element in HTML.
 dh_agent_definition(Request, _):-
-  request_filter(Request, get, _-json, AgentDefinition, _-_), !,
+  cors_enable,
+  request_filter(Request, get, _/json, AgentDefinition), !,
   aggregate_all(
     set(AgentDefinition-AgentDefinition),
     agent_definition_db0(AgentDefinition, _),
@@ -136,7 +142,8 @@ dh_agent_definition(Request, _):-
   reply_json_dict(Dict).
 % GET application/json *
 dh_agent_definition(Request, _):-
-  request_filter(Request, get, _-json, AgentDefinition),
+  cors_enable,
+  request_filter(Request, get, _/json, AgentDefinition),
   agent_definition_db0(AgentDefinition, Predicates1),
   def_pairs(Predicates1, Predicates2),
   dict_create(Pairs, json, Predicates2),

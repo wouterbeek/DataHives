@@ -2,6 +2,7 @@
 % File search path `dh` has to set for this.
 
 user:file_search_path(dh_agent, dh(agent)).
+  user:file_search_path(dh_agent_definition,  dh_agent(definition)).
 user:file_search_path(dh_beh,   dh(behavior)).
   user:file_search_path(dh_act,  dh_beh(act)).
   user:file_search_path(dh_com,  dh_beh(communicate)).

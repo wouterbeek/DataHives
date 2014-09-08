@@ -16,8 +16,6 @@ that implement the DataHives Web-based front-end.
 
 :- use_module(library(http/html_write)).
 
-:- use_module(plDcg(dcg_meta)).
-
 :- html_meta(dh_head(html,?,?)).
 
 

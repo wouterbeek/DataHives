@@ -29,11 +29,7 @@ A program that runs within the DataHives architecture and that counts triples.
 
 :- use_module(plRdfDev(rdf_html_table)).
 
-:- dynamic(http:location/3).
-:- multifile(http:location/3).
-   http:location(dh_web, root(dh), []).
-
-:- http_handler(dh_web(triple_count), top_triples_web, []).
+:- http_handler(dh(triple_count), top_triples_web, []).
 
 user:web_module('DH TripleCount', top_triples_web).
 

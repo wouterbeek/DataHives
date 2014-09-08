@@ -18,11 +18,11 @@ The Web API for DataHives.
 :- use_module(library(http/http_dispatch)).
 
 :- use_module(dh_agent(dh_agent)).
-:- use_module(dh_agent(dh_agent_definition)).
+:- use_module(dh_agent_definition(dh_agent_definition)).
 :- use_module(dh_web(dh_web_generics)).
 
 % /stats
-:- http_handler(dh_web(stats), rest_process_stats, [prefix]).
+:- http_handler(dh(stats), rest_process_stats, [prefix]).
 
 
 

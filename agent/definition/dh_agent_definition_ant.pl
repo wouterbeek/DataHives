@@ -1,6 +1,6 @@
-:- module(dh_agent_ant, []).
+:- module(dh_agent_definition_ant, []).
 
-/** <module> DataHives: ant agents
+/** <module> DataHives Agent Definition: Ant
 
 @author Baudouin Duthoit
 @author Wouter Beek
@@ -8,11 +8,15 @@
 */
 
 :- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_path)).
 
-:- use_module(dh_agent(dh_agent_definition)).
+:- use_module(plRdf(rdfs_label_ext)).
+
+:- use_module(dh_agent_definition(dh_agent_definition)).
 
 :- initialization((
-  http_link_to_id(dh_agent_definition, path_postfix(ant), AgentDefinition),
+  http_absolute_uri(dh_agent_definition(ant), AgentDefinition),
+  rdfs_assert_label(AgentDefinition, ant, dh),
   dh_agent_definition_db(
     AgentDefinition,
     [

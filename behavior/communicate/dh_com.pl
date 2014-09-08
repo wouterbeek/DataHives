@@ -20,6 +20,7 @@ Communication predicates for agents in DataHives.
 
 :- use_module(library(ansi_term)).
 :- use_module(library(apply)).
+:- use_module(library(http/http_path)).
 :- use_module(library(semweb/rdf_db)).
 
 :- use_module(dh_act(dh_search)).
@@ -76,11 +77,7 @@ spawn_foragers(InterestLevel, NumberOfForagers, DirectedTriple):-
     NumberOfSearchResults >= InterestLevel
   ->
     directed_triple(DirectedTriple, Triple),
-    http_link_to_id(
-      dh_agent_definition,
-      path_postfix(forager),
-      AgentDefinition
-    ),
+    http_absolute_uri(dh_agent_definition(forager), AgentDefinition),
     forall(
       between(1, NumberOfForagers, _),
       dh_agent_create(AgentDefinition, Triple)

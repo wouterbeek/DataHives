@@ -84,7 +84,7 @@ dh_web(Request):-
 
 % DataHives: agents.
 
-http:location(dh_agent, dh(agents), []).
+http:location(dh_agent, dh(agent), []).
 
 :- use_module(dh_agent(dh_agent)).
 
@@ -100,7 +100,7 @@ dh_agent(Request):-
 
 http:location(dh_agent_definition, dh_agent(definitions), []).
 
-:- use_module(dh_agent(dh_agent_definition)).
+:- use_module(dh_agent_definition(dh_agent_definition)).
 
 user:web_module('DH Agent Definitions', dh_agent_definition).
 
@@ -129,5 +129,5 @@ dh_agent_graph(Request):-
 % The part of the initialization that requires HTTP handlers to be set.
 
 % Load the agent definitions.
-:- ensure_loaded(dh_agent(dh_agent_init)).
+:- ensure_loaded(dh_agent_definition(dh_agent_definition_init)).
 

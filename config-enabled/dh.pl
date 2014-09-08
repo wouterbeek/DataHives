@@ -13,16 +13,16 @@
 
 :- use_module(cliopatria(hooks)).
 
+:- multifile(http:location/3).
+:- multifile(user:file_search_path/2).
 
 
 % DataHives: home.
 
-:- multifile(http:location/3).
-   http:location(dh_web, cliopatria(dh_web), []).
+http:location(dh, cliopatria(dh), []).
 
-:- multifile(user:file_search_path/2).
-   user:file_search_path(css, dh_web(css)).
-   user:file_search_path(js, dh_web(js)).
+user:file_search_path(css, dh_web(css)).
+user:file_search_path(js, dh_web(js)).
 
 :- use_module(dh_web(dh_web)).
 
@@ -33,14 +33,14 @@ cliopatria:menu_item(600=dh/home, 'DataHives').
 
 % DataHives: agent.
 
-:- use_module(dh_web(dh_web_agents)).
+:- use_module(dh_agent(dh_agent)).
 
-cliopatria:menu_item(600=dh/agent, 'DH Agents').
+cliopatria:menu_item(600=dh/agent, 'DH Agent').
 
-:- http_handler(dh_web(agents), dh_web_agents, [id(agents)]).
+:- http_handler(dh(agent), dh_agent, [id(agent)]).
 
-dh_web_agents(Request):-
-  dh_web_agents(Request, cliopatria(default)).
+dh_agent(Request):-
+  dh_agent(Request, cliopatria(default)).
 
 
 % DataHives: graph.
@@ -49,7 +49,7 @@ dh_web_agents(Request):-
 
 cliopatria:menu_item(700=dh/graph, 'DH Graph').
 
-:- http_handler(dh_web(graph), dh_agent_graph, [id(graph)]).
+:- http_handler(dh(graph), dh_agent_graph, [id(graph)]).
 
 dh_agent_graph(Request):-
   dh_agent_graph(Request, cliopatria(default)).
@@ -58,10 +58,11 @@ dh_agent_graph(Request):-
 % plTabular
 
 :- use_module(plTabular(rdf_tabular)).
-rdf_tabular(Request):-
-  rdf_tabular(Request, plTabular).
 
 :- http_handler(cliopatria(plTabular), rdf_tabular, []).
+
+rdf_tabular(Request):-
+  rdf_tabular(Request, plTabular).
 
 :- html_resource(plTabular, [requires([css('plTabular.css')]),virtual(true)]).
 

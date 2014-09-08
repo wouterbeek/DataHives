@@ -1,6 +1,6 @@
-:- module(dh_agent_forager, []).
+:- module(dh_agent_definition_forager, []).
 
-/** <module> DataHives agent forager
+/** <module> DataHives Agent Definition: forager
 
 Defines the forager bee agent for use in DataHives.
 
@@ -10,15 +10,15 @@ Defines the forager bee agent for use in DataHives.
 */
 
 :- use_module(library(http/http_dispatch)).
+:- use_module(library(http/http_path)).
 
-:- use_module(dh_agent(dh_agent_definition)).
+:- use_module(plRdf(rdfs_label_ext)).
+
+:- use_module(dh_agent_definition(dh_agent_definition)).
 
 :- initialization((
-  http_link_to_id(
-    dh_agent_definition,
-    path_postfix(forager),
-    AgentDefinition
-  ),
+  http_absolute_uri(dh_agent_definition(forager), AgentDefinition),
+  rdfs_assert_label(AgentDefinition, forager, dh),
   dh_agent_definition_db(
     AgentDefinition,
     [
