@@ -25,10 +25,11 @@ that implement the DataHives Web-based front-end.
 
 
 
-dh_body(Body) -->
+dh_body(Content) -->
   html([
+    \html_requires(css(pure)),
     \html_requires(js(jquery)),
-    Body
+    div([style='margin-left: 1.5cm; margin-top: 0.5cm;'], Content)
   ]).
 
 

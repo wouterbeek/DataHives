@@ -46,9 +46,29 @@ dh_agent_definition(Request, HtmlStyle):-
     HtmlStyle,
     \dh_agent_definition_head(html('')),
     \dh_body([
-      div(id=agentDefinitionsContainer, []),
-      div(id=agentDefinitionContainer, []),
-      button(id=createBtn, ['Create agent']),
+      form(class=['pure-form','pure-form-stacked'],
+        fieldset([
+          legend('Agent definitions'),
+          div(class='pure-g', [
+            div([
+              class=['pure-u-1','pure-u-md-1-3'],
+              id=agentDefinitionsContainer
+            ], []),
+            div([
+              class=['pure-u-1','pure-u-md-1-3'],
+              id=agentDefinitionContainer
+            ], [])
+          ]),
+          button(
+            [
+              class=['pure-button','pure-button-primary'],
+              id=createBtn,
+              type=submit
+            ],
+            ['Create agent']
+          )
+        ])
+      ),
       \js_script({|javascript(AgentLocation,AgentDefinitionLocation,SparqlLocation)||
 function pairsToDescriptionList(data) {
   var string = "<dl>";
@@ -61,7 +81,7 @@ $(document).ready(function() {
   $.ajax({
     "dataType": "json",
     "success": function(data) {
-      var select = $("<select id=aliases></select>").appendTo("#agentDefinitionsContainer");
+      var select = $("<select class=\"pure-input-1-2\" id=aliases></select>").appendTo("#agentDefinitionsContainer");
       $.each(data, function(key, value) {
         select.append($("<option value=" + key + ">" + value + "</option>"));
       });
