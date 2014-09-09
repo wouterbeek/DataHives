@@ -1,11 +1,11 @@
 :- module(
   dh_agent_definition,
   [
-    dh_agent_definition/2, % +Request:list(nvpair)
-                           % +HtmlStyle
-    dh_agent_definition_db/1, % ?AgentDefinition:url
-    dh_agent_definition_db/2 % ?AgentDefinition:url
-                             % ?Predicates:list
+    dh_agent_definition/1, % ?AgentDefinition:url
+    dh_agent_definition/2, % ?AgentDefinition:url
+                           % ?Predicates:list
+    dh_agent_definition_rest/2 % +Request:list(nvpair)
+                               % +HtmlStyle
   ]
 ).
 
@@ -36,13 +36,33 @@ Implements agent definitions in DataHives.
 :- use_module(dh_core(dh_generics)).
 :- use_module(dh_web(dh_web_generics)).
 
-:- dynamic(agent_definition_db0/2).
-:- multifile(agent_definition_db0/2).
+:- dynamic(agent_definition0/2).
+:- multifile(agent_definition0/2).
 
+
+
+%! dh_agent_definition(+AgentDefinition:url) is semidet.
+%! dh_agent_definition(-AgentDefinition:url) is nondet.
+
+dh_agent_definition(AgentDefinition):-
+  rdfs_individual_of(AgentDefinition, dh:'AgentDefinition').
+
+
+%! dh_agent_definition(+AgentDefinition:url, +Predicates:list) is det.
+%! dh_agent_definition(+AgentDefinition:url, -Predicates:list) is det.
+%! dh_agent_definition(-AgentDefinition:url, -Predicates:list) is nondet.
+
+dh_agent_definition(AgentDefinition, Predicates):-
+  maplist(ground, [AgentDefinition,Predicates]), !,
+  assert(agent_definition0(AgentDefinition, Predicates)),
+  rdf_assert_instance(AgentDefinition, dh:'AgentDefinition', dh),
+  rdfs_assert_subclass(AgentDefinition, dh:'Agent', dh).
+dh_agent_definition(AgentDefinition, Predicates):-
+  agent_definition0(AgentDefinition, Predicates).
 
 
 % GET text/html *
-dh_agent_definition(Request, HtmlStyle):-
+dh_agent_definition_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinitionLocation),
   http_absolute_uri(dh_agent_definition(.), AgentDefinitionLocation), !,
@@ -52,7 +72,13 @@ dh_agent_definition(Request, HtmlStyle):-
     HtmlStyle,
     \dh_agent_definition_head(html('')),
     \dh_body([
-      form(class=['pure-form','pure-form-stacked'],
+      form(
+        [
+          action=AgentLocation,
+          class=['pure-form','pure-form-stacked'],
+          id=agentDefinitionForm,
+          method=post
+        ],
         fieldset([
           legend('Agent definitions'),
           div(class='pure-g', [
@@ -111,6 +137,22 @@ $(document).ready(function() {
     "url": AgentDefinitionLocation
   });
 });
+// Replace the outdated HTML5 <form> encoding practice with a modern REST+JSON approach.
+$("#agentDefinitionForm").submit(function(event) {
+  event.preventDefault(); // Keep the form from submitting
+  $.ajax({
+    "contentType": "application/json",
+    "data": JSON.stringify({
+        "agentDefinition":
+        $("#agentDefinitionsContainer option:selected").attr("value")
+    }),
+    "dataType": "json",
+    // Reuse <form> attribute: method -> type.
+    "type": $(event.currentTarget).attr("method"),
+    // Reuse <form> attribute: action -> url.
+    "url": $(event.currentTarget).attr("action")
+  });
+});
 $("#agentDefinitionsContainer").on("change", "select", function() {
   $.ajax({
     "dataType": "json",
@@ -136,28 +178,18 @@ $("#agentDefinitionsContainer").on("change", "select", function() {
     "url": $(this).find("option:selected").attr("value")
   });
 });
-$("#createBtn").click(function() {
-  var agentDefinition = $("#agentDefinitionsContainer option:selected").attr("value");
-  $.ajax({
-    "contentType" : "application/json",
-    "data": JSON.stringify({ "agentDefinition": agentDefinition }),
-    "dataType": "json",
-    "type": "post",
-    "url": AgentLocation
-  });
-});
       |})
     ])
   ).
 % GET text/html PATH
 %
 % Returns 404 if the given agent definition is not known.
-dh_agent_definition(Request, HtmlStyle):-
+dh_agent_definition_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinition), !,
   
   % Unknown agent definition.
-  (   dh_agent_definition_db(AgentDefinition, _)
+  (   dh_agent_definition(AgentDefinition)
   ->  true
   ;   http_404([], Request)
   ),
@@ -230,14 +262,14 @@ $("#createBtn").click(function() {
 % GET application/json *
 % Returns type/label pairs in JSON format.
 % This can e.g. be used to populate a <select> element in HTML.
-dh_agent_definition(Request, _):-
+dh_agent_definition_rest(Request, _):-
   cors_enable,
   request_filter(Request, get, _/json, Root),
   http_absolute_uri(dh_agent_definition(.), Root), !,
   aggregate_all(
     set(AgentDefinition-Label),
     (
-      agent_definition_db0(AgentDefinition, _),
+      agent_definition0(AgentDefinition, _),
       rdfs_label(AgentDefinition, Label)
     ),
     Pairs
@@ -245,34 +277,14 @@ dh_agent_definition(Request, _):-
   dict_create(Dict, agent_definitions, Pairs),
   reply_json_dict(Dict).
 % GET application/json PATH
-dh_agent_definition(Request, _):-
+dh_agent_definition_rest(Request, _):-
   cors_enable,
   request_filter(Request, get, _/json, AgentDefinition),
-  agent_definition_db0(AgentDefinition, Predicates1),
+  agent_definition0(AgentDefinition, Predicates1),
   def_pairs(Predicates1, Predicates2),
   dict_create(Pairs, json, Predicates2),
   dict_create(Dict, json, [agentDefinition-AgentDefinition,predicates-Pairs]),
   reply_json_dict(Dict).
-
-
-%! dh_agent_definition_db(+AgentDefinition:url) is semidet.
-%! dh_agent_definition_db(-AgentDefinition:url) is nondet.
-
-dh_agent_definition_db(AgentDefinition):-
-  rdfs_individual_of(AgentDefinition, dh:'AgentDefinition').
-
-
-%! dh_agent_definition_db(+AgentDefinition:url, +Predicates:list) is det.
-%! dh_agent_definition_db(+AgentDefinition:url, -Predicates:list) is det.
-%! dh_agent_definition_db(-AgentDefinition:url, -Predicates:list) is nondet.
-
-dh_agent_definition_db(AgentDefinition, Predicates):-
-  maplist(ground, [AgentDefinition,Predicates]), !,
-  assert(agent_definition_db0(AgentDefinition, Predicates)).
-dh_agent_definition_db(AgentDefinition, Predicates):-
-  agent_definition_db0(AgentDefinition, Predicates),
-  rdf_assert_instance(AgentDefinition, dh:'AgentDefinition', dh),
-  rdfs_assert_subclass(AgentDefinition, dh:'Agent', dh).
 
 
 

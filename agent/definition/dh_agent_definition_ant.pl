@@ -17,7 +17,7 @@
 :- initialization((
   http_absolute_uri(dh_agent_definition(ant), AgentDefinition),
   rdfs_assert_label(AgentDefinition, ant, dh),
-  dh_agent_definition_db(
+  dh_agent_definition(
     AgentDefinition,
     [
       dh_weighted_walk,

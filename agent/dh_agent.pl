@@ -1,9 +1,9 @@
 :- module(
   dh_agent,
   [
-    dh_agent/2, % +Request:list(nvpair)
-                % +HtmlStyle
-    dh_agent_db/1 % ?Agent:url
+    dh_agent/1, % ?Agent:url
+    dh_agent_rest/2 % +Request:list(nvpair)
+                    % +HtmlStyle
   ]
 ).
 
@@ -40,8 +40,15 @@ Interface to agents in DataHives.
 
 
 
+%! dh_agent(+Agent:url) is semidet.
+%! dh_agent(-Agent:url) is nondet.
+
+dh_agent(Agent):-
+  rdfs_individual_of(Agent, dh:'Agent').
+
+
 % GET html *
-dh_agent(Request, HtmlStyle):-
+dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
@@ -53,7 +60,7 @@ dh_agent(Request, HtmlStyle):-
   findall(
     Row,
     (
-      dh_agent_db(Agent),
+      dh_agent(Agent),
       maplist(
         \Property^Value^dh_agent_property(Agent, Property, Value),
         Properties,
@@ -62,6 +69,7 @@ dh_agent(Request, HtmlStyle):-
     ),
     Rows
   ),
+gtrace,
   number_of_agents(N),
   maplist(
     \Property^Header^dcg_phrase(capitalize, Property, Header),
@@ -84,10 +92,9 @@ dh_agent(Request, HtmlStyle):-
     )
   ).
 % GET html PATH
-dh_agent(Request, HtmlStyle):-
+dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Agent), !,
-gtrace,
   findall(
     [Name,Value],
     dh_agent_property(Agent, Name, Value),
@@ -105,13 +112,14 @@ gtrace,
       )
     )
   ).
-% POST json PATH
+% POST json *
 %
 % Returns 400 (Bad Request) if the request does not include an agentDefinition
 % in JSON format.
-dh_agent(Request, _):-
+dh_agent_rest(Request, _):-
   cors_enable,
   request_filter(Request, post, _/json, _), !,
+gtrace,
   catch(
     (
       http_read_json_dict(Request, Dict),
@@ -122,13 +130,6 @@ dh_agent(Request, _):-
   ),
   dh_agent_create(AgentDefinition, graph(visum)),
   reply_json_dict(json{}).
-
-
-%! dh_agent_db(+Agent:url) is semidet.
-%! dh_agent_db(-Agent:url) is nondet.
-
-dh_agent_db(Agent):-
-  rdfs_individual_of(Agent, dh:'Agent').
 
 
 

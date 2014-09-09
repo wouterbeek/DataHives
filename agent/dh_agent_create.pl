@@ -93,7 +93,7 @@ which is used for storing beliefs the agent has.
 
 % An agent definition that does not specific a special exit predicate.
 dh_agent_create(AgentDefinition, Initialization):-
-  dh_agent_definition_db(
+  dh_agent_definition(
     AgentDefinition,
     [NavDef,ActDef,ComDef,EvalDef]
   ), !,
@@ -110,7 +110,7 @@ dh_agent_create(AgentDefinition, Initialization):-
   ).
 % An agent definition that specifies a special exit predicate.
 dh_agent_create(AgentDefinition, Initialization):-
-  dh_agent_definition_db(
+  dh_agent_definition(
     AgentDefinition,
     [NavDef,ActDef,ComDef,EvalDef,ExitDef]
   ), !,

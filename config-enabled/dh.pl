@@ -17,6 +17,11 @@
 :- dynamic(user:file_search_path/2).
 :- multifile(user:file_search_path/2).
 
+:- use_module(library(settings)).
+
+:- set_setting_default(http:public_host, localhost).
+:- set_setting_default(http:public_port, setting(http:port)).
+
 
 
 % DataHives: Home
@@ -44,10 +49,10 @@ http:location(dh_agent, dh(agent), []).
 
 cliopatria:menu_item(600=dh/dh_agent, 'DH Agent').
 
-:- http_handler(dh_agent(.), dh_agent, [id(dh_agent),prefix,priority(-1)]).
+:- http_handler(dh_agent(.), dh_agent_rest, [id(dh_agent),prefix,priority(-1)]).
 
-dh_agent(Request):-
-  dh_agent(Request, cliopatria(default)).
+dh_agent_rest(Request):-
+  dh_agent_rest(Request, cliopatria(default)).
 
 
 % DataHives: Agent Definition
@@ -60,12 +65,12 @@ cliopatria:menu_item(600=dh/dh_agent_definition, 'DH Agent Definition').
 
 :- http_handler(
      dh_agent_definition(.),
-     dh_agent_definition,
+     dh_agent_definition_rest,
      [id(dh_agent_definition),prefix,priority(-1)]
    ).
 
-dh_agent_definition(Request):-
-  dh_agent_definition(Request, cliopatria(default)).
+dh_agent_definition_rest(Request):-
+  dh_agent_definition_rest(Request, cliopatria(default)).
 
 
 % DataHives: Graph
