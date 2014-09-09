@@ -1,5 +1,6 @@
 :- module(conf_dh, []).
 
+:- use_module(library(http/html_head)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_path)). % http:location/3 registrations
 
@@ -93,4 +94,10 @@ rdf_tabular(Request):-
 user:body(plTabular, Body) -->
   html_requires(plTabular),
   user:body(dh, Body).
+
+
+% The part of the initialization that requires HTTP handlers to be set.
+
+% Load the agent definitions.
+:- ensure_loaded(dh_agent_definition(dh_agent_definition_init)).
 

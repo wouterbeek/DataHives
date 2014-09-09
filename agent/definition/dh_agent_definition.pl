@@ -38,10 +38,10 @@ Implements agent definitions in DataHives.
 % GET text/html *
 dh_agent_definition(Request, HtmlStyle):-
   cors_enable,
-  request_filter(Request, get, _/html, Root),
-  http_absolute_uri(dh_agent_definition(.), Root), !,
+  request_filter(Request, get, _/html, AgentDefinitionLocation),
+  http_absolute_uri(dh_agent_definition(.), AgentDefinitionLocation), !,
   http_absolute_uri(dh_agent(.), AgentLocation),
-  http_absolute_uri(dh_agent_definition(.), AgentDefinitionLocation),
+  http_absolute_location(sparql(.), SparqlLocation, []),
   reply_html_page(
     HtmlStyle,
     \dh_agent_definition_head(html('')),
@@ -49,7 +49,7 @@ dh_agent_definition(Request, HtmlStyle):-
       div(id=agentDefinitionsContainer, []),
       div(id=agentDefinitionContainer, []),
       button(id=createBtn, ['Create agent']),
-      \js_script({|javascript(AgentLocation,AgentDefinitionLocation)||
+      \js_script({|javascript(AgentLocation,AgentDefinitionLocation,SparqlLocation)||
 function pairsToDescriptionList(data) {
   var string = "<dl>";
   $.each(data, function(term, description) {
@@ -66,6 +66,7 @@ $(document).ready(function() {
         select.append($("<option value=" + key + ">" + value + "</option>"));
       });
     },
+    "type": "get",
     "url": AgentDefinitionLocation
   });
 });
@@ -73,16 +74,34 @@ $("#agentDefinitionsContainer").on("change", "select", function() {
   $.ajax({
     "dataType": "json",
     "success": function(data) {
-      $("#createBtn").text("Create " + data["agentDefinition"] + " agent");
+      var query = "SELECT ?label WHERE { <" +
+          data["agentDefinition"] +
+          "> <http://www.w3.org/2000/01/rdf-schema#label> ?label . }";
+      $.ajax({
+        "accepts": { "json": "application/sparql-results+json" },
+        "data": [{ "name": "query", "value": query }],
+        "dataType": "json",
+        "success": function(data) {
+          $("#createBtn").text(
+            "Create " + data["results"]["bindings"][0]["label"]["value"] + " agent"
+          );
+        },
+        "type": "get",
+        "url": SparqlLocation
+      });
       $("#agentDefinitionContainer").html(pairsToDescriptionList(data["predicates"]));
     },
+    "type": "get",
     "url": $(this).find("option:selected").attr("value")
   });
 });
 $("#createBtn").click(function() {
+  var agentDefinition = $("#agentDefinitionsContainer option:selected").attr("value");
   $.ajax({
-    "data": { "agentDefinition": $("#agentDefinitionsContainer option:selected").attr("value") },
+    "contentType" : "application/json",
+    "data": JSON.stringify({ "agentDefinition": agentDefinition }),
     "dataType": "json",
+    "type": "post",
     "url": AgentLocation
   });
 });
@@ -109,6 +128,7 @@ $(document).ready(function() {
         select.append($("<option value=" + key + ">" + value + "</option>"));
       });
     },
+    "type": "get",
     "url": Location
   });
 });
@@ -148,7 +168,7 @@ dh_agent_definition(Request, _):-
 %! dh_agent_definition_db(-AgentDefinition:url, -Predicates:list) is nondet.
 
 dh_agent_definition_db(AgentDefinition, Predicates):-
-  maplist(nonvar, [AgentDefinition,Predicates]), !,
+  maplist(ground, [AgentDefinition,Predicates]), !,
   assert(agent_definition_db0(AgentDefinition, Predicates)).
 dh_agent_definition_db(AgentDefinition, Predicates):-
   agent_definition_db0(AgentDefinition, Predicates).

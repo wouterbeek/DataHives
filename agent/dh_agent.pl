@@ -93,9 +93,20 @@ dh_agent(Request, HtmlStyle):-
     )
   ).
 % POST json PATH
+%
+% Returns 400 (Bad Request) if the request does not include an agentDefinition
+% in JSON format.
 dh_agent(Request, _):-
   cors_enable,
-  request_filter(Request, post, _-json, AgentDefinition), !,
+  request_filter(Request, post, _/json, _), !,
+  catch(
+    (
+      http_read_json_dict(Request, Dict),
+      atom_string(AgentDefinition, Dict.agentDefinition)
+    ),
+    Exception,
+    throw(http_reply(bad_request(Exception)))
+  ),
   dh_agent_create(AgentDefinition, graph(visum)),
   reply_json_dict(json{}).
 
