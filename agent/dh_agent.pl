@@ -15,13 +15,18 @@ Interface to agents in DataHives.
 @version 2014/09
 */
 
+:- use_module(library(apply)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
+:- use_module(library(lambda)).
 :- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(request_ext)).
+
+:- use_module(plDcg(dcg_content)).
+:- use_module(plDcg(dcg_generic)).
 
 :- use_module(plHtml(html)).
 :- use_module(plHtml(html_pl_term)).
@@ -40,37 +45,32 @@ dh_agent(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
+  aggregate_all(
+    set(Property),
+    dh_agent_property(Property),
+    Properties
+  ),
   findall(
-    [ThreadAlias,AgentDefinitionLabel,Status,CPU_Time,Cycles,Steps,Effectiveness],
+    Row,
     (
-      % Thread alias / agent label.
       dh_agent_db(Agent),
-      rdfs_label(Agent, ThreadAlias),
-
-      % Agent definition label.
-      rdf(Agent, rdf:type, AgentDefinition, dh),
-      rdfs_label(AgentDefinition, AgentDefinitionLabel),
-
-      % Thead properties: status, CPU time, cycles, steps.
-      thread_property(Thread, alias(ThreadAlias)),
-      thread_property(Thread, status(Status)),
-      dh_agent_age(Thread, Age),
-      dh_agent_cycles(Thread, Cycles),
-      dh_agent_steps(Thread, Steps),
-      (   memberchk(Status, [exception(_),false])
-      ->  CPU_Time = 0
-      ;   thread_statistics(Thread, cputime, CPU_Time)
-      ),
-
-      % Custom defined statistics: effectiveness.
-      Effectiveness is Steps / Age
+      maplist(
+        \Property^Value^dh_agent_property(Agent, Property, Value),
+        Properties,
+        Row
+      )
     ),
     Rows
   ),
   number_of_agents(N),
+  maplist(
+    \Property^Header^dcg_phrase(capitalize, Property, Header),
+    Properties,
+    HeaderRow
+  ),
   reply_html_page(
     HtmlStyle,
-    \dh_head(['Agents']),
+    \dh_agent_head(['Overview']),
     \dh_body(
       \html_table(
         html([
@@ -78,7 +78,7 @@ dh_agent(Request, HtmlStyle):-
           \html_pl_term(dh, N),
           ' currently running agents in DataHives.'
         ]),
-        [['Alias','ThreadId','Status','CPU time','Cycles','Steps','Effectiveness']|Rows],
+        [HeaderRow|Rows],
         [header_row(true),index(true)]
       )
     )
@@ -87,18 +87,19 @@ dh_agent(Request, HtmlStyle):-
 dh_agent(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Agent), !,
+gtrace,
   findall(
     [Name,Value],
     dh_agent_property(Agent, Name, Value),
     Rows
   ),
-  rdfs_label(Location, Label),
+  rdfs_label(Agent, Label),
   reply_html_page(
     HtmlStyle,
     \dh_agent_head([Label]),
     \dh_body(
       \html_table(
-        html(['Overview of agent ', \html_link(Location-Label), '.']),
+        html(['Overview of agent ', \html_link(Agent-Label), '.']),
         Rows,
         [header_row(false),index(false)]
       )
