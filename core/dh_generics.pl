@@ -21,8 +21,12 @@
 Generic predicates that are used in DataHives.
 
 @author Wouter Beek
-@version 2014/06, 2014/08
+@version 2014/06, 2014/08-2014/09
 */
+
+:- use_module(library(semweb/rdf_db)).
+
+:- rdf_register_prefix(dh, 'http://www.wouterbeek.com/dh/').
 
 
 

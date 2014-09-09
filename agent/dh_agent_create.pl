@@ -37,7 +37,9 @@ which is used for storing beliefs the agent has.
 :- use_module(library(lists)).
 :- use_module(library(predicate_options)). % Declarations.
 
+:- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_random)).
+:- use_module(plRdf(rdfs_label_ext)).
 
 :- use_module(dh_agent_definition(dh_agent_definition)).
 :- use_module(dh_core(dh_cycle)).
@@ -101,6 +103,7 @@ dh_agent_create(AgentDefinition, Initialization):-
     [NavPred,ActPred,ComPred,EvalPred]
   ),
   dh_agent_create(
+    AgentDefinition,
     [NavPred,ActPred,ComPred,EvalPred],
     default_exit(Initialization),
     Initialization
@@ -123,6 +126,7 @@ dh_agent_create(AgentDefinition, Initialization):-
   ExitPred2 =.. [ExitPred0|ExitArgs2],
 
   dh_agent_create(
+    AgentDefinition,
     [NavPred,ActPred,ComPred,EvalPred],
     ExitPred2,
     Initialization
@@ -130,6 +134,7 @@ dh_agent_create(AgentDefinition, Initialization):-
 
 
 %! dh_agent_create(
+%!   +AgentDefinition:url,
 %!   +Predicates:list(atom),
 %!   :Exit,
 %!   +Initialization:or([atom,compound])
@@ -138,25 +143,29 @@ dh_agent_create(AgentDefinition, Initialization):-
 %      or a triple, denoted by =|rdf(+subject,+predicate,+object)|=.
 
 % Initialize by graph.
-dh_agent_create(Preds, Exit, graph(Graph)):- !,
+dh_agent_create(AgentDefinition, Preds, Exit, graph(Graph)):- !,
   rdf_random_triple(S, P, O, Graph),
-  dh_agent_create(Preds, Exit, rdf(S,P,O), [graph(Graph)]).
+  dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O), [graph(Graph)]).
 % Initialize by triple.
-dh_agent_create(Preds, Exit, rdf(S,P,O)):-
-  dh_agent_create(Preds, Exit, rdf(S,P,O), []).
+dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O)):-
+  dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O), []).
 
 %! dh_agent_create(
+%!   +AgentDefinition:url,
 %!   +Predicates:list(atom),
 %!   :Exit,
 %!   +InitialTriple:compound,
 %!   +Options:list(nvpair)
 %! ) is det.
 
-dh_agent_create(Preds, ExitPred, InitialTriple, Options):-
+dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   % Construct the agent thread name.
   flag(number_of_agents, Id, Id + 1),
-  format(atom(Alias), 'agent_~d', [Id]),
-
+  format(atom(Alias), '~d', [Id]),
+  rdf_global_id(dh:Alias, Agent),
+  rdf_assert_instance(Agent, AgentDefinition, dh),
+  rdfs_assert_label(Agent, Alias, dh),
+  
   % Start the thread.
   thread_create(
     dh_cycle(Preds, InitialTriple, Options),

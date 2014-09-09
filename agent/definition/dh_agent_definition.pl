@@ -3,6 +3,7 @@
   [
     dh_agent_definition/2, % +Request:list(nvpair)
                            % +HtmlStyle
+    dh_agent_definition_db/1, % ?AgentDefinition:url
     dh_agent_definition_db/2 % ?AgentDefinition:url
                              % ?Predicates:list
   ]
@@ -29,6 +30,10 @@ Implements agent definitions in DataHives.
 :- use_module(generics(request_ext)).
 :- use_module(pl(pl_log)).
 
+:- use_module(plRdf(rdf_build)).
+:- use_module(plRdf(rdfs_build)).
+
+:- use_module(dh_core(dh_generics)).
 :- use_module(dh_web(dh_web_generics)).
 
 :- dynamic(agent_definition_db0/2).
@@ -158,16 +163,26 @@ dh_agent_definition(Request, HtmlStyle):-
   ),
   
   rdfs_label(AgentDefinition, Label),
+  http_absolute_uri(dh_agent(.), AgentLocation),
   reply_html_page(
     HtmlStyle,
     \dh_agent_definition_head([Label]),
     \dh_body([
+      h1(['Specification of the ',Label,' agent']),
       div(
         [
           class=['pure-u-1','pure-u-md-1-3'],
           id=agentDefinitionContainer
         ], []),
-      \js_script({|javascript(AgentDefinition)||
+      button(
+        [
+          class=['pure-button','pure-button-primary'],
+          id=createBtn,
+          type=submit
+        ],
+        ['Create ',Label,' agent']
+      ),
+      \js_script({|javascript(AgentDefinition,Label,AgentLocation)||
 function indexString(index) {
   switch (index) {
     case 0:
@@ -198,6 +213,15 @@ $(document).ready(function() {
     },
     "type": "get",
     "url": AgentDefinition
+  });
+});
+$("#createBtn").click(function() {
+  $.ajax({
+    "contentType" : "application/json",
+    "data": JSON.stringify({ "agentDefinition": AgentDefinition }),
+    "dataType": "json",
+    "type": "post",
+    "url": AgentLocation
   });
 });
       |})
@@ -231,6 +255,13 @@ dh_agent_definition(Request, _):-
   reply_json_dict(Dict).
 
 
+%! dh_agent_definition_db(+AgentDefinition:url) is semidet.
+%! dh_agent_definition_db(-AgentDefinition:url) is nondet.
+
+dh_agent_definition_db(AgentDefinition):-
+  rdfs_individual_of(AgentDefinition, dh:'AgentDefinition').
+
+
 %! dh_agent_definition_db(+AgentDefinition:url, +Predicates:list) is det.
 %! dh_agent_definition_db(+AgentDefinition:url, -Predicates:list) is det.
 %! dh_agent_definition_db(-AgentDefinition:url, -Predicates:list) is nondet.
@@ -239,7 +270,9 @@ dh_agent_definition_db(AgentDefinition, Predicates):-
   maplist(ground, [AgentDefinition,Predicates]), !,
   assert(agent_definition_db0(AgentDefinition, Predicates)).
 dh_agent_definition_db(AgentDefinition, Predicates):-
-  agent_definition_db0(AgentDefinition, Predicates).
+  agent_definition_db0(AgentDefinition, Predicates),
+  rdf_assert_instance(AgentDefinition, dh:'AgentDefinition', dh),
+  rdfs_assert_subclass(AgentDefinition, dh:'Agent', dh).
 
 
 
