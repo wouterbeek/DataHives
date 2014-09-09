@@ -20,6 +20,7 @@ Implements agent definitions in DataHives.
 :- use_module(library(apply)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
+:- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
@@ -70,10 +71,25 @@ dh_agent_definition(Request, HtmlStyle):-
         ])
       ),
       \js_script({|javascript(AgentLocation,AgentDefinitionLocation,SparqlLocation)||
+function indexString(index) {
+  switch (index) {
+    case 0:
+      return "NAVIGATE";
+    case 1:
+      return "ACT";
+    case 2:
+      return "COMMUNICATE";
+    case 3:
+      return "EVALUATE";
+    case 4:
+      return "END-OF-LIFE";
+  }
+}
 function pairsToDescriptionList(data) {
   var string = "<dl>";
+  var index = 0;
   $.each(data, function(term, description) {
-    string += "<dt>" + term + "</dt><dd>" + description + "</dd>";
+    string += "<dt>[" + indexString(index++) + "] " + term + "</dt><dd>" + description + "</dd>";
   });
   return string + "</dl>";
 }
@@ -129,27 +145,59 @@ $("#createBtn").click(function() {
     ])
   ).
 % GET text/html PATH
+%
+% Returns 404 if the given agent definition is not known.
 dh_agent_definition(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinition), !,
+  
+  % Unknown agent definition.
+  (   dh_agent_definition_db(AgentDefinition, _)
+  ->  true
+  ;   http_404([], Request)
+  ),
+  
   rdfs_label(AgentDefinition, Label),
   reply_html_page(
     HtmlStyle,
     \dh_agent_definition_head([Label]),
     \dh_body([
-      div(id=agentDefinitionsContainer, []),
-      \js_script({|javascript(Location)||
+      div(
+        [
+          class=['pure-u-1','pure-u-md-1-3'],
+          id=agentDefinitionContainer
+        ], []),
+      \js_script({|javascript(AgentDefinition)||
+function indexString(index) {
+  switch (index) {
+    case 0:
+      return "NAVIGATE";
+    case 1:
+      return "ACT";
+    case 2:
+      return "COMMUNICATE";
+    case 3:
+      return "EVALUATE";
+    case 4:
+      return "END-OF-LIFE";
+  }
+}
+function pairsToDescriptionList(data) {
+  var string = "<dl>";
+  var index = 0;
+  $.each(data, function(term, description) {
+    string += "<dt>[" + indexString(index++) + "] " + term + "</dt><dd>" + description + "</dd>";
+  });
+  return string + "</dl>";
+}
 $(document).ready(function() {
   $.ajax({
     "dataType": "json",
     "success": function(data) {
-      var select = $("<select id=aliases></select>").appendTo("#agentDefinitionsContainer");
-      $.each(data, function(key, value) {
-        select.append($("<option value=" + key + ">" + value + "</option>"));
-      });
+      $("#agentDefinitionContainer").html(pairsToDescriptionList(data["predicates"]));
     },
     "type": "get",
-    "url": Location
+    "url": AgentDefinition
   });
 });
       |})
