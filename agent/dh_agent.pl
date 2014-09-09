@@ -47,7 +47,7 @@ dh_agent(Request, HtmlStyle):-
   reply_html_page(
     HtmlStyle,
     \dh_agent_head([Label]),
-    html(
+    \dh_body(
       \html_table(
         html(['Overview of agent ', \html_link(Location-Label), '.']),
         Rows,
@@ -80,7 +80,7 @@ dh_agent(Request, HtmlStyle):-
   reply_html_page(
     HtmlStyle,
     \dh_head(['Agents']),
-    html(
+    \dh_body(
       \html_table(
         html([
           'Overview of the ',

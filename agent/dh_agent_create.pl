@@ -39,6 +39,7 @@ which is used for storing beliefs the agent has.
 
 :- use_module(plRdf(rdf_random)).
 
+:- use_module(dh_agent_definition(dh_agent_definition)).
 :- use_module(dh_core(dh_cycle)).
 
 :- predicate_options(dh_agent_create/4, 4, [

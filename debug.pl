@@ -8,8 +8,8 @@
 :- debug(dh).
 
 % Thread monitor.
-:- use_module(library(swi_ide)).
-:- prolog_ide(thread_monitor).
+%%%%:- use_module(library(swi_ide)).
+%%%%:- prolog_ide(thread_monitor).
 
 
 % Population-wide predicates for analytics.
@@ -22,7 +22,7 @@
 
 :- dynamic(user:debug_mode/0).
 :- multifile(user:debug_mode/0).
-:- assert(user:debug_mode).
+user:debug_mode.
 
 
 :- use_module(plRdf(rdf_gc)).

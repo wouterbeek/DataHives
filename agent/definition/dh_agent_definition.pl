@@ -18,10 +18,8 @@ Implements agent definitions in DataHives.
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
-:- use_module(library(http/html_head)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
-:- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
@@ -37,47 +35,17 @@ Implements agent definitions in DataHives.
 
 
 
-% GET text/html PATH
-dh_agent_definition(Request, HtmlStyle):-
-  cors_enable,
-  request_filter(Request, get, _/html, AgentDefinition),
-  \+ http_absolute_uri(dh_agent_definition(.), AgentDefinition), !,
-  rdfs_label(AgentDefinition, Label),
-  reply_html_page(
-    HtmlStyle,
-    \dh_agent_definition_head([Label]),
-    html([
-      \html_requires(js(jquery)),
-      div(id=agentDefinitionsContainer, []),
-      \js_script({|javascript(Location)||
-$(document).ready(function() {
-  $.ajax({
-    "dataType": "json",
-    "success": function(data) {
-        var select = $("<select id=aliases></select>")
-            .appendTo("#agentDefinitionsContainer");
-        $.each(data, function(key, value) {
-          select
-              .append($("<option value=" + key + ">" + value + "</option>"));
-        });
-      },
-    "url": Location
-  });
-});
-      |})
-    ])
-  ).
 % GET text/html *
 dh_agent_definition(Request, HtmlStyle):-
   cors_enable,
-  request_filter(Request, get, _/html, _), !,
+  request_filter(Request, get, _/html, Root),
+  http_absolute_uri(dh_agent_definition(.), Root), !,
   http_absolute_uri(dh_agent(.), AgentLocation),
   http_absolute_uri(dh_agent_definition(.), AgentDefinitionLocation),
   reply_html_page(
     HtmlStyle,
     \dh_agent_definition_head(html('')),
-    html([
-      \html_requires(js(jquery)),
+    \dh_body([
       div(id=agentDefinitionsContainer, []),
       div(id=agentDefinitionContainer, []),
       button(id=createBtn, ['Create agent']),
@@ -93,33 +61,27 @@ $(document).ready(function() {
   $.ajax({
     "dataType": "json",
     "success": function(data) {
-        var select = $("<select id=aliases></select>")
-            .appendTo("#agentDefinitionsContainer");
-        $.each(data, function(key, value) {
-          select
-              .append($("<option value=" + key + ">" + value + "</option>"));
-        });
-      },
+      var select = $("<select id=aliases></select>").appendTo("#agentDefinitionsContainer");
+      $.each(data, function(key, value) {
+        select.append($("<option value=" + key + ">" + value + "</option>"));
+      });
+    },
     "url": AgentDefinitionLocation
   });
 });
 $("#agentDefinitionsContainer").on("change", "select", function() {
   $.ajax({
-    "data": {"alias": $(this).find("option:selected").attr("value")},
     "dataType": "json",
-    "success": function() {
-        $("#createBtn").text("Create " + data["alias"] + " agent");
-        $("#agentDefinitionContainer")
-            .html(pairsToDescriptionList(data["description"]));
-      },
-    "url": AgentDefinitionLocation
+    "success": function(data) {
+      $("#createBtn").text("Create " + data["agentDefinition"] + " agent");
+      $("#agentDefinitionContainer").html(pairsToDescriptionList(data["predicates"]));
+    },
+    "url": $(this).find("option:selected").attr("value")
   });
 });
 $("#createBtn").click(function() {
   $.ajax({
-    "data": {
-        "alias": $("#agentDefinitionsContainer option:selected").attr("value")
-    },
+    "data": { "agentDefinition": $("#agentDefinitionsContainer option:selected").attr("value") },
     "dataType": "json",
     "url": AgentLocation
   });
@@ -127,27 +89,57 @@ $("#createBtn").click(function() {
       |})
     ])
   ).
-% GET application/json PATH
+% GET text/html PATH
+dh_agent_definition(Request, HtmlStyle):-
+  cors_enable,
+  request_filter(Request, get, _/html, AgentDefinition), !,
+  rdfs_label(AgentDefinition, Label),
+  reply_html_page(
+    HtmlStyle,
+    \dh_agent_definition_head([Label]),
+    \dh_body([
+      div(id=agentDefinitionsContainer, []),
+      \js_script({|javascript(Location)||
+$(document).ready(function() {
+  $.ajax({
+    "dataType": "json",
+    "success": function(data) {
+      var select = $("<select id=aliases></select>").appendTo("#agentDefinitionsContainer");
+      $.each(data, function(key, value) {
+        select.append($("<option value=" + key + ">" + value + "</option>"));
+      });
+    },
+    "url": Location
+  });
+});
+      |})
+    ])
+  ).
+% GET application/json *
 % Returns type/label pairs in JSON format.
 % This can e.g. be used to populate a <select> element in HTML.
 dh_agent_definition(Request, _):-
   cors_enable,
-  request_filter(Request, get, _/json, AgentDefinition), !,
+  request_filter(Request, get, _/json, Root),
+  http_absolute_uri(dh_agent_definition(.), Root), !,
   aggregate_all(
-    set(AgentDefinition-AgentDefinition),
-    agent_definition_db0(AgentDefinition, _),
+    set(AgentDefinition-Label),
+    (
+      agent_definition_db0(AgentDefinition, _),
+      rdfs_label(AgentDefinition, Label)
+    ),
     Pairs
   ),
   dict_create(Dict, agent_definitions, Pairs),
   reply_json_dict(Dict).
-% GET application/json *
+% GET application/json PATH
 dh_agent_definition(Request, _):-
   cors_enable,
   request_filter(Request, get, _/json, AgentDefinition),
   agent_definition_db0(AgentDefinition, Predicates1),
   def_pairs(Predicates1, Predicates2),
   dict_create(Pairs, json, Predicates2),
-  dict_create(Dict, json, [alias-AgentDefinition,description-Pairs]),
+  dict_create(Dict, json, [agentDefinition-AgentDefinition,predicates-Pairs]),
   reply_json_dict(Dict).
 
 

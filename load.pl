@@ -14,6 +14,7 @@
      plXsd,
      plRdf,
      plHtml,
+     plServer,
      plSparql,
      plGraphViz,
      plTabular

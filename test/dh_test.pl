@@ -55,7 +55,7 @@ dh_test_agent(AgentDefinition, rdf(S,P,O)):-
 
 % Helpers
 
-%! ensure_file_is_loaded(+File:atom, -Graph:atom) is det,
+%! ensure_file_is_loaded(+File:atom, -Graph:atom) is det.
 
 % The file is already loaded. Return its graph.
 ensure_file_is_loaded(File, Graph):-

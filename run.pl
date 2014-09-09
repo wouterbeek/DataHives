@@ -11,8 +11,6 @@
 :- multifile(http:location/3).
 :- dynamic(http:location/3).
 
-:- multifile(user:file_search_path/2).
-
 :- dynamic(user:web_module/2).
 :- multifile(user:web_module/2).
 
@@ -30,21 +28,9 @@
 :- start_app_server([]).
 
 
-% jQuery
+% DataHives: home.
 
-:- use_module(library(http/html_head)).
-
-:- if(predicate_property(user:debug_mode, visible)).
-  :- html_resource(
-       js(jquery),
-       [requires([js('jquery-debug-2.1.1.js')]),virtual(true)]
-     ).
-:- else.
-  :- html_resource(
-       js(jquery),
-       [requires([js('jquery-min-2.1.1.js')]),virtual(true)]
-     ).
-:- endif.
+http:location(dh, root(dh), []).
 
 
 % plTabular
@@ -63,26 +49,7 @@ rdf_tabular(Request):-
 :- html_resource(plTabular, [requires([css('plTabular.css')]),virtual(true)]).
 
 
-% DataHives: home.
-
-http:location(dh, root(dh), []).
-
-user:file_search_path(css, dh_web(css)).
-user:file_search_path(js, dh_web(js)).
-
-/*
-:- use_module(dh_web(dh_web)).
-
-user:web_module('DH Home', dh_web).
-
-:- http_handler(dh(.), dh_web, [prefix,priority(-1)]).
-
-dh_web(Request):-
-  dh_web(Request, plServer_style).
-*/
-
-
-% DataHives: agents.
+% DataHives: Agent
 
 http:location(dh_agent, dh(agent), []).
 
@@ -96,9 +63,9 @@ dh_agent(Request):-
   dh_agent(Request, plServer_style).
 
 
-% DataHives: agent definitions.
+% DataHives: Agent Definition
 
-http:location(dh_agent_definition, dh_agent(definitions), []).
+http:location(dh_agent_definition, dh(agent_definition), []).
 
 :- use_module(dh_agent_definition(dh_agent_definition)).
 
@@ -114,7 +81,7 @@ dh_agent_definition(Request):-
   dh_agent_definition(Request, plServer_style).
 
 
-% DataHives: graph.
+% DataHives: Graph
 
 :- use_module(dh_web(dh_agent_graph)).
 

@@ -1,8 +1,8 @@
 :- module(
   dh_web,
   [
-    dh_web/2 % +Request:list(nvpair)
-             % +HtmlStyle
+    dh/2 % +Request:list(nvpair)
+         % +HtmlStyle
   ]
 ).
 
@@ -26,17 +26,10 @@ The Web API for DataHives.
 
 
 
-dh_web(_, HtmlStyle):-
+dh(_, HtmlStyle):-
   reply_html_page(
     HtmlStyle,
     \dh_head(['Home']),
-    \dh_web_body
+    html(dummy)
   ).
-
-
-dh_web_body -->
-  html([
-    \(dh_web_agent:dh_web_agent_body),
-    \(dh_web_agentDef:dh_web_agentDef_body)
-  ]).
 
