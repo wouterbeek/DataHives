@@ -120,7 +120,7 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
 
 
 
-% Statistics
+% AGENT PROPERTIES
 
 dh:dh_agent_property(deductions, Deductions):-
   number_of_deductions(Deductions), !.
@@ -128,9 +128,9 @@ dh:dh_agent_property(deductions, 0).
 
 dh:dh_agent_property(Agent, deductions, Deductions):-
   dh_agent(Agent),
-  dh_agent_ask(Agent, dh_agent_deductions, Deductions).
+  dh_agent_ask(Agent, dh:dh_agent_property(deductions), Deductions).
 
-dh:dh_agent_property_name0(deductions,    nonneg).
+dh:dh_agent_property_name0(deductions, nonneg).
 
 
 %! increment_deductions is det.
@@ -157,7 +157,7 @@ reset_number_of_deductions:-
 
 
 
-% Messages
+% MESSAGES
 
 :- multifile(prolog:message//1).
 

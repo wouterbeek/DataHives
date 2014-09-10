@@ -59,7 +59,6 @@ dh_agent_rest(Request, HtmlStyle):-
     dh_agent_property_name(Property),
     Properties
   ),
-gtrace,
   findall(
     Row,
     (
@@ -99,13 +98,13 @@ gtrace,
 dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Agent), !,
-  
+
   % Reply with a failure code if the agent does not exist.
   (   dh_agent(Agent)
   ->  true
   ;   http_404([], Request)
   ),
-  
+
   findall(
     [Name,Value],
     dh:dh_agent_property(Agent, Name, Value),
@@ -130,7 +129,6 @@ dh_agent_rest(Request, HtmlStyle):-
 dh_agent_rest(Request, _):-
   cors_enable,
   request_filter(Request, post, _/json, _), !,
-gtrace,
   catch(
     (
       http_read_json_dict(Request, Dict),

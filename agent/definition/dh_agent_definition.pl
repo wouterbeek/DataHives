@@ -102,25 +102,12 @@ dh_agent_definition_rest(Request, HtmlStyle):-
         ])
       ),
       \js_script({|javascript(AgentLocation,AgentDefinitionLocation,SparqlLocation)||
-function indexString(index) {
-  switch (index) {
-    case 0:
-      return "NAVIGATE";
-    case 1:
-      return "ACT";
-    case 2:
-      return "COMMUNICATE";
-    case 3:
-      return "EVALUATE";
-    case 4:
-      return "END-OF-LIFE";
-  }
-}
-function pairsToDescriptionList(data) {
+function pairsToDescriptionList(predicates) {
   var string = "<dl>";
-  var index = 0;
-  $.each(data, function(term, description) {
-    string += "<dt>[" + indexString(index++) + "] " + term + "</dt><dd>" + description + "</dd>";
+  var prefixes = ["NAVIGATE","ACT","COMMUNICATE","EVALUATE","END-OF-LIFE"];
+  $.each(predicates, function(index, element) {
+    string += "<dt>[" + prefixes[index] + "] " + element["predicate"] +
+              "</dt><dd>" + element["documentation"] + "</dd>";
   });
   return string + "</dl>";
 }
@@ -128,9 +115,11 @@ $(document).ready(function() {
   $.ajax({
     "dataType": "json",
     "success": function(data) {
-      var select = $("<select class=\"pure-input-1-2\" id=aliases></select>").appendTo("#agentDefinitionsContainer");
-      $.each(data, function(key, value) {
-        select.append($("<option value=" + key + ">" + value + "</option>"));
+      var select = $("<select class=\"pure-input-1-2\" id=aliases></select>")
+          .appendTo("#agentDefinitionsContainer");
+      $.each(data["agentDefinitions"], function(index, element) {
+        select.append($("<option value=" + element["agentDefinition"] +
+            ">" + element["label"] + "</option>"));
       });
     },
     "type": "get",
@@ -266,37 +255,38 @@ dh_agent_definition_rest(Request, _):-
   cors_enable,
   request_filter(Request, get, _/json, Root),
   http_absolute_uri(dh_agent_definition(.), Root), !,
-  aggregate_all(
-    set(AgentDefinition-Label),
+  findall(
+    json{agentDefinition:AgentDefinition, label:Label},
     (
       dh_agent_definition(AgentDefinition),
       rdfs_label(AgentDefinition, Label)
     ),
-    Pairs
+    Dicts
   ),
-  dict_create(Dict, agent_definitions, Pairs),
-  reply_json_dict(Dict).
+  reply_json_dict(json{agentDefinitions:Dicts}).
 % GET application/json PATH
 dh_agent_definition_rest(Request, _):-
   cors_enable,
   request_filter(Request, get, _/json, AgentDefinition),
-  agent_definition0(AgentDefinition, Predicates1),
-  def_pairs(Predicates1, Predicates2),
-  dict_create(Pairs, json, Predicates2),
-  dict_create(Dict, json, [agentDefinition-AgentDefinition,predicates-Pairs]),
-  reply_json_dict(Dict).
+  agent_definition0(AgentDefinition, Preds),
+  def_pairs(Preds, PredDicts),
+  reply_json_dict(
+    json{agentDefinition:AgentDefinition, predicates:PredDicts}
+  ).
 
 
 
 % Helpers
 
 def_pairs([], []):- !.
-def_pairs([X1-Y|T1], [X2-Y|T2]):- !,
-  with_output_to(atom(X2), write_canonical_blobs(X1)),
-  def_pairs(T1, T2).
-def_pairs([H1|T1], [H2-""|T2]):-
-  with_output_to(atom(H2), write_canonical_blobs(H1)),
-  def_pairs(T1, T2).
+def_pairs([Predicate0-Documentation|T], [Dict|Dicts]):- !,
+  with_output_to(atom(Predicate), write_canonical_blobs(Predicate0)),
+  dict_create(Dict, json, [predicate-Predicate,documentation-Documentation]),
+  def_pairs(T, Dicts).
+def_pairs([Predicate0|T], [Dict|Dicts]):-
+  with_output_to(atom(Predicate), write_canonical_blobs(Predicate0)),
+  dict_create(Dict, json, [predicate-Predicate,documentation-""]),
+  def_pairs(T, Dicts).
 
 
 dh_agent_definition_head(Dcg) -->

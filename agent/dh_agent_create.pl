@@ -107,7 +107,7 @@ dh_agent_create(AgentDefinition, Initialization):-
   dh_agent_create(
     AgentDefinition,
     [NavPred,ActPred,ComPred,EvalPred],
-    dh_agent_exit(Initialization),
+    dh_agent_delete,
     Initialization
   ).
 % An agent definition that specifies a special exit predicate.
@@ -163,7 +163,7 @@ dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O)):-
 dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   % Construct the agent thread name.
   flag(number_of_agents, Id, Id + 1),
-  format(atom(Alias), '~d', [Id]),
+  format(atom(Alias), 'agent/~d', [Id]),
   rdf_global_id(dh:Alias, Agent),
   rdf_assert_instance(Agent, AgentDefinition, dh),
   rdfs_assert_label(Agent, Alias, dh),
