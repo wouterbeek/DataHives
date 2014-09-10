@@ -35,6 +35,7 @@ which is used for storing beliefs the agent has.
 @version 2014/02, 2014/04, 2014/06-2014/09
 */
 
+:- use_module(library(http/http_path)).
 :- use_module(library(lists)).
 :- use_module(library(predicate_options)). % Declarations.
 
@@ -161,11 +162,13 @@ dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O)):-
 %! ) is det.
 
 dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
-  % Construct the agent thread name.
+  % Construct the agent resource.
   flag(number_of_agents, Id, Id + 1),
-  format(atom(Alias), 'agent/~d', [Id]),
-  rdf_global_id(dh:Alias, Agent),
+  http_absolute_uri(dh_agent(Id), Agent),
   rdf_assert_instance(Agent, AgentDefinition, dh),
+  
+  % Construct the agent thread alias / RDF graph name.
+  format(atom(Alias), 'agent_~d', [Id]),
   rdfs_assert_label(Agent, Alias, dh),
 
   % Start the thread.

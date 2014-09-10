@@ -93,12 +93,11 @@ dh_agent_rest(Request, HtmlStyle):-
     )
   ).
 % GET html PATH
-%
 % Returns 404 (Not Found) is the agent does not exist on the server.
 dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Agent), !,
-
+  
   % Reply with a failure code if the agent does not exist.
   (   dh_agent(Agent)
   ->  true
