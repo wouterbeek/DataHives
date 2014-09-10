@@ -32,6 +32,7 @@ y_per_t(Y, T, Agents):-
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
+:- use_module(library(lambda)).
 :- use_module(library(real)).
 
 :- use_module(dh_agent(dh_agent_property)).
@@ -41,15 +42,14 @@ y_per_t(Y, T, Agents):-
 
 
 test1:-
-  aggregate_all(
-    set(Agent),
-    dh_agent_thread(Agent),
-    Agents
-  ),
-  y_per_t(dh_agent_steps, 100, Agents).
+  dh_population_property(members, Agents),
+  y_per_t(\Agent^dh:dh_agent_property(Agent, steps, 100), Agents).
 
 test2:-
-  dh_stats_collection(y_per_t(dh_agent_steps), Collection),
+  dh_stats_collection(
+    y_per_t(\Agent^Steps^dh:dh_agent_property(Agent, steps, Steps)),
+    Collection
+  ),
   maplist(add_graph, Collection),
   pairs_keys(Collection, [Agent|Agents]),
   <- plot(Agent),

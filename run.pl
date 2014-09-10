@@ -81,16 +81,16 @@ dh_agent_definition(Request):-
   dh_agent_definition(Request, plServer_style).
 
 
-% DataHives: Graph
+% DataHives: Graphic
 
-:- use_module(dh_web(dh_agent_graph)).
+:- use_module(dh_web(dh_agent_graphic)).
 
-user:web_module('DH Agent Graph', dh_agent_graph).
+user:web_module('DH Agent Graphic', dh_agent_graphic).
 
-:- http_handler(dh_agent(graph), dh_agent_graph, []).
+:- http_handler(dh_agent(graphic), dh_agent_graphic, []).
 
-dh_agent_graph(Request):-
-  dh_agent_graph(Request, plServer_style).
+dh_agent_graphic(Request):-
+  dh_agent_graphic(Request, plServer_style).
 
 
 % The part of the initialization that requires HTTP handlers to be set.

@@ -1,5 +1,10 @@
 :- module(conf_dh, []).
 
+:- use_module(library(settings)).
+
+:- set_setting_default(http:public_host, 'localhost.localdomain').
+:- set_setting_default(http:public_port, setting(http:port)).
+
 :- use_module(library(http/html_head)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_path)). % http:location/3 registrations
@@ -16,12 +21,6 @@
 
 :- dynamic(user:file_search_path/2).
 :- multifile(user:file_search_path/2).
-
-:- use_module(library(settings)).
-
-:- set_setting_default(http:public_host, localhost).
-:- set_setting_default(http:public_port, setting(http:port)).
-
 
 
 % DataHives: Home
@@ -75,14 +74,14 @@ dh_agent_definition_rest(Request):-
 
 % DataHives: Graph
 
-:- use_module(dh_web(dh_agent_graph)).
+:- use_module(dh_web(dh_agent_graphic)).
 
-cliopatria:menu_item(700=dh/dh_agent_graph, 'DH Graph').
+cliopatria:menu_item(700=dh/dh_agent_graphic, 'DH Graphic').
 
-:- http_handler(dh(graph), dh_agent_graph, [id(dh_agent_graph)]).
+:- http_handler(dh(graphic), dh_agent_graphic, [id(dh_agent_graphic)]).
 
-dh_agent_graph(Request):-
-  dh_agent_graph(Request, cliopatria(default)).
+dh_agent_graphic(Request):-
+  dh_agent_graphic(Request, cliopatria(default)).
 
 
 % plTabular

@@ -2,8 +2,7 @@
   dh_nav,
   [
     increment_number_of_steps/0,
-    increment_number_of_steps/1, % +Increment:integer
-    dh_agent_steps/1 % -NumberOfSteps:nonneg
+    increment_number_of_steps/1 % +Increment:integer
   ]
 ).
 
@@ -12,16 +11,26 @@
 Reexports the navigation stategies in DataHives.
 
 @author Wouter Beek
-@version 2104/07-2014/08
+@version 2104/07-2014/09
 */
 
 :- reexport(dh_nav(dh_random_jump)).
 :- reexport(dh_nav(dh_random_walk)).
 :- reexport(dh_nav(dh_weighted_walk)).
 
+:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_core(dh_messages)).
+
 %! number_of_steps(-NumberOfSteps:nonneg) is det.
 
 :- thread_local(number_of_steps/1).
+
+:- dynamic(dh:dh_agent_property/2).
+:- multifile(dh:dh_agent_property/2).
+:- dynamic(dh:dh_agent_property/3).
+:- multifile(dh:dh_agent_property/3).
+:- dynamic(dh:dh_agent_property_name0/2).
+:- multifile(dh:dh_agent_property_name0/2).
 
 
 
@@ -40,9 +49,16 @@ increment_number_of_steps(N):-
   assert(number_of_steps(N)).
 
 
-%! dh_agent_steps(-NumberOfSteps:nonneg) is det.
 
-dh_agent_steps(N):-
-  number_of_steps(N), !.
-dh_agent_steps(0).
+% AGENT PROPERTY
+
+dh:dh_agent_property(steps, Steps):-
+  number_of_steps(Steps), !.
+dh:dh_agent_property(steps, 0).
+
+dh:dh_agent_property(Agent, steps, Steps):-
+  dh_agent(Agent),
+  dh_agent_ask(Agent, dh:dh_agent_property(steps), Steps).
+
+dh:dh_agent_property_name0(steps, nonneg).
 

@@ -2,10 +2,7 @@
   dh_entailment,
   [
     deductive_action/1, % +DirectedTriple:compound
-    deductive_exit/1, % +Initialization:compound
-    evaluate_entailment/0,
-% Statistics
-    dh_agent_deductions/1 % ?NumberOfDeductions:nonneg
+    evaluate_entailment/0
   ]
 ).
 
@@ -14,7 +11,7 @@
 DataHives agents that implement RDFS 1.1 entailment.
 
 @author Wouter Beek
-@version 2014/06-2014/08
+@version 2014/06-2014/09
 */
 
 :- use_module(library(semweb/rdf_db)).
@@ -22,14 +19,23 @@ DataHives agents that implement RDFS 1.1 entailment.
 :- use_module(plRdf_ent(rdf_bnode_map)).
 :- use_module(plRdf_ent(rdf_entailment_patterns)).
 
-:- use_module(dh_agent(dh_agent_create)). % @tbd Relocate?
+:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_agent(dh_agent_create)).
 :- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_core(dh_cycle)).
+:- use_module(dh_core(dh_cycle)). % agent_property(cycles)
 :- use_module(dh_core(dh_generics)).
+:- use_module(dh_core(dh_messages)).
 
 %! number_of_deductions(?Deductions:nonneg) is nondet.
 
 :- thread_local(number_of_deductions/1).
+
+:- dynamic(dh:dh_agent_property/2).
+:- multifile(dh:dh_agent_property/2).
+:- dynamic(dh:dh_agent_property/3).
+:- multifile(dh:dh_agent_property/3).
+:- dynamic(dh:dh_agent_property_name0/2).
+:- multifile(dh:dh_agent_property_name0/2).
 
 
 
@@ -43,16 +49,9 @@ deductive_action(DirTriple):-
   ).
 
 
-%! deductive_exit(+Initialization:compound) is det.
-% @tbd Test of agent definition-specific exit conditions.
-
-deductive_exit(Init):-
-  default_exit(Init).
-
-
 evaluate_entailment:-
   number_of_deductions(Deductions),
-  dh_agent_cycles(Lifetime),
+  dh:dh_agent_property(cycles, Lifetime),
   Fitness is Deductions / Lifetime,
   (
     Fitness < 0.5
@@ -81,7 +80,7 @@ rdf_assert_entailment(rdf(U1,V,W)):-
   ),
 
   % Assert the triple in the graph named after the agent alias.
-  dh_agent_graph(MyGraph),
+  dh:dh_agent_property(graph, MyGraph),
   rdf_assert(U2, V, W, MyGraph),
 
   % Count the number of deductions per agent.
@@ -123,11 +122,15 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
 
 % Statistics
 
-%! dh_agent_deductions(-NumberOfDeductions:nonneg) is det.
+dh:dh_agent_property(deductions, Deductions):-
+  number_of_deductions(Deductions), !.
+dh:dh_agent_property(deductions, 0).
 
-dh_agent_deductions(N):-
-  number_of_deductions(N), !.
-dh_agent_deductions(0).
+dh:dh_agent_property(Agent, deductions, Deductions):-
+  dh_agent(Agent),
+  dh_agent_ask(Agent, dh_agent_deductions, Deductions).
+
+dh:dh_agent_property_name0(deductions,    nonneg).
 
 
 %! increment_deductions is det.
@@ -159,6 +162,6 @@ reset_number_of_deductions:-
 :- multifile(prolog:message//1).
 
 prolog:message(entailment_fitness(Deductions,Lifetime,Fitness)) -->
-  {dh_agent_graph(MyGraph)},
+  {dh:dh_agent_property(graph, MyGraph)},
   ['[~w] ~f (~D entailments; ~D steps)'-[MyGraph,Fitness,Deductions,Lifetime]].
 

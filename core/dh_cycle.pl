@@ -1,12 +1,9 @@
 :- module(
   dh_cycle,
   [
-    dh_cycle/3, % +Predicates:list(atom)
-                % +InitialTriple:compound
-                % +Options:list(nvpair)
-% Statistics
-    dh_agent_creation/1, % -Creation:float
-    dh_agent_cycles/1 % -NumberOfCycles:nonneg
+    dh_cycle/3 % +Predicates:list(atom)
+               % +InitialTriple:compound
+               % +Options:list(nvpair)
   ]
 ).
 
@@ -15,11 +12,12 @@
 The navigate-act-communicate cycle for agents in DataHives.
 
 @author Wouter Beek
-@version 2014/04-2014/08
+@version 2014/04-2014/09
 */
 
 :- use_module(generics(flag_ext)).
 
+:- use_module(dh_agent(dh_agent)).
 :- use_module(dh_beh(dh_beh)).
 :- use_module(dh_core(dh_generics)).
 :- use_module(dh_core(dh_messages)).
@@ -34,6 +32,13 @@ The navigate-act-communicate cycle for agents in DataHives.
 :- thread_local(number_of_cycles/1).
 
 :- meta_predicate(call_every_n_cycles(+,1)).
+
+:- dynamic(dh_agent_property/2).
+:- multifile(dh_agent_property/2).
+:- dynamic(dh_agent_property/3).
+:- multifile(dh_agent_property/3).
+:- dynamic(dh_agent_property_name0/2).
+:- multifile(dh_agent_property_name0/2).
 
 
 
@@ -73,7 +78,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
 
   % CHOICEPOINT.
   repeat,
-  call_every_n_cycles(100, print_number_of_cycles),
+  call_every_n_cycles(10, print_number_of_cycles),
 
   % Navigate.
   call(Nav, dir(From,Dir,Link,To), Options),
@@ -99,7 +104,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
 % Helpers
 
 call_every_n_cycles(N, Goal):-
-  dh_agent_cycles(M),
+  dh:dh_agent_property(cycles, M),
   M > 0,
   M mod N =:= 0, !,
   call(Goal, M).
@@ -109,18 +114,26 @@ call_every_n_cycles(_, _).
 
 % Statistics
 
-dh_agent_creation(Creation):-
+dh:dh_agent_property(creation, Creation):-
   creation(Creation), !.
-dh_agent_creation(Creation):-
+dh:dh_agent_property(creation, Creation):-
   existence_error(integer, Creation).
 
+dh:dh_agent_property(Agent, creation, Creation):-
+  dh_agent(Agent),
+  dh_agent_ask(Agent, dh:dh_agent_property(creation), Creation).
 
-%! dh_agent_cycles(-NumberOfCycles:nonneg) is det.
-% Returns the number of cycles for a specific agent thread.
+dh:dh_agent_property_name0(creation, float).
 
-dh_agent_cycles(N):-
-  number_of_cycles(N), !.
-dh_agent_cycles(0).
+dh:dh_agent_property(cycles, Cycles):-
+  number_of_cycles(Cycles), !.
+dh:dh_agent_property(cycles, 0).
+
+dh:dh_agent_property(Agent, cycles, Cycles):-
+  dh_agent(Agent),
+  dh_agent_ask(Agent, dh:dh_agent_property(cycles), Cycles).
+
+dh:dh_agent_property_name0(cycles, nonneg).
 
 
 %! increment_number_of_cycles is det.
@@ -144,9 +157,9 @@ increment_number_of_cycles(N):-
 :- multifile(prolog:message//1).
 
 print_number_of_cycles(N):-
-  sleep(10), %DEB
-  print_message(informational, dh_agent_cycles(N)).
+  sleep(1), %DEB
+  print_message(informational, dh_agent_property(cycles,N)).
 
-prolog:message(dh_agent_cycles(N)) -->
+prolog:message(dh_agent_property(cycles,N)) -->
   ['~D cycles.'-[N]].
 

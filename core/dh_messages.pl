@@ -1,6 +1,11 @@
 :- module(
   dh_messages,
   [
+    dh_agent_ask/3, % +Agent:url
+                    % +Question:compound
+                    % -Answer
+    dh_agent_command/2, % +Agent:url
+                        % +Command:compound
     process_messages/0
   ]
 ).
@@ -10,34 +15,41 @@
 Where message queue are being processed.
 
 @author Wouter Beek
-@version 2014/06-2014/08
+@version 2014/06-2014/09
 */
+
+:- use_module(library(semweb/rdfs)).
+
+:- use_module(generics(vox_populi)).
 
 :- use_module(dh_act(dh_entailment)).
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_nav(dh_nav)).
 
-:- meta_predicate(answer_question(1,+)).
-:- meta_predicate(execute_command(0)).
 
 
+%! dh_agent_ask(+Agent:url, +Question:compound, -Answer) is det.
 
-answer_question(Goal, X):-
-  call(Goal, X).
+dh_agent_ask(Agent, Question, Answer):-
+  rdfs_label(Agent, Thread),
+  ask_thread(Thread, Question, Answer).
 
 
-execute_command(Goal):-
-  call(Goal).
+%! dh_agent_command(+Agent:url, +Command:compound) is det.
+
+dh_agent_command(Agent, Command):-
+  rdfs_label(Agent, Thread),
+  command_thread(Thread, Command).
 
 
 process_messages:-
   thread_peek_message(command(Caller,Command)), !,
   thread_get_message(command(Caller,Command)),
-  execute_command(Command).
+  call(Command).
 process_messages:-
   thread_peek_message(question(Caller,Question)), !,
   thread_get_message(question(Caller,Question)),
-  answer_question(Question, Answer),
+  call(Question, Answer),
   thread_self(Me),
   thread_send_message(Caller, answer(Me,Answer)).
 process_messages.

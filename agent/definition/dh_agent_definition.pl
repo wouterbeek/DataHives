@@ -187,13 +187,13 @@ $("#agentDefinitionsContainer").on("change", "select", function() {
 dh_agent_definition_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinition), !,
-  
+
   % Unknown agent definition.
   (   dh_agent_definition(AgentDefinition)
   ->  true
   ;   http_404([], Request)
   ),
-  
+
   rdfs_label(AgentDefinition, Label),
   http_absolute_uri(dh_agent(.), AgentLocation),
   reply_html_page(
@@ -269,7 +269,7 @@ dh_agent_definition_rest(Request, _):-
   aggregate_all(
     set(AgentDefinition-Label),
     (
-      agent_definition0(AgentDefinition, _),
+      dh_agent_definition(AgentDefinition),
       rdfs_label(AgentDefinition, Label)
     ),
     Pairs

@@ -18,6 +18,7 @@ Interface to agents in DataHives.
 :- use_module(library(apply)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
+:- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(lambda)).
@@ -35,6 +36,7 @@ Interface to agents in DataHives.
 :- use_module(dh_agent(dh_agent_create)).
 :- use_module(dh_agent(dh_agent_property)).
 :- use_module(dh_core(dh_generics)). % RDF namespace.
+:- use_module(dh_core(dh_messages)).
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_web(dh_web_generics)).
 
@@ -54,23 +56,23 @@ dh_agent_rest(Request, HtmlStyle):-
   http_absolute_uri(dh_agent(.), Root), !,
   aggregate_all(
     set(Property),
-    dh_agent_property(Property),
+    dh_agent_property_name(Property),
     Properties
   ),
+gtrace,
   findall(
     Row,
     (
       dh_agent(Agent),
       maplist(
-        \Property^Value^dh_agent_property(Agent, Property, Value),
+        \Property^Value^(dh:dh_agent_property(Agent, Property, Value)),
         Properties,
         Row
       )
     ),
     Rows
   ),
-gtrace,
-  number_of_agents(N),
+  dh_population_property(size, Size),
   maplist(
     \Property^Header^dcg_phrase(capitalize, Property, Header),
     Properties,
@@ -83,7 +85,7 @@ gtrace,
       \html_table(
         html([
           'Overview of the ',
-          \html_pl_term(dh, N),
+          \html_pl_term(dh, Size),
           ' currently running agents in DataHives.'
         ]),
         [HeaderRow|Rows],
@@ -92,12 +94,21 @@ gtrace,
     )
   ).
 % GET html PATH
+%
+% Returns 404 (Not Found) is the agent does not exist on the server.
 dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Agent), !,
+  
+  % Reply with a failure code if the agent does not exist.
+  (   dh_agent(Agent)
+  ->  true
+  ;   http_404([], Request)
+  ),
+  
   findall(
     [Name,Value],
-    dh_agent_property(Agent, Name, Value),
+    dh:dh_agent_property(Agent, Name, Value),
     Rows
   ),
   rdfs_label(Agent, Label),

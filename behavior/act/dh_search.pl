@@ -12,7 +12,7 @@
 /** <module> DataHives search
 
 @author Wouter Beek
-@version 2014/07
+@version 2014/07, 2014/09
 */
 
 :- use_module(library(aggregate)).
@@ -40,7 +40,7 @@ number_of_overall_search_results(N):-
 %! number_of_self_search_results(-NumberOfSearchResults:nonneg) is det.
 
 number_of_self_search_results(N):-
-  dh_agent_graph(MyGraph),
+  dh:dh_agent_property(graph, MyGraph),
   aggregate_all(
     count,
     rdf(_, _, _, MyGraph),
@@ -56,13 +56,11 @@ number_of_self_search_results(N):-
 
 search_action(Search, ResultsGraph, DirTriple):-
   directed_triple(DirTriple, Triple),
-  (
-    search_result_found(Search, Triple)
-  ->
-    Triple = rdf(S,P,O),
-    dh_agent_graph(MyGraph),
-    rdf_assert(S, P, O, MyGraph),
-    rdf_assert(S, P, O, ResultsGraph)
+  (   search_result_found(Search, Triple)
+  ->  Triple = rdf(S,P,O),
+      dh:dh_agent_property(graph, MyGraph),
+      rdf_assert(S, P, O, MyGraph),
+      rdf_assert(S, P, O, ResultsGraph)
   ;
     true
   ).

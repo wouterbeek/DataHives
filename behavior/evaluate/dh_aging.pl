@@ -11,17 +11,17 @@ An evaluation strategy that checks whether an agent's set maximum age
 has not been exceeded yet.
 
 @author Wouter Beek
-@version 2014/07
+@version 2014/07, 2014/09
 */
 
-:- use_module(dh_core(dh_cycle)).
+:- use_module(dh_core(dh_cycle)). % agent_property(cycles)
 
 
 
 %! aging(+MaxAge:positive_integer) is det.
 
 aging(MaxAge):-
-  dh_agent_cycles(Age),
+  dh:dh_agent_property(cycles, Age),
   (
     Age == MaxAge
   ->

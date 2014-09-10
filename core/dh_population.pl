@@ -1,12 +1,10 @@
 :- module(
   dh_population,
   [
-    dh_agent_thread/1, % ?Thread:atom
-    exit_population/0,
-    number_of_agents/1, % -NumberOfAgents:nonneg
-    number_of_deduced_triples/1, % -TotaNumberOfDeducedTriples:nonneg
-    total_number_of_cycles/1, % -Cycles:nonneg
-    total_number_of_steps/1 % -Steps:nonneg
+    dh_population_delete/0,
+    dh_population_property_name/1, % ?Name:atom
+    dh_population_property/2 % ?Name:atom
+                             % ?Value
   ]
 ).
 
@@ -18,76 +16,73 @@ At the moment, at most one population can be formed.
 The population is the collection of all agent threads that are active.
 
 @author Wouter Beek
-@version 2014/06-2014/08
+@version 2014/06-2014/09
 */
 
 :- use_module(library(aggregate)).
+:- use_module(library(apply)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 
 :- use_module(generics(thread_ext)).
 :- use_module(generics(vox_populi)).
 
+:- use_module(dh_agent(dh_agent)).
+:- use_module(dh_agent(dh_agent_create)).
+:- use_module(dh_agent(dh_agent_property)).
 :- use_module(dh_com(dh_edge_weight)).
 
 
 
-agent_prefix(agent_).
+%! dh_population_delete is det.
+
+dh_population_delete:-
+  dh_population_property(members, Agents),
+  maplist(dh_agent_delete, Agents).
 
 
-%! dh_agent_thread(+Thread:atom) is semidet.
-% Succeeds if the given thread denotes an agent.
-%! dh_agent_thread(-Thread:atom) is nondet.
-% Enumerates the currently running threads that denote agents.
+%! dh_population_property(+Name:atom, +Value) is semidet.
+%! dh_population_property(+Name:atom, -Value) is det.
+%! dh_population_property(-Name:atom, -Value) is nondet.
 
-dh_agent_thread(Thread):-
-  agent_prefix(Prefix),
-  thread_prefix(Prefix, Thread).
-
-
-%! exit_population is det.
-
-exit_population:-
-  agent_prefix(Prefix),
-  command_thread_prefix(Prefix, thread_exit(true)),
-  reset_edge_count.
-
-%! number_of_agents(-NumberOfAgents:nonneg) is det.
-
-number_of_agents(N):-
+dh_population_property(members, Value):-
   aggregate_all(
-    count,
-    dh_agent_thread(_),
-    N
+    set(Agent),
+    dh_agent(Agent),
+    Value
   ).
-
-
-%! total_number_of_cycles(-Cycles:nonneg) is det.
-
-total_number_of_cycles(Cycles):-
-  agent_prefix(Prefix),
-  ask_thread_prefix(Prefix, dh_agent_cycles, Cycless),
-  sum_list(Cycless, Cycles).
-
-
-%! total_number_of_steps(-Steps:nonneg) is det.
-
-total_number_of_steps(Steps):-
-  agent_prefix(Prefix),
-  ask_thread_prefix(Prefix, dh_agent_steps, Stepss),
-  sum_list(Stepss, Steps).
-
-
-%! number_of_deduced_triples(-TotaNumberOfDeducedTriples:nonneg) is det
-
-number_of_deduced_triples(Triples):-
+dh_population_property(size, Value):-
+  dh_population_property(members, Agents),
+  length(Agents, Value).
+dh_population_property(Name, Value):-
+  dh:dh_agent_property(Name, numeric), !,
+  dh_population_property(members, Agents),
   aggregate_all(
-    sum(Triples),
+    sum(Value0),
     (
-      rdf_graph(Graph),
-      dh_agent_thread(Graph),
-      rdf_statistics(triples_by_graph(Graph,Triples))
+      member(Agent, Agents),
+      dh:dh_agent_property(Agent, Name, Value0)
     ),
-    Triples
+    Value
   ).
+dh_population_property(Name, Value):-
+  dh_agent_property_name(Name), !,
+  dh_population_property(members, Agents),
+  aggregate_all(
+    set(Value0),
+    (
+      member(Agent, Agents),
+      dh:dh_agent_property(Agent, Name, Value0)
+    ),
+    Value
+  ).
+
+
+%! dh_population_property_name(+Name:atom) is semidet.
+%! dh_population_property_name(-Name:atom) is multi.
+
+dh_population_property_name(members).
+dh_population_property_name(size).
+dh_population_property_name(Name):-
+  dh_agent_property_name(Name, numeric).
 

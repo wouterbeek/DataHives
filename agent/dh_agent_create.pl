@@ -3,10 +3,11 @@
   [
     dh_agent_create/2, % +AgentDefinition:url
                        % +Initialization:compound
-    dh_create_agents/3, % +NumberOfAgents:positive_integer
-                     % +AgentDefinition:url
-                     % +Initialization:compound
-    default_exit/1 % +Initialization:compound
+    dh_agents_create/3, % +NumberOfAgents:positive_integer
+                        % +AgentDefinition:url
+                        % +Initialization:compound
+    dh_agent_delete/0,
+    dh_agent_delete/1 % +Agent:url
   ]
 ).
 
@@ -21,7 +22,7 @@ e.g. listing the currently loaded agent definitions.
 
 We assume that every agent is represented by and implemented with
 a Linux thread. These threads can be recognized (and enumerated)
-by dh_agent_thread/1 in [dh_population].
+by `dh_agent_property(Agent, thread, Thread)` in [dh_agent_property].
 
 We also assume that the thread alias of an agent
 is the same as the name of the agent's RDF graph,
@@ -43,6 +44,7 @@ which is used for storing beliefs the agent has.
 
 :- use_module(dh_agent_definition(dh_agent_definition)).
 :- use_module(dh_core(dh_cycle)).
+:- use_module(dh_core(dh_messages)).
 
 :- predicate_options(dh_agent_create/4, 4, [
      pass_to(dh_cycle/3, 3)
@@ -105,7 +107,7 @@ dh_agent_create(AgentDefinition, Initialization):-
   dh_agent_create(
     AgentDefinition,
     [NavPred,ActPred,ComPred,EvalPred],
-    default_exit(Initialization),
+    dh_agent_exit(Initialization),
     Initialization
   ).
 % An agent definition that specifies a special exit predicate.
@@ -165,7 +167,7 @@ dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   rdf_global_id(dh:Alias, Agent),
   rdf_assert_instance(Agent, AgentDefinition, dh),
   rdfs_assert_label(Agent, Alias, dh),
-  
+
   % Start the thread.
   thread_create(
     dh_cycle(Preds, InitialTriple, Options),
@@ -174,24 +176,30 @@ dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   ).
 
 
-%! dh_create_agents(
+%! dh_agents_create(
 %!   +NumberOfAgents:positive_integer,
 %!   +AgentDefinition:url,
 %!   +Initialization:or([atom,compound])
 %! ) is det.
 
-dh_create_agents(N, AgentDefinition, Initialization):-
+dh_agents_create(N, AgentDefinition, Initialization):-
   forall(
     between(1, N, _),
     dh_agent_create(AgentDefinition, Initialization)
   ).
 
 
-%! default_exit(+Initialization:compound) is det.
+%! dh_agent_delete is det.
 
-default_exit(_):-
-  % @tbd Move to navigate: walk.
-  retractall(backtrack(_)).
+dh_agent_delete:-
+  retractall(backtrack(_)),
+  thread_exit(true).
+
+
+%! dh_agent_delete(+Agent:url) is det.
+
+dh_agent_delete(Agent):-
+  dh_agent_command(Agent, dh_agent_delete).
 
 
 
