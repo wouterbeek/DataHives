@@ -42,12 +42,12 @@ y_per_t(Y, T, Agents):-
 
 
 test1:-
-  dh_population_property(members, Agents),
-  y_per_t(\Agent^dh:dh_agent_property(Agent, steps, 100), Agents).
+  dh_population_property(dho:members, Agents),
+  y_per_t(\Agent^dh:dh_agent_property(Agent, dho:steps, 100), Agents).
 
 test2:-
   dh_stats_collection(
-    y_per_t(\Agent^Steps^dh:dh_agent_property(Agent, steps, Steps)),
+    y_per_t(\Agent^Steps^dh:dh_agent_property(Agent, dho:steps, Steps)),
     Collection
   ),
   maplist(add_graph, Collection),

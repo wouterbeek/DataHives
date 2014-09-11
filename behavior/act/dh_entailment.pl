@@ -16,6 +16,7 @@ DataHives agents that implement RDFS 1.1 entailment.
 
 :- use_module(library(semweb/rdf_db)).
 
+:- use_module(plRdf(rdfs_build2)).
 :- use_module(plRdf_ent(rdf_bnode_map)).
 :- use_module(plRdf_ent(rdf_entailment_patterns)).
 
@@ -34,8 +35,8 @@ DataHives agents that implement RDFS 1.1 entailment.
 :- multifile(dh:dh_agent_property/2).
 :- dynamic(dh:dh_agent_property/3).
 :- multifile(dh:dh_agent_property/3).
-:- dynamic(dh:dh_agent_property_name0/2).
-:- multifile(dh:dh_agent_property_name0/2).
+
+:- initialization(init_agent_properties).
 
 
 
@@ -51,14 +52,11 @@ deductive_action(DirTriple):-
 
 evaluate_entailment:-
   number_of_deductions(Deductions),
-  dh:dh_agent_property(cycles, Lifetime),
+  dh:dh_agent_property(dho:cycles, Lifetime),
   Fitness is Deductions / Lifetime,
-  (
-    Fitness < 0.5
-  ->
-    thread_exit(done)
-  ;
-    true
+  (   Fitness < 0.5
+  -> thread_exit(done)
+  ;  true
   ),
   print_message(
     informational,
@@ -71,16 +69,13 @@ evaluate_entailment:-
 rdf_assert_entailment(rdf(U1,V,W)):-
   % Literals that are not yet replaced by blank nodes
   % are added to the blank node map here.
-  (
-    rdf_is_literal(U1)
-  ->
-    term_to_bnode(user, U1, U2)
-  ;
-    U2 = U1
+  (   rdf_is_literal(U1)
+  ->  term_to_bnode(user, U1, U2)
+  ;   U2 = U1
   ),
 
   % Assert the triple in the graph named after the agent alias.
-  dh:dh_agent_property(graph, MyGraph),
+  dh:dh_agent_property(dho:graph, MyGraph),
   rdf_assert(U2, V, W, MyGraph),
 
   % Count the number of deductions per agent.
@@ -106,13 +101,10 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
 
   % Use the existing blank node map
   % to replace literals with their blank node proxy.
-  (
-    rdf_is_literal(U1),
-    term_to_bnode(user, U1, U2)
-  ->
-    true
-  ;
-    U2 = U1
+  (   rdf_is_literal(U1),
+      term_to_bnode(user, U1, U2)
+  ->  true
+  ;   U2 = U1
   ),
 
   % The conclusion must be new.
@@ -130,7 +122,17 @@ dh:dh_agent_property(Agent, deductions, Deductions):-
   dh_agent(Agent),
   dh_agent_ask(Agent, dh:dh_agent_property(deductions), Deductions).
 
-dh:dh_agent_property_name0(deductions, nonneg).
+init_agent_properties:-
+  rdfs_assert_property(
+    dho:deductions,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:integer,
+    deductions,
+    'The number of deductions that have made by an agent \c
+     since it was created.',
+    dh
+  ).
 
 
 %! increment_deductions is det.

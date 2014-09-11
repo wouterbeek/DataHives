@@ -2,8 +2,7 @@
   dh_population,
   [
     dh_population_delete/0,
-    dh_population_property_name/1, % ?Name:atom
-    dh_population_property/2 % ?Name:atom
+    dh_population_property/2 % ?Property:iri
                              % ?Value
   ]
 ).
@@ -23,14 +22,21 @@ The population is the collection of all agent threads that are active.
 :- use_module(library(apply)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(thread_ext)).
 :- use_module(generics(vox_populi)).
+
+:- use_module(plRdf(rdfs_build2)).
 
 :- use_module(dh_agent(dh_agent)).
 :- use_module(dh_agent(dh_agent_create)).
 :- use_module(dh_agent(dh_agent_property)).
 :- use_module(dh_com(dh_edge_weight)).
+
+:- rdf_meta(dh_population_property(r,?)).
+
+:- initialization(init_population_properties).
 
 
 
@@ -41,48 +47,63 @@ dh_population_delete:-
   maplist(dh_agent_delete, Agents).
 
 
-%! dh_population_property(+Name:atom, +Value) is semidet.
-%! dh_population_property(+Name:atom, -Value) is det.
-%! dh_population_property(-Name:atom, -Value) is nondet.
+%! dh_population_property(+Property:iri, +Value) is semidet.
+%! dh_population_property(+Property:iri, -Value) is det.
+%! dh_population_property(-Property:iri, -Value) is nondet.
 
-dh_population_property(members, Value):-
+dh_population_property(dho:members, Value):-
   aggregate_all(
     set(Agent),
     dh_agent(Agent),
     Value
   ).
-dh_population_property(size, Value):-
-  dh_population_property(members, Agents),
+dh_population_property(dho:size, Value):-
+  dh_population_property(dho:members, Agents),
   length(Agents, Value).
-dh_population_property(Name, Value):-
-  dh:dh_agent_property(Name, numeric), !,
-  dh_population_property(members, Agents),
+dh_population_property(Property, Value):-
+  rdfs_subproperty_of(Property, dho:agentProperty),
+  rdf(Property, rdfs:range, Datatype0, dh),
+  rdfs_subclass_of(Datatype0, dho:numeric), !,
+  dh_population_property(dho:members, Agents),
   aggregate_all(
     sum(Value0),
     (
       member(Agent, Agents),
-      dh:dh_agent_property(Agent, Name, Value0)
+      dh:dh_agent_property(Agent, Property, Value0)
     ),
     Value
   ).
-dh_population_property(Name, Value):-
-  dh_agent_property_name(Name), !,
-  dh_population_property(members, Agents),
+% @tbd Testing only: are *all* agent properties also population properties?
+dh_population_property(Property, Value):-
+  rdfs_subproperty_of(Property, dho:agentProperty), !,
+  dh_population_property(dho:members, Agents),
   aggregate_all(
     set(Value0),
     (
       member(Agent, Agents),
-      dh:dh_agent_property(Agent, Name, Value0)
+      dh:dh_agent_property(Agent, Property, Value0)
     ),
     Value
   ).
 
 
-%! dh_population_property_name(+Name:atom) is semidet.
-%! dh_population_property_name(-Name:atom) is multi.
-
-dh_population_property_name(members).
-dh_population_property_name(size).
-dh_population_property_name(Name):-
-  dh_agent_property_name(Name, numeric).
+init_population_properties:-
+  rdfs_assert_property(
+    dho:members,
+    dho:populationProperty,
+    dho:'Population',
+    rdf:'Bag',
+    members,
+    'The members (agents) of a population.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:size,
+    dho:populationProperty,
+    dho:'Population',
+    xsd:nonNegativeInteger,
+    'population size',
+    'The number of agents that belong to a population.',
+    dh
+  ).
 

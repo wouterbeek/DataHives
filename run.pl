@@ -93,6 +93,20 @@ dh_agent_graphic(Request):-
   dh_agent_graphic(Request, plServer_style).
 
 
+% DataHives: Statistics
+
+http:location(dh_stats, dh(stats), []).
+
+:- use_module(dh_stats(dh_stats_web)).
+
+user:web_module('DH Statistics', dh_stats_web).
+
+:- http_handler(dh_stats(.), dh_stats_web, [prefix,priority(-1)]).
+
+dh_stats_web(Request):-
+  dh_stats_web(Request, plServer_style).
+
+
 % The part of the initialization that requires HTTP handlers to be set.
 
 % Load the agent definitions.

@@ -46,7 +46,7 @@ Interface to agents in DataHives.
 %! dh_agent(-Agent:url) is nondet.
 
 dh_agent(Agent):-
-  rdfs_individual_of(Agent, dh:'Agent').
+  rdfs_individual_of(Agent, dho:'Agent').
 
 
 % GET html *
@@ -56,14 +56,14 @@ dh_agent_rest(Request, HtmlStyle):-
   http_absolute_uri(dh_agent(.), Root), !,
   aggregate_all(
     set(Property),
-    dh_agent_property_name(Property),
+    rdfs_subproperty_of(Property, dho:agentProperty),
     Properties
   ),
   findall(
-    [Name-Agent|Row],
+    [Label-Agent|Row],
     (
       dh_agent(Agent),
-      rdfs_label(Agent, Name),
+      rdfs_label(Agent, Label),
       maplist(
         \Property^Value^(dh:dh_agent_property(Agent, Property, Value)),
         Properties,
@@ -72,7 +72,7 @@ dh_agent_rest(Request, HtmlStyle):-
     ),
     Rows
   ),
-  dh_population_property(size, Size),
+  dh_population_property(dho:size, Size),
   maplist(
     \Property^Header^dcg_phrase(capitalize, Property, Header),
     Properties,
@@ -169,10 +169,11 @@ dh_agent_head(Substrings) -->
 dh_agent_properties_json(Agent, json{agent:Agent, agentProperties:Dicts}):-
   dh_agent(Agent),
   findall(
-    json{name:Name, type:Type, value:Value},
+    json{name:Property, type:Datatype, value:Value},
     (
-      dh:dh_agent_property(Agent, Name, Value),
-      dh_agent_property_name(Name, Type)
+      dh:dh_agent_property(Agent, Property, Value),
+      rdfs_subproperty_of(Property, dho:agentProperty),
+      rdf(Property, rdfs:range, Datatype, dh)
     ),
     Dicts
   ).

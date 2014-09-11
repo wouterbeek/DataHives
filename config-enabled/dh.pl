@@ -1,5 +1,7 @@
 :- module(conf_dh, []).
 
+http:location(dh, cliopatria(dh), []).
+
 :- use_module(library(settings)).
 
 :- set_setting_default(http:public_host, 'localhost.localdomain').
@@ -24,8 +26,6 @@
 
 
 % DataHives: Home
-
-http:location(dh, cliopatria(dh), []).
 
 user:file_search_path(css, dh_web(css)).
 user:file_search_path(js, dh_web(js)).
@@ -72,7 +72,7 @@ dh_agent_definition_rest(Request):-
   dh_agent_definition_rest(Request, cliopatria(default)).
 
 
-% DataHives: Graph
+% DataHives: Graphic
 
 :- use_module(dh_web(dh_agent_graphic)).
 
@@ -82,6 +82,24 @@ cliopatria:menu_item(700=dh/dh_agent_graphic, 'DH Graphic').
 
 dh_agent_graphic(Request):-
   dh_agent_graphic(Request, cliopatria(default)).
+
+
+% DataHives: Statistics
+
+http:location(dh_stats, dh(stats), []).
+
+:- use_module(dh_stats(dh_stats_web)).
+
+cliopatria:menu_item(700=dh/dh_stats, 'DH Statistics').
+
+:- http_handler(
+     dh_stats(.),
+     dh_stats_web,
+     [id(dh_stats),prefix,priority(-1)]
+   ).
+
+dh_stats_web(Request):-
+  dh_stats_web(Request, plServer_style).
 
 
 % plTabular

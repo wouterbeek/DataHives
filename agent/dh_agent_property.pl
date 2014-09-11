@@ -1,9 +1,6 @@
 :- module(
   dh_agent_property,
   [
-    dh_agent_property_name/1, % ?Name:atom
-    dh_agent_property_name/2 % ?Name:atom
-                             % ?Type:oneof([numeric])
   ]
 ).
 
@@ -15,7 +12,12 @@ Access to the properties of individual agents.
 @version 2014/08-2014/09
 */
 
+:- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
+
+:- use_module(plXsd(xsd_rdf)).
+
+:- use_module(plRdf(rdfs_build2)).
 
 :- use_module(dh_act(dh_entailment)).
 :- use_module(dh_agent(dh_agent)).
@@ -26,95 +28,112 @@ Access to the properties of individual agents.
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_nav(dh_nav)).
 
+:- dynamic(dh:dh_agent_property/2).
+:- multifile(dh:dh_agent_property/2).
+:- dynamic(dh:dh_agent_property/3).
+:- multifile(dh:dh_agent_property/3).
+
+:- rdf_meta(dh:dh_agent_property(r,?)).
+:- rdf_meta(dh:dh_agent_property(?,r,?)).
+
 
 
 % @tbd Allow thread and graph names to be dissimilar.
-dh:dh_agent_property(graph, Graph):-
+dh:dh_agent_property(dho:graph, Graph):-
   thread_self(Thread),
   thread_property(Thread, alias(Graph)).
 
 
-%! dh_agent_property(+Agent:url, +Name:atom, +Value) is semidet.
-%! dh_agent_property(+Agent:url, +Name:atom, -Value) is det.
-%! dh_agent_property(+Agent:url, -Name:atom, -Value) is multi.
-%! dh_agent_property(-Agent:url, -Name:atom, -Value) is nondet.
+%! dh:dh_agent_property(+Agent:iri, +Property:iri, +Value) is semidet.
+%! dh:dh_agent_property(+Agent:iri, +Property:iri, -Value) is det.
+%! dh:dh_agent_property(+Agent:iri, -Property:iri, -Value) is multi.
+%! dh:dh_agent_property(-Agent:iri, -Property:iri, -Value) is nondet.
 
 % Age
-dh:dh_agent_property(Agent, age, Age):-
+dh:dh_agent_property(Agent, dho:age, Age):-
   dh_agent(Agent),
   get_time(Now),
-  dh_agent_ask(Agent, dh:dh_agent_property(creation), Creation),
+  dh_agent_ask(Agent, dh:dh_agent_property(dho:creation), Creation),
   Age is Now - Creation.
-% Class label
-dh:dh_agent_property(Agent, classLabel, Label):-
-  dh_agent(Agent),
-  once((
-    rdfs_individual_of(Agent, AgentDefinition),
-    rdfs_subclass_of(AgentDefinition, dh:'Agent')
-  )),
-  rdfs_label(AgentDefinition, Label).
 % CPU time
-dh:dh_agent_property(Agent, cpuTime, CpuTime):-
-  dh:dh_agent_property(Agent, thread, Thread),
+dh:dh_agent_property(Agent, dho:cpuTime, CpuTime):-
+  dh:dh_agent_property(Agent, dho:thread, Thread),
   thread_property(Thread, status(Status)),
   (   memberchk(Status, [exception(_),false])
   ->  CpuTime = 0
   ;   thread_statistics(Thread, cputime, CpuTime)
   ).
 % Effectiveness
-dh:dh_agent_property(Agent, effectiveness, Effectiveness):-
-  dh:dh_agent_property(Agent, steps, Steps),
-  dh:dh_agent_property(Agent, age, Age),
+dh:dh_agent_property(Agent, dho:effectiveness, Effectiveness):-
+  dh:dh_agent_property(Agent, dho:steps, Steps),
+  dh:dh_agent_property(Agent, dho:age, Age),
   Effectiveness is Steps / Age.
-% Graph
-dh:dh_agent_property(Agent, graph, Graph):-
-  rdfs_label(Agent, Graph).
-% Label
-dh:dh_agent_property(Agent, label, Label):-
-  dh_agent(Agent),
-  rdfs_label(Agent, Label).
 % Status
-dh:dh_agent_property(Agent, status, Status):-
-  dh:dh_agent_property(Agent, thread, Thread),
+dh:dh_agent_property(Agent, dho:status, Status):-
+  dh:dh_agent_property(Agent, dho:thread, Thread),
   thread_property(Thread, status(Status)).
-% Thread
-dh:dh_agent_property(Agent, thread, Thread):-
-  dh_agent(Agent),
-  rdfs_label(Agent, Thread).
+% Asserted in RDF: Graph, Thread.
+dh:dh_agent_property(Agent, Property, Value):-
+  rdf(Agent, Property, Value, dh).
 
 
-
-%! dh_agent_property_name(+Name:atom) is semidet.
-%! dh_agent_property_name(-Name:atom) is multi.
-
-dh_agent_property_name(Name):-
-  dh_agent_property_name(Name, _).
-
-
-%! dh_agent_property_name(+Name:atom, +Type:atom) is semidet.
-%! dh_agent_property_name(+Name:atom, -Type:atom) is multi.
-
-dh_agent_property_name(Name, Type):-
-  dh:dh_agent_property_name0(Name, Type0),
-  subclass(Type0, Type).
-
-subclass(X, X):- !.
-subclass(X, Z):-
-  subclass0(X, Y),
-  subclass(Y, Z).
-
-subclass0(float,            numeric).
-subclass0(integer,          numeric).
-subclass0(nonneg,           integer).
-subclass0(negative_integer, integer).
-subclass0(positive_integer, integer).
-
-dh:dh_agent_property_name0(age,           nonneg).
-dh:dh_agent_property_name0(classLabel,    atom).
-dh:dh_agent_property_name0(cpuTime,       float).
-dh:dh_agent_property_name0(effectiveness, float).
-dh:dh_agent_property_name0(graph,         atom).
-dh:dh_agent_property_name0(label,         atom).
-dh:dh_agent_property_name0(status,        compound).
-dh:dh_agent_property_name0(thread,        atom).
+init_agent_properties:-
+  xsd_assert_schema,
+  rdfs_assert_property(
+    dho:age,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:duration,
+    age,
+    'The duration of the agent\'s lifespan.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:cpuTime,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:float,
+    'CPU time',
+    'The CPU time that has been spend by an agent process \c
+     since it was created.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:effectiveness,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:float,
+    effectiveness,
+    'A non-basic agent property intended for testing purposes.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:graph,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:anyURI,
+    graph,
+    'The RDF graph that is used to store the beliefs of an agent.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:status,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:string,
+    status,
+    'The status of an agent process. \c
+     This is either `true` (completed), `false` (Prolog fail), \c
+     or a compound term describing a specific exception.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:thread,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:string,
+    thread,
+    'The alias of the thread that is used to implement an agent.',
+    dh
+  ).
 

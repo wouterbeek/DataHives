@@ -24,9 +24,23 @@ Generic predicates that are used in DataHives.
 @version 2014/06, 2014/08-2014/09
 */
 
+:- use_module(library(http/http_path)).
 :- use_module(library(semweb/rdf_db)).
 
-:- rdf_register_prefix(dh, 'http://www.wouterbeek.com/dh/').
+:- initialization(init_prefixes).
+
+init_prefixes:-
+  http_absolute_uri(dh(.), Prefix1),
+  rdf_register_prefix(dh, Prefix1),
+  
+  atomic_concat(Prefix1, 'agent/', Prefix2),
+  rdf_register_prefix(dha, Prefix2),
+  
+  atomic_concat(Prefix1, 'agent_definition/', Prefix3),
+  rdf_register_prefix(dhad, Prefix3),
+  
+  atomic_concat(Prefix1, 'ontology/', Prefix4),
+  rdf_register_prefix(dho, Prefix4).
 
 
 

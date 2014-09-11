@@ -14,6 +14,8 @@ Reexports the navigation stategies in DataHives.
 @version 2104/07-2014/09
 */
 
+:- use_module(plRdf(rdfs_build2)).
+
 :- reexport(dh_nav(dh_random_jump)).
 :- reexport(dh_nav(dh_random_walk)).
 :- reexport(dh_nav(dh_weighted_walk)).
@@ -29,8 +31,8 @@ Reexports the navigation stategies in DataHives.
 :- multifile(dh:dh_agent_property/2).
 :- dynamic(dh:dh_agent_property/3).
 :- multifile(dh:dh_agent_property/3).
-:- dynamic(dh:dh_agent_property_name0/2).
-:- multifile(dh:dh_agent_property_name0/2).
+
+:- initialization(init_agent_properties).
 
 
 
@@ -59,6 +61,18 @@ dh:dh_agent_property(steps, 0).
 dh:dh_agent_property(Agent, steps, Steps):-
   dh_agent(Agent),
   dh_agent_ask(Agent, dh:dh_agent_property(steps), Steps).
+
+init_agent_properties:-
+  rdfs_assert_property(
+    dho:steps,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:integer,
+    steps,
+    'The number of steps an agent has navigated over RDF graphs \c
+     since its creation.',
+    dh
+  ).
 
 dh:dh_agent_property_name0(steps, nonneg).
 

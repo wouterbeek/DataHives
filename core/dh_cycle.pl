@@ -17,6 +17,8 @@ The navigate-act-communicate cycle for agents in DataHives.
 
 :- use_module(generics(flag_ext)).
 
+:- use_module(plRdf(rdfs_build2)).
+
 :- use_module(dh_agent(dh_agent)).
 :- use_module(dh_beh(dh_beh)).
 :- use_module(dh_core(dh_generics)).
@@ -37,8 +39,8 @@ The navigate-act-communicate cycle for agents in DataHives.
 :- multifile(dh_agent_property/2).
 :- dynamic(dh_agent_property/3).
 :- multifile(dh_agent_property/3).
-:- dynamic(dh_agent_property_name0/2).
-:- multifile(dh_agent_property_name0/2).
+
+:- initialization(init_agent_properties).
 
 
 
@@ -123,8 +125,6 @@ dh:dh_agent_property(Agent, creation, Creation):-
   dh_agent(Agent),
   dh_agent_ask(Agent, dh:dh_agent_property(creation), Creation).
 
-dh:dh_agent_property_name0(creation, float).
-
 dh:dh_agent_property(cycles, Cycles):-
   number_of_cycles(Cycles), !.
 dh:dh_agent_property(cycles, 0).
@@ -133,7 +133,26 @@ dh:dh_agent_property(Agent, cycles, Cycles):-
   dh_agent(Agent),
   dh_agent_ask(Agent, dh:dh_agent_property(cycles), Cycles).
 
-dh:dh_agent_property_name0(cycles, nonneg).
+init_agent_properties:-
+  rdfs_assert_property(
+    dho:creation,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:float,
+    creation,
+    'The date and time at which an agent was created.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:cycles,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:integer,
+    cycles,
+    'The number of cycles that have been run for an agent \c
+     since it was created.',
+    dh
+  ).
 
 
 %! increment_number_of_cycles is det.

@@ -45,7 +45,7 @@ Implements agent definitions in DataHives.
 %! dh_agent_definition(-AgentDefinition:url) is nondet.
 
 dh_agent_definition(AgentDefinition):-
-  rdfs_individual_of(AgentDefinition, dh:'AgentDefinition').
+  rdfs_individual_of(AgentDefinition, dho:'AgentDefinition').
 
 
 %! dh_agent_definition(+AgentDefinition:url, +Predicates:list) is det.
@@ -55,8 +55,8 @@ dh_agent_definition(AgentDefinition):-
 dh_agent_definition(AgentDefinition, Predicates):-
   maplist(ground, [AgentDefinition,Predicates]), !,
   assert(agent_definition0(AgentDefinition, Predicates)),
-  rdf_assert_instance(AgentDefinition, dh:'AgentDefinition', dh),
-  rdfs_assert_subclass(AgentDefinition, dh:'Agent', dh).
+  rdf_assert_instance(AgentDefinition, dho:'AgentDefinition', dh),
+  rdfs_assert_subclass(AgentDefinition, dho:'Agent', dh).
 dh_agent_definition(AgentDefinition, Predicates):-
   agent_definition0(AgentDefinition, Predicates).
 

@@ -22,7 +22,7 @@ e.g. listing the currently loaded agent definitions.
 
 We assume that every agent is represented by and implemented with
 a Linux thread. These threads can be recognized (and enumerated)
-by `dh_agent_property(Agent, thread, Thread)` in [dh_agent_property].
+by `dh_agent_property(Agent, dho:thread, Thread)` in [dh_agent_property].
 
 We also assume that the thread alias of an agent
 is the same as the name of the agent's RDF graph,
@@ -38,6 +38,7 @@ which is used for storing beliefs the agent has.
 :- use_module(library(http/http_path)).
 :- use_module(library(lists)).
 :- use_module(library(predicate_options)). % Declarations.
+:- use_module(library(semweb/rdf_db)).
 
 :- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_random)).
@@ -164,19 +165,24 @@ dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O)):-
 dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   % Construct the agent resource.
   flag(number_of_agents, Id, Id + 1),
-  http_absolute_uri(dh_agent(Id), Agent),
+  rdf_global_id(dha:Id, Agent),
   rdf_assert_instance(Agent, AgentDefinition, dh),
   
   % Construct the agent thread alias / RDF graph name.
-  format(atom(Alias), 'agent_~d', [Id]),
-  rdfs_assert_label(Agent, Alias, dh),
-
-  % Start the thread.
+  format(atom(Label), 'Agent ~d', [Id]),
+  rdfs_assert_label(Agent, Label, dh),
+  
+  % Create the agent's graph.
+  rdf_create_graph(Agent),
+  rdf_assert(Agent, dho:graph, literal(type(Agent,xsd:anyURI)), dh),
+  
+  % Create the agent process in a separate thread.
   thread_create(
     dh_cycle(Preds, InitialTriple, Options),
     _,
-    [alias(Alias),at_exit(ExitPred),detached(true)]
-  ).
+    [alias(Agent),at_exit(ExitPred),detached(true)]
+  ),
+  rdf_assert(Agent, dho:thread, literal(type(Agent,xsd:anyURI)), dh).
 
 
 %! dh_agents_create(
