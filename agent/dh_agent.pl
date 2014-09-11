@@ -98,12 +98,9 @@ dh_agent_rest(Request, HtmlStyle):-
 dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Agent), !,
-  
+
   % Reply with a failure code if the agent does not exist.
-  (   dh_agent(Agent)
-  ->  true
-  ;   http_404([], Request)
-  ),
+  http_exists(Request, dh_agent(Agent)),
 
   findall(
     [Name,Value],
@@ -122,6 +119,24 @@ dh_agent_rest(Request, HtmlStyle):-
       )
     )
   ).
+% GET json *
+dh_agent_rest(Request, _):-
+  cors_enable,
+  request_filter(Request, get, _/json, Root),
+  http_absolute_uri(dh_agent(.), Root), !,
+  findall(
+    Dict,
+    dh_agent_properties_json(_, Dict),
+    Dicts
+  ),
+  reply_json_dict(json{agentProperties:Dicts}).
+% GET json PATH
+dh_agent_rest(Request, _):-
+  cors_enable,
+  request_filter(Request, get, _/json, Agent), !,
+  http_exists(Request, dh_agent(Agent)),
+  dh_agent_properties_json(Agent, Dict),
+  reply_json_dict(Dict).
 % POST json *
 %
 % Returns 400 (Bad Request) if the request does not include an agentDefinition
@@ -146,4 +161,27 @@ dh_agent_rest(Request, _):-
 
 dh_agent_head(Substrings) -->
   html(\dh_head(['Agent'|Substrings])).
+
+
+%! dh_agent_properties_json(+Agent:url, -Json:dict) is det.
+%! dh_agent_properties_json(-Agent:url, -Json:dict) is nondet.
+
+dh_agent_properties_json(Agent, json{agent:Agent, agentProperties:Dicts}):-
+  dh_agent(Agent),
+  findall(
+    json{name:Name, type:Type, value:Value},
+    (
+      dh:dh_agent_property(Agent, Name, Value),
+      dh_agent_property_name(Name, Type)
+    ),
+    Dicts
+  ).
+
+
+%! http_exists(+Request:list(nvpair), :Goal) is det.
+:- meta_predicate(http_exists(+,0)).
+http_exists(_, Goal):-
+  Goal, !.
+http_exists(Request, _):-
+  http_404([], Request).
 
