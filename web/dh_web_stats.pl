@@ -18,13 +18,14 @@ in DataHives.
 :- use_module(library(http/html_write)).
 
 :- use_module(dh_stats(dh_stats)).
+:- use_module(dh_web(dh_web_generics)).
 
 
 
 dh_web_stats(_, Style):-
   reply_html_page(
     Style,
-    title('DataHives - Statistics'),
+    \dh_head(['Statistics']),
     html(\dh_web_stats(Goals))
   ).
 

@@ -9,7 +9,7 @@
 /** <module> DataHives Agent: Graphic
 
 @author Wouter Beek
-@version 2014/04
+@version 2014/04, 2014/09
 */
 
 :- use_module(library(http/html_head)).
@@ -20,6 +20,7 @@
 :- use_module(plGraphViz(gv_file)).
 
 :- use_module(dh_web(dh_gif)).
+:- use_module(dh_web(dh_web_generics)).
 
 :- html_resource(css('gv_interactive.css'), []).
 :- html_resource(js('gv_interactive.js'), []).
@@ -30,21 +31,19 @@ dh_agent_graphic(_, HtmlStyle):-
   reply_html_page(
     HtmlStyle,
     % Auto-update HTML: `meta([content(1),'http-equiv'(refresh)], [])`
-    html(\dh_agent_graphic_head),
-    html(\dh_agent_graphic_body)
+    \dh_head(['Graphic']),
+    \dh_agent_graphic_body
   ).
 
-dh_agent_graphic_head -->
-  html([
-    title('DataHives - Graphic'),
-    \html_requires(css('gv_interactive.css')),
-    \html_requires(js('gv_interactive.js'))
-  ]).
 
 dh_agent_graphic_body -->
   {
     dh_graph(Gif, []),
     gif_to_svg_dom(Gif, SvgDom, [method(dot)])
   },
-  html(\xml_dom_as_atom(SvgDom)).
+  html([
+    \html_requires(css('gv_interactive.css')),
+    \html_requires(js('gv_interactive.js')),
+    \xml_dom_as_atom(SvgDom)
+  ]).
 

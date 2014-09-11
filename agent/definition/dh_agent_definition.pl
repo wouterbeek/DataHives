@@ -70,7 +70,7 @@ dh_agent_definition_rest(Request, HtmlStyle):-
   http_absolute_location(sparql(.), SparqlLocation, []),
   reply_html_page(
     HtmlStyle,
-    \dh_agent_definition_head(html('')),
+    \dh_agent_definition_head([]),
     \dh_body([
       form(
         [
@@ -102,7 +102,7 @@ dh_agent_definition_rest(Request, HtmlStyle):-
         ])
       ),
       \js_script({|javascript(AgentLocation,AgentDefinitionLocation,SparqlLocation)||
-function pairsToDescriptionList(predicates) {
+function showPredicates(predicates) {
   var string = "<dl>";
   var prefixes = ["NAVIGATE","ACT","COMMUNICATE","EVALUATE","END-OF-LIFE"];
   $.each(predicates, function(index, element) {
@@ -161,7 +161,7 @@ $("#agentDefinitionsContainer").on("change", "select", function() {
         "type": "get",
         "url": SparqlLocation
       });
-      $("#agentDefinitionContainer").html(pairsToDescriptionList(data["predicates"]));
+      $("#agentDefinitionContainer").html(showPredicates(data["predicates"]));
     },
     "type": "get",
     "url": $(this).find("option:selected").attr("value")
@@ -204,25 +204,12 @@ dh_agent_definition_rest(Request, HtmlStyle):-
         ['Create ',Label,' agent']
       ),
       \js_script({|javascript(AgentDefinition,Label,AgentLocation)||
-function indexString(index) {
-  switch (index) {
-    case 0:
-      return "NAVIGATE";
-    case 1:
-      return "ACT";
-    case 2:
-      return "COMMUNICATE";
-    case 3:
-      return "EVALUATE";
-    case 4:
-      return "END-OF-LIFE";
-  }
-}
-function pairsToDescriptionList(data) {
+function showPredicates(predicates) {
   var string = "<dl>";
-  var index = 0;
-  $.each(data, function(term, description) {
-    string += "<dt>[" + indexString(index++) + "] " + term + "</dt><dd>" + description + "</dd>";
+  var prefixes = ["NAVIGATE","ACT","COMMUNICATE","EVALUATE","END-OF-LIFE"];
+  $.each(predicates, function(index, element) {
+    string += "<dt>[" + prefixes[index] + "] " + element["predicate"] +
+              "</dt><dd>" + element["documentation"] + "</dd>";
   });
   return string + "</dl>";
 }
@@ -230,7 +217,7 @@ $(document).ready(function() {
   $.ajax({
     "dataType": "json",
     "success": function(data) {
-      $("#agentDefinitionContainer").html(pairsToDescriptionList(data["predicates"]));
+      $("#agentDefinitionContainer").html(showPredicates(data["predicates"]));
     },
     "type": "get",
     "url": AgentDefinition
@@ -289,6 +276,6 @@ def_pairs([Predicate0|T], [Dict|Dicts]):-
   def_pairs(T, Dicts).
 
 
-dh_agent_definition_head(Dcg) -->
-  html(\dh_head(['Agent definition',Dcg])).
+dh_agent_definition_head(Substrings) -->
+  html(\dh_head(['Agent definition'|Substrings])).
 

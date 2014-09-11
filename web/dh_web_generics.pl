@@ -2,7 +2,7 @@
   dh_web_generics,
   [
     dh_body//1, % :Body
-    dh_head//1 % :Subtitle
+    dh_head//1 % +Substrings:list(atom)
   ]
 ).
 
@@ -21,7 +21,6 @@ that implement the DataHives Web-based front-end.
 :- ensure_loaded(plServer(style)).
 
 :- html_meta(dh_body(html,?,?)).
-:- html_meta(dh_head(html,?,?)).
 
 
 
@@ -33,6 +32,7 @@ dh_body(Content) -->
   ]).
 
 
-dh_head(Subtitle) -->
-  html(title(['DataHives - '|Subtitle])).
+dh_head(Substrings) -->
+  {atomic_list_concat(['DataHives'|Substrings], ' - ', String)},
+  html(title(String)).
 

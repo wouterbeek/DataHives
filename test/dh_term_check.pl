@@ -11,7 +11,7 @@
 Program that checks RDF terms and that runs on the DataHives architecture.
 
 @author Wouter Beek
-@version 2013/10, 2014/02
+@version 2013/10, 2014/02, 2014/09
 */
 
 :- use_module(library(apply)).
@@ -25,6 +25,8 @@ Program that checks RDF terms and that runs on the DataHives architecture.
 :- use_module(plServer(web_modules)).
 
 :- use_module(plRdfDev(rdf_html_table)).
+
+:- use_module(dh_web(dh_web_generics)).
 
 :- http_handler(dh(termcheck), suspicious_terms_web, []).
 
@@ -56,7 +58,7 @@ suspicious_terms_web(_Request):-
   suspicious_terms(Terms),
   reply_html_page(
     plServer_style,
-    title('DataHives - Term check'),
+    \dh_head(['Term check']),
     html(
       \rdf_html_table(
         [header_row(true),indexed(true),location(dh_termcheck)],

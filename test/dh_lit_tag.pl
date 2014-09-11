@@ -10,7 +10,7 @@
 Count languages and datatypes used in literals.
 
 @author Wouter Beek
-@version 2014/02-2014/04
+@version 2014/02-2014/04, 2014/09
 */
 
 :- use_module(library(aggregate)).
@@ -32,6 +32,7 @@ Count languages and datatypes used in literals.
 :- use_module(plRdfDev(rdf_html_table)).
 
 :- use_module(dh_nav(dh_random_walk)).
+:- use_module(dh_web(dh_web_generics)).
 
 :- http_handler(dh(literal_tag), dh_lit_tag, []).
 
@@ -90,7 +91,7 @@ dh_lit_tag(_Request):-
   ),
   reply_html_page(
     plServer_style,
-    title('DataHives - Language tags'),
+    \dh_head(['Language tags']),
     \rdf_html_table(
       [header_column(true),header_row(true),location(dh_literal_tag)],
       html('Overview of language tags.'),

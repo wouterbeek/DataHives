@@ -80,7 +80,7 @@ dh_agent_rest(Request, HtmlStyle):-
   ),
   reply_html_page(
     HtmlStyle,
-    \dh_agent_head('Overview'),
+    \dh_agent_head(['Overview']),
     \dh_body(
       \html_table(
         html([
@@ -144,6 +144,6 @@ dh_agent_rest(Request, _):-
 
 % Helpers
 
-dh_agent_head(Dcg) -->
-  html(\dh_head(['Agent - ',Dcg])).
+dh_agent_head(Substrings) -->
+  html(\dh_head(['Agent'|Substrings])).
 

@@ -28,7 +28,7 @@
 /** <module> DataHives Network
 
 @author Wouter Beek
-@version 2013/09-2013/10, 2014/02
+@version 2013/09-2013/10, 2014/02, 2014/09
 */
 
 :- use_module(library(debug)).
@@ -56,6 +56,8 @@
 :- use_module(plRdf_term(rdf_term)).
 
 :- use_module(plRdfDev(rdf_html_table)).
+
+:- use_module(dh_web(dh_web_generics)).
 
 :- http_handler(dh(connected_hives), connected_hives, []).
 
@@ -196,7 +198,7 @@ connected_hives(_Request):-
   gif_to_svg_dom(graph(Vs,Es,G_Attrs), SvgDom, [method(sfdp)]),
   reply_html_page(
     plServer_style,
-    title('DataHives - Network'),
+    \dh_head(['Network']),
     html([
       \rdf_html_table(
         [header_row(true),indexed(true),location(dh_connected_hives)],
