@@ -60,9 +60,10 @@ dh_agent_rest(Request, HtmlStyle):-
     Properties
   ),
   findall(
-    Row,
+    [Name-Agent|Row],
     (
       dh_agent(Agent),
+      rdfs_label(Agent, Name),
       maplist(
         \Property^Value^(dh:dh_agent_property(Agent, Property, Value)),
         Properties,
