@@ -163,12 +163,12 @@ dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O)):-
 %! ) is det.
 
 dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
-  % Construct the agent resource.
-  flag(number_of_agents, Id, Id + 1),
-  rdf_global_id(dha:Id, Agent),
+  % Create the agent resource.
+  rdf_create_next_resource(dh_agent, dh, Agent),
   rdf_assert_instance(Agent, AgentDefinition, dh),
   
   % Construct the agent thread alias / RDF graph name.
+  flag(dh_agent, Id, Id),
   format(atom(Label), 'Agent ~d', [Id]),
   rdfs_assert_label(Agent, Label, dh),
   
