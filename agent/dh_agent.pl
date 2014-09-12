@@ -27,12 +27,11 @@ Interface to agents in DataHives.
 
 :- use_module(generics(request_ext)).
 
-:- use_module(plDcg(dcg_content)).
-:- use_module(plDcg(dcg_generic)).
-
 :- use_module(plHtml(html)).
 :- use_module(plHtml(html_pl_term)).
 :- use_module(plHtml(html_table)).
+
+:- use_module(plTabular(rdf_html_table)).
 
 :- use_module(dh_agent(dh_agent_create)).
 :- use_module(dh_agent(dh_agent_property)).
@@ -54,12 +53,19 @@ dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
-gtrace,
+
+  % Collect all agent properties.
+  % These are the columns of the table.
   aggregate_all(
     set(Property),
-    rdfs_subproperty_of(Property, dho:agentProperty),
+    (
+      rdfs_subproperty_of(Property, dho:agentProperty),
+      \+ rdf_equal(dho:agentProperty, Property)
+    ),
     Properties
   ),
+gtrace,
+  % Create a row for each agent.
   findall(
     [Label-Agent|Row],
     (
@@ -73,24 +79,20 @@ gtrace,
     ),
     Rows
   ),
+
   dh_population_property(dho:size, Size),
-  maplist(
-    \Property^Header^dcg_phrase(capitalize, Property, Header),
-    Properties,
-    HeaderRow
-  ),
   reply_html_page(
     HtmlStyle,
     \dh_agent_head(['Overview']),
     \dh_body(
-      \html_table(
+      \rdf_html_table(
         html([
           'Overview of the ',
           \html_pl_term(dh, Size),
           ' currently running agents in DataHives.'
         ]),
-        [HeaderRow|Rows],
-        [header_row(true),index(true)]
+        [['Agent'|Properties]|Rows],
+        [graph(dh),header_row(true),index(true)]
       )
     )
   ).
@@ -140,8 +142,7 @@ dh_agent_rest(Request, _):-
   reply_json_dict(Dict).
 % POST json *
 %
-% Returns 400 (Bad Request) if the request does not include an agentDefinition
-% in JSON format.
+% Returns 400 (Bad Request)
 dh_agent_rest(Request, _):-
   cors_enable,
   request_filter(Request, post, _/json, _), !,

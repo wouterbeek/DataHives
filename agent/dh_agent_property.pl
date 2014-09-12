@@ -53,7 +53,7 @@ dh:dh_agent_property(dho:graph, Graph):-
 dh:dh_agent_property(Agent, dho:age, Age):-
   dh_agent(Agent),
   get_time(Now),
-  dh_agent_ask(Agent, dh:dh_agent_property(dho:creation), Creation),
+  rdf(Agent, dho:creation, Creation, dh),
   Age is Now - Creation.
 % CPU time
 dh:dh_agent_property(Agent, dho:cpuTime, CpuTime):-
