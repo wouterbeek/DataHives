@@ -92,7 +92,7 @@ gtrace,
           ' currently running agents in DataHives.'
         ]),
         [['Agent'|Properties]|Rows],
-        [graph(dh),header_row(true),index(true)]
+        [graph(dh),header_row(true),index(true),iri_display(label)]
       )
     )
   ).
