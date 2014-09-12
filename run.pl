@@ -46,7 +46,10 @@ user:web_module('plTabular', rdf_tabular).
 rdf_tabular(Request):-
   rdf_tabular(Request, plServer_style).
 
-:- html_resource(plTabular, [requires([css('plTabular.css')]),virtual(true)]).
+:- html_resource(
+     css(plTabular),
+     [requires([css('plTabular.css')]),virtual(true)]
+   ).
 
 
 % DataHives: Agent

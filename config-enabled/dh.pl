@@ -76,7 +76,7 @@ dh_agent_definition_rest(Request):-
 
 :- use_module(dh_web(dh_agent_graphic)).
 
-cliopatria:menu_item(700=dh/dh_agent_graphic, 'DH Graphic').
+cliopatria:menu_item(600=dh/dh_agent_graphic, 'DH Graphic').
 
 :- http_handler(dh(graphic), dh_agent_graphic, [id(dh_agent_graphic)]).
 
@@ -90,7 +90,7 @@ http:location(dh_stats, dh(stats), []).
 
 :- use_module(dh_stats(dh_stats_web)).
 
-cliopatria:menu_item(700=dh/dh_stats, 'DH Statistics').
+cliopatria:menu_item(600=dh/dh_stats, 'DH Statistics').
 
 :- http_handler(
      dh_stats(.),
@@ -99,23 +99,30 @@ cliopatria:menu_item(700=dh/dh_stats, 'DH Statistics').
    ).
 
 dh_stats_web(Request):-
-  dh_stats_web(Request, plServer_style).
+  dh_stats_web(Request, cliopatria(default)).
 
 
 % plTabular
 
+user:file_search_path(css, plTabular_web(css)).
+
 :- use_module(plTabular(rdf_tabular)).
 
-:- http_handler(cliopatria(plTabular), rdf_tabular, []).
+cliopatria:menu_item(600=dh/plTabular, 'plTabular').
+
+:- http_handler(dh(plTabular), rdf_tabular, [id(plTabular)]).
 
 rdf_tabular(Request):-
   rdf_tabular(Request, plTabular).
 
-:- html_resource(plTabular, [requires([css('plTabular.css')]),virtual(true)]).
+:- html_resource(
+     css(plTabular),
+     [requires([css('plTabular.css')]),virtual(true)]
+   ).
 
 user:body(plTabular, Body) -->
-  html_requires(plTabular),
-  user:body(dh, Body).
+  html_requires(css(plTabular)),
+  user:body(cliopatria(default), Body).
 
 
 % The part of the initialization that requires HTTP handlers to be set.
