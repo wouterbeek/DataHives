@@ -1,7 +1,7 @@
 % The load file the DataHives project.
 
-:- dynamic(user:prolog/3).
-:- multifile(user:prolog/3).
+:- dynamic(user:project/3).
+:- multifile(user:project/3).
    user:project('DataHives', 'Where agents travel across the Semantic Web',
        dh).
 

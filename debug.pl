@@ -1,5 +1,7 @@
 % Debug file for the DataHives project.
 
+:- guitracer.
+
 :- [load].
 
 

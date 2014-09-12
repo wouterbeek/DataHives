@@ -15,6 +15,7 @@ Interface to agents in DataHives.
 @version 2014/09
 */
 
+:- use_module(library(aggregate)).
 :- use_module(library(apply)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
@@ -35,8 +36,7 @@ Interface to agents in DataHives.
 
 :- use_module(dh_agent(dh_agent_create)).
 :- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_core(dh_generics)). % RDF namespace.
-:- use_module(dh_core(dh_messages)).
+:- use_module(dh_core(dh_generics), []). % RDF namespace.
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_web(dh_web_generics)).
 
@@ -54,6 +54,7 @@ dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
+gtrace,
   aggregate_all(
     set(Property),
     rdfs_subproperty_of(Property, dho:agentProperty),
