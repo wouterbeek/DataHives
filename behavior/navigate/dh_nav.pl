@@ -67,7 +67,7 @@ init_agent_properties:-
     dho:steps,
     dho:agentProperty,
     dho:'Agent',
-    xsd:integer,
+    xsd:nonNegativeInteger,
     steps,
     'The number of steps an agent has navigated over RDF graphs \c
      since its creation.',

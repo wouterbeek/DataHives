@@ -127,7 +127,7 @@ init_agent_properties:-
     dho:deductions,
     dho:agentProperty,
     dho:'Agent',
-    xsd:integer,
+    xsd:nonNegativeInteger,
     deductions,
     'The number of deductions that have made by an agent \c
      since it was created.',

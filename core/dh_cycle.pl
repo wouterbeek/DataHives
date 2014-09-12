@@ -147,7 +147,7 @@ init_agent_properties:-
     dho:cycles,
     dho:agentProperty,
     dho:'Agent',
-    xsd:integer,
+    xsd:nonNegativeInteger,
     cycles,
     'The number of cycles that have been run for an agent \c
      since it was created.',
