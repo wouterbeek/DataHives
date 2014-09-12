@@ -40,7 +40,7 @@ number_of_overall_search_results(N):-
 %! number_of_self_search_results(-NumberOfSearchResults:nonneg) is det.
 
 number_of_self_search_results(N):-
-  dh:dh_agent_property(graph, MyGraph),
+  dh:dh_agent_property(dho:graph, MyGraph),
   aggregate_all(
     count,
     rdf(_, _, _, MyGraph),
@@ -58,7 +58,7 @@ search_action(Search, ResultsGraph, DirTriple):-
   directed_triple(DirTriple, Triple),
   (   search_result_found(Search, Triple)
   ->  Triple = rdf(S,P,O),
-      dh:dh_agent_property(graph, MyGraph),
+      dh:dh_agent_property(dho:graph, MyGraph),
       rdf_assert(S, P, O, MyGraph),
       rdf_assert(S, P, O, ResultsGraph)
   ;

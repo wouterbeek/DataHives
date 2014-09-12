@@ -67,7 +67,7 @@ dh_agent_rest(Request, HtmlStyle):-
     ),
     Properties
   ),
-gtrace,
+  
   % Create a row for each agent.
   findall(
     [Label-Agent|Row],

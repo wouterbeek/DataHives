@@ -54,13 +54,17 @@ increment_number_of_steps(N):-
 
 % AGENT PROPERTY
 
-dh:dh_agent_property(steps, Steps):-
-  number_of_steps(Steps), !.
-dh:dh_agent_property(steps, 0).
+dh:dh_agent_property(Property, Steps):-
+  rdf_global_id(dho:steps, Property),
+  (   number_of_steps(Steps)
+  ->  true
+  ;   Steps = 0
+  ).
 
-dh:dh_agent_property(Agent, steps, Steps):-
+dh:dh_agent_property(Agent, Property, Steps):-
+  rdf_global_id(dho:steps, Property),
   dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(steps), Steps).
+  dh_agent_ask(Agent, dh:dh_agent_property(Property), Steps).
 
 init_agent_properties:-
   rdfs_assert_property(
@@ -73,6 +77,4 @@ init_agent_properties:-
      since its creation.',
     dh
   ).
-
-dh:dh_agent_property_name0(steps, nonneg).
 

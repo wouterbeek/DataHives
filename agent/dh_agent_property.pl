@@ -15,9 +15,14 @@ Access to the properties of individual agents.
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
+:- use_module(plDcg(dcg_generic)).
+
 :- use_module(plXsd(xsd_rdf)).
+:- use_module(plXsd_datetime(xsd_dateTime)).
+:- use_module(plXsd_datetime(xsd_dateTime_support)).
 
 :- use_module(plRdf(rdfs_build2)).
+:- use_module(plRdf_term(rdf_datatype)).
 
 :- use_module(dh_act(dh_entailment)).
 :- use_module(dh_agent(dh_agent)).
@@ -41,7 +46,8 @@ Access to the properties of individual agents.
 
 
 % @tbd Allow thread and graph names to be dissimilar.
-dh:dh_agent_property(dho:graph, Graph):-
+dh:dh_agent_property(Property, Graph):-
+  rdf_global_id(dho:graph, Property),
   thread_self(Thread),
   rdf(Agent, dho:thread, literal(type(Thread,xsd:anyURI)), dh),
   rdf(Agent, dho:graph, literal(type(Graph,xsd:anyURI)), dh).
@@ -53,13 +59,19 @@ dh:dh_agent_property(dho:graph, Graph):-
 %! dh:dh_agent_property(-Agent:iri, -Property:iri, -Value) is nondet.
 
 % Age
-dh:dh_agent_property(Agent, dho:age, Age):-
+dh:dh_agent_property(Agent, Property, Age):-
+  rdf_global_id(dho:age, Property),
   dh_agent(Agent),
   get_time(Now),
-  rdf(Agent, dho:creation, Creation, dh),
+
+  % The creation time must be parsed.
+  rdf_datatype(Agent, dho:creation, DateTimeValue, xsd:dateTime, dh),
+  timeOnTimeline(DateTimeValue, Creation),
+
   Age is Now - Creation.
 % CPU time
-dh:dh_agent_property(Agent, dho:cpuTime, CpuTime):-
+dh:dh_agent_property(Agent, Property, CpuTime):-
+  rdf_global_id(dho:cpuTime, Property),
   dh:dh_agent_property(Agent, dho:thread, Thread),
   thread_property(Thread, status(Status)),
   (   memberchk(Status, [exception(_),false])
@@ -67,17 +79,26 @@ dh:dh_agent_property(Agent, dho:cpuTime, CpuTime):-
   ;   thread_statistics(Thread, cputime, CpuTime)
   ).
 % Effectiveness
-dh:dh_agent_property(Agent, dho:effectiveness, Effectiveness):-
+dh:dh_agent_property(Agent, Property, Effectiveness):-
+  rdf_global_id(dho:effectiveness, Property),
   dh:dh_agent_property(Agent, dho:steps, Steps),
   dh:dh_agent_property(Agent, dho:age, Age),
   Effectiveness is Steps / Age.
+% Graph
+dh:dh_agent_property(Agent, Property, Value):-
+  rdf_global_id(dho:graph, Property),
+  rdf_datatype(Agent, Property, Value, xsd:anyURI, dh).
 % Status
-dh:dh_agent_property(Agent, dho:status, Status):-
+dh:dh_agent_property(Agent, Property, Status):-
+  rdf_global_id(dho:status, Property),
   dh:dh_agent_property(Agent, dho:thread, Thread),
   thread_property(Thread, status(Status)).
-% Asserted in RDF: Graph, Thread.
+% Thread
 dh:dh_agent_property(Agent, Property, Value):-
-  rdf(Agent, Property, Value, dh).
+  rdf_global_id(dho:thread, Property),
+gtrace,
+  rdf_datatype(Agent, Property, Value, xsd:anyURI, dh).
+
 
 
 init_agent_properties:-

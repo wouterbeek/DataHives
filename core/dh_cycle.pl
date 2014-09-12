@@ -106,7 +106,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
 % Helpers
 
 call_every_n_cycles(N, Goal):-
-  dh:dh_agent_property(cycles, M),
+  dh:dh_agent_property(dho:cycles, M),
   M > 0,
   M mod N =:= 0, !,
   call(Goal, M).
@@ -116,22 +116,31 @@ call_every_n_cycles(_, _).
 
 % Statistics
 
-dh:dh_agent_property(creation, Creation):-
-  creation(Creation), !.
-dh:dh_agent_property(creation, Creation):-
-  existence_error(integer, Creation).
+dh:dh_agent_property(Property, Creation):-
+  rdf_global_id(dho:creation, Property),
+  (   creation(Creation)
+  ->  true
+  ;   existence_error(integer, Creation)
+  ).
 
-dh:dh_agent_property(Agent, creation, Creation):-
+dh:dh_agent_property(Agent, Property, Creation):-
+  rdf_global_id(dho:creation, Property),
   dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(creation), Creation).
+  dh_agent_ask(Agent, dh:dh_agent_property(Property), Creation).
 
-dh:dh_agent_property(cycles, Cycles):-
-  number_of_cycles(Cycles), !.
-dh:dh_agent_property(cycles, 0).
 
-dh:dh_agent_property(Agent, cycles, Cycles):-
+dh:dh_agent_property(Property, Cycles):-
+  rdf_global_id(dho:cycles, Property),
+  (   number_of_cycles(Cycles)
+  ->  true
+  ;   Cycles = 0
+  ).
+
+dh:dh_agent_property(Agent, Property, Cycles):-
+  rdf_global_id(dho:cycles, Property),
   dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(cycles), Cycles).
+  dh_agent_ask(Agent, dh:dh_agent_property(Property), Cycles).
+
 
 init_agent_properties:-
   rdfs_assert_property(
@@ -176,7 +185,7 @@ increment_number_of_cycles(N):-
 :- multifile(prolog:message//1).
 
 print_number_of_cycles(N):-
-  sleep(1), %DEB
+  sleep(10), %DEB
   print_message(informational, dh_agent_property(cycles,N)).
 
 prolog:message(dh_agent_property(cycles,N)) -->

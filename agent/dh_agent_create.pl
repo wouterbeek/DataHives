@@ -42,6 +42,7 @@ which is used for storing beliefs the agent has.
 :- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_random)).
 :- use_module(plRdf(rdfs_label_ext)).
+:- use_module(plRdf_term(rdf_datatype)).
 :- use_module(plRdf_term(rdf_dateTime)).
 
 :- use_module(dh_agent_definition(dh_agent_definition)).
@@ -174,7 +175,8 @@ dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   
   % Create the agent's graph.
   rdf_create_graph(Agent),
-  rdf_assert(Agent, dho:graph, literal(type(Agent,xsd:anyURI)), dh),
+gtrace,
+  rdf_assert_datatype(Agent, dho:graph, Agent, xsd:anyURI, dh),
   
   % Register creation time.
   rdf_assert_now(Agent, dho:creation, dh),
@@ -185,7 +187,7 @@ dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
     _,
     [alias(Agent),at_exit(ExitPred),detached(true)]
   ),
-  rdf_assert(Agent, dho:thread, literal(type(Agent,xsd:anyURI)), dh).
+  rdf_assert_datatype(Agent, dho:thread, Agent, xsd:anyURI, dh).
 
 
 %! dh_agents_create(

@@ -114,13 +114,17 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
 
 % AGENT PROPERTIES
 
-dh:dh_agent_property(deductions, Deductions):-
-  number_of_deductions(Deductions), !.
-dh:dh_agent_property(deductions, 0).
+dh:dh_agent_property(Property, Deductions):-
+  rdf_global_id(dho:deductions, Property),
+  (   number_of_deductions(Deductions)
+  ->  true
+  ;   Deductions = 0
+  ).
 
-dh:dh_agent_property(Agent, deductions, Deductions):-
+dh:dh_agent_property(Agent, Property, Deductions):-
+  rdf_global_id(dho:deductions, Property),
   dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(deductions), Deductions).
+  dh_agent_ask(Agent, dh:dh_agent_property(Property), Deductions).
 
 init_agent_properties:-
   rdfs_assert_property(
@@ -164,6 +168,6 @@ reset_number_of_deductions:-
 :- multifile(prolog:message//1).
 
 prolog:message(entailment_fitness(Deductions,Lifetime,Fitness)) -->
-  {dh:dh_agent_property(graph, MyGraph)},
+  {dh:dh_agent_property(dho:graph, MyGraph)},
   ['[~w] ~f (~D entailments; ~D steps)'-[MyGraph,Fitness,Deductions,Lifetime]].
 
