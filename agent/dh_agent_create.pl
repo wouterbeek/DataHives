@@ -167,20 +167,19 @@ dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   % Create the agent resource.
   rdf_create_next_resource(dh_agent, dh, Agent),
   rdf_assert_instance(Agent, AgentDefinition, dh),
-  
+
   % Construct the agent thread alias / RDF graph name.
   flag(dh_agent, Id, Id),
   format(atom(Label), 'Agent ~d', [Id]),
   rdfs_assert_label(Agent, Label, dh),
-  
+
   % Create the agent's graph.
   rdf_create_graph(Agent),
-gtrace,
   rdf_assert_datatype(Agent, dho:graph, Agent, xsd:anyURI, dh),
-  
+
   % Register creation time.
   rdf_assert_now(Agent, dho:creation, dh),
-  
+
   % Create the agent process in a separate thread.
   thread_create(
     dh_cycle(Preds, InitialTriple, Options),

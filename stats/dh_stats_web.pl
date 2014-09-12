@@ -26,7 +26,6 @@ Web-based front-end for statistics in DataHives.
 
 % GET html *
 dh_stats_web(Request, HtmlStyle):-
-gtrace,
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_stats(.), Root), !,

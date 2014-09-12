@@ -116,19 +116,6 @@ call_every_n_cycles(_, _).
 
 % Statistics
 
-dh:dh_agent_property(Property, Creation):-
-  rdf_global_id(dho:creation, Property),
-  (   creation(Creation)
-  ->  true
-  ;   existence_error(integer, Creation)
-  ).
-
-dh:dh_agent_property(Agent, Property, Creation):-
-  rdf_global_id(dho:creation, Property),
-  dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(Property), Creation).
-
-
 dh:dh_agent_property(Property, Cycles):-
   rdf_global_id(dho:cycles, Property),
   (   number_of_cycles(Cycles)
@@ -143,15 +130,6 @@ dh:dh_agent_property(Agent, Property, Cycles):-
 
 
 init_agent_properties:-
-  rdfs_assert_property(
-    dho:creation,
-    dho:agentProperty,
-    dho:'Agent',
-    xsd:float,
-    creation,
-    'The date and time at which an agent was created.',
-    dh
-  ),
   rdfs_assert_property(
     dho:cycles,
     dho:agentProperty,

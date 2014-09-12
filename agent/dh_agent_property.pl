@@ -1,6 +1,7 @@
 :- module(
   dh_agent_property,
   [
+    agent_self/1 % -Agent:iri
   ]
 ).
 
@@ -45,12 +46,23 @@ Access to the properties of individual agents.
 
 
 
-% @tbd Allow thread and graph names to be dissimilar.
+agent_self(Agent):-
+  thread_self(Thread),
+  rdf(Agent, dho:thread, literal(type(Thread,xsd:anyURI)), dh).
+
+
+/*
+% Creation
+dh:dh_agent_property(Property, Creation):-
+  rdf_global_id(dho:creation, Property),
+  agent_self(Agent),
+  rdf_datatype(Agent, Property, Creation, xsd:dateTime, dh).
+% Graph
 dh:dh_agent_property(Property, Graph):-
   rdf_global_id(dho:graph, Property),
-  thread_self(Thread),
-  rdf(Agent, dho:thread, literal(type(Thread,xsd:anyURI)), dh),
+  agent_self(Agent),
   rdf(Agent, dho:graph, literal(type(Graph,xsd:anyURI)), dh).
+*/
 
 
 %! dh:dh_agent_property(+Agent:iri, +Property:iri, +Value) is semidet.
@@ -65,7 +77,7 @@ dh:dh_agent_property(Agent, Property, Age):-
   get_time(Now),
 
   % The creation time must be parsed.
-  rdf_datatype(Agent, dho:creation, DateTimeValue, xsd:dateTime, dh),
+  dh:dh_agent_property(Agent, dho:creation, DateTimeValue),
   timeOnTimeline(DateTimeValue, Creation),
 
   Age is Now - Creation.
@@ -78,6 +90,11 @@ dh:dh_agent_property(Agent, Property, CpuTime):-
   ->  CpuTime = 0
   ;   thread_statistics(Thread, cputime, CpuTime)
   ).
+% Creation
+dh:dh_agent_property(Agent, Property, Creation):-
+  rdf_global_id(dho:creation, Property),
+  dh_agent(Agent),
+  rdf_datatype(Agent, Property, Creation, xsd:dateTime, dh).
 % Effectiveness
 dh:dh_agent_property(Agent, Property, Effectiveness):-
   rdf_global_id(dho:effectiveness, Property),
@@ -97,6 +114,7 @@ dh:dh_agent_property(Agent, Property, Status):-
 dh:dh_agent_property(Agent, Property, Value):-
   rdf_global_id(dho:thread, Property),
 gtrace,
+  dh_agent(Agent),
   rdf_datatype(Agent, Property, Value, xsd:anyURI, dh).
 
 
@@ -120,6 +138,15 @@ init_agent_properties:-
     'CPU time',
     'The CPU time that has been spend by an agent process \c
      since it was created.',
+    dh
+  ),
+  rdfs_assert_property(
+    dho:creation,
+    dho:agentProperty,
+    dho:'Agent',
+    xsd:float,
+    creation,
+    'The date and time at which an agent was created.',
     dh
   ),
   rdfs_assert_property(

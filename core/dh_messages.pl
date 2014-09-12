@@ -31,7 +31,7 @@ Where message queue are being processed.
 %! dh_agent_ask(+Agent:url, +Question:compound, -Answer) is det.
 
 dh_agent_ask(Agent, Question, Answer):-
-  rdfs_label(Agent, Thread),
+  dh:dh_agent_property(Agent, dho:thread, Thread),
   ask_thread(Thread, Question, Answer).
 
 
