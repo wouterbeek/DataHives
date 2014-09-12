@@ -116,12 +116,17 @@ call_every_n_cycles(_, _).
 
 % Statistics
 
-dh:dh_agent_property(Property, Cycles):-
-  rdf_global_id(dho:cycles, Property),
-  (   number_of_cycles(Cycles)
-  ->  true
-  ;   Cycles = 0
-  ).
+perform_measurement(Agent, Goal):-
+  dh_agent_ask(Agent, Goal, Value),
+  rdf_global_id(dho:Goal, Property),
+  rdf(Property, rdfs:range, Datatype, dh),
+  
+  rdf_create_next_resource(measurement, dhm, Measurement),
+  rdf_assert_indiviudal(Measurement, dho:'Measurement', dh),
+  rdf_assert_now(Measurement, dho:created, dh),
+  
+  rdf_assert_datatype_statement(Agent, Property, Value, Datatype, dh),
+
 
 dh:dh_agent_property(Agent, Property, Cycles):-
   rdf_global_id(dho:cycles, Property),

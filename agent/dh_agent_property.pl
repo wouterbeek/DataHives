@@ -1,7 +1,9 @@
 :- module(
   dh_agent_property,
   [
-    agent_self/1 % -Agent:iri
+    agent_self/1, % -Agent:iri
+    cycles/1, % -Cycles:nonneg
+    graph_self/1 % -Graph:iri
   ]
 ).
 
@@ -34,35 +36,28 @@ Access to the properties of individual agents.
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_nav(dh_nav)).
 
-:- dynamic(dh:dh_agent_property/2).
-:- multifile(dh:dh_agent_property/2).
-:- dynamic(dh:dh_agent_property/3).
-:- multifile(dh:dh_agent_property/3).
-
-:- rdf_meta(dh:dh_agent_property(r,?)).
-:- rdf_meta(dh:dh_agent_property(?,r,?)).
-
 :- initialization(init_agent_properties).
 
 
 
+%! agent_self(-Agent:iri) is det.
+
 agent_self(Agent):-
-  thread_self(Thread),
-  rdf(Agent, dho:thread, literal(type(Thread,xsd:anyURI)), dh).
+  thread_self(Agent).
 
 
-/*
-% Creation
-dh:dh_agent_property(Property, Creation):-
-  rdf_global_id(dho:creation, Property),
-  agent_self(Agent),
-  rdf_datatype(Agent, Property, Creation, xsd:dateTime, dh).
-% Graph
-dh:dh_agent_property(Property, Graph):-
-  rdf_global_id(dho:graph, Property),
-  agent_self(Agent),
-  rdf(Agent, dho:graph, literal(type(Graph,xsd:anyURI)), dh).
-*/
+% cycles(+Cycles:nonneg) is semidet.
+% cycles(-Cycles:nonneg) is det.
+
+cycles(Cycles):-
+  dh_cycle:number_of_cycles(Cycles), !.
+cycles(0).
+
+
+%! graph_self(-Graph:iri) is det.
+
+graph_self(Graph):-
+  thread_self(Graph).
 
 
 %! dh:dh_agent_property(+Agent:iri, +Property:iri, +Value) is semidet.
@@ -84,11 +79,10 @@ dh:dh_agent_property(Agent, Property, Age):-
 % CPU time
 dh:dh_agent_property(Agent, Property, CpuTime):-
   rdf_global_id(dho:cpuTime, Property),
-  dh:dh_agent_property(Agent, dho:thread, Thread),
-  thread_property(Thread, status(Status)),
+  thread_property(Agent, status(Status)),
   (   memberchk(Status, [exception(_),false])
   ->  CpuTime = 0
-  ;   thread_statistics(Thread, cputime, CpuTime)
+  ;   thread_statistics(Agent, cputime, CpuTime)
   ).
 % Creation
 dh:dh_agent_property(Agent, Property, Creation):-
@@ -101,21 +95,10 @@ dh:dh_agent_property(Agent, Property, Effectiveness):-
   dh:dh_agent_property(Agent, dho:steps, Steps),
   dh:dh_agent_property(Agent, dho:age, Age),
   Effectiveness is Steps / Age.
-% Graph
-dh:dh_agent_property(Agent, Property, Value):-
-  rdf_global_id(dho:graph, Property),
-  rdf_datatype(Agent, Property, Value, xsd:anyURI, dh).
 % Status
 dh:dh_agent_property(Agent, Property, Status):-
   rdf_global_id(dho:status, Property),
-  dh:dh_agent_property(Agent, dho:thread, Thread),
-  thread_property(Thread, status(Status)).
-% Thread
-dh:dh_agent_property(Agent, Property, Value):-
-  rdf_global_id(dho:thread, Property),
-gtrace,
-  dh_agent(Agent),
-  rdf_datatype(Agent, Property, Value, xsd:anyURI, dh).
+  thread_property(Agent, status(Status)).
 
 
 
@@ -159,15 +142,6 @@ init_agent_properties:-
     dh
   ),
   rdfs_assert_property(
-    dho:graph,
-    dho:agentProperty,
-    dho:'Agent',
-    xsd:anyURI,
-    graph,
-    'The RDF graph that is used to store the beliefs of an agent.',
-    dh
-  ),
-  rdfs_assert_property(
     dho:status,
     dho:agentProperty,
     dho:'Agent',
@@ -176,15 +150,6 @@ init_agent_properties:-
     'The status of an agent process. \c
      This is either `true` (completed), `false` (Prolog fail), \c
      or a compound term describing a specific exception.',
-    dh
-  ),
-  rdfs_assert_property(
-    dho:thread,
-    dho:agentProperty,
-    dho:'Agent',
-    xsd:string,
-    thread,
-    'The alias of the thread that is used to implement an agent.',
     dh
   ).
 

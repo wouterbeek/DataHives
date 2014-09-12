@@ -21,8 +21,7 @@ e.g. listing the currently loaded agent definitions.
 ### Assumptions
 
 We assume that every agent is represented by and implemented with
-a Linux thread. These threads can be recognized (and enumerated)
-by `dh_agent_property(Agent, dho:thread, Thread)` in [dh_agent_property].
+a Linux thread.
 
 We also assume that the thread alias of an agent
 is the same as the name of the agent's RDF graph,
@@ -175,7 +174,6 @@ dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
 
   % Create the agent's graph.
   rdf_create_graph(Agent),
-  rdf_assert_datatype(Agent, dho:graph, Agent, xsd:anyURI, dh),
 
   % Register creation time.
   rdf_assert_now(Agent, dho:creation, dh),
@@ -185,8 +183,7 @@ dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
     dh_cycle(Preds, InitialTriple, Options),
     _,
     [alias(Agent),at_exit(ExitPred),detached(true)]
-  ),
-  rdf_assert_datatype(Agent, dho:thread, Agent, xsd:anyURI, dh).
+  ).
 
 
 %! dh_agents_create(

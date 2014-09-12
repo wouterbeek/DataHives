@@ -23,8 +23,6 @@ and reading off their results.
 
 :- use_module(generics(thread_ext)).
 
-:- use_module(dh_agent(dh_agent_property)).
-
 %! dh_stat(?Alias, ?Time:float, ?Agent, ?Value) is nondet.
 % The `Goal` is used to name a specific collection of measurements over time.
 

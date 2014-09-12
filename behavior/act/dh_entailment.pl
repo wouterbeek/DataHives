@@ -75,7 +75,7 @@ rdf_assert_entailment(rdf(U1,V,W)):-
   ),
 
   % Assert the triple in the graph named after the agent alias.
-  dh:dh_agent_property(dho:graph, MyGraph),
+  graph_self(MyGraph),
   rdf_assert(U2, V, W, MyGraph),
 
   % Count the number of deductions per agent.
@@ -168,6 +168,6 @@ reset_number_of_deductions:-
 :- multifile(prolog:message//1).
 
 prolog:message(entailment_fitness(Deductions,Lifetime,Fitness)) -->
-  {dh:dh_agent_property(dho:graph, MyGraph)},
+  {graph_self(MyGraph)},
   ['[~w] ~f (~D entailments; ~D steps)'-[MyGraph,Fitness,Deductions,Lifetime]].
 

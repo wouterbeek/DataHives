@@ -31,15 +31,13 @@ Where message queue are being processed.
 %! dh_agent_ask(+Agent:url, +Question:compound, -Answer) is det.
 
 dh_agent_ask(Agent, Question, Answer):-
-  dh:dh_agent_property(Agent, dho:thread, Thread),
-  ask_thread(Thread, Question, Answer).
+  ask_thread(Agent, Question, Answer).
 
 
 %! dh_agent_command(+Agent:url, +Command:compound) is det.
 
 dh_agent_command(Agent, Command):-
-  rdfs_label(Agent, Thread),
-  command_thread(Thread, Command).
+  command_thread(Agent, Command).
 
 
 process_messages:-

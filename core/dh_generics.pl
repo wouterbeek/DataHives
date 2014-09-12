@@ -40,7 +40,10 @@ init_prefixes:-
   rdf_register_prefix(dhad, Prefix3),
   
   atomic_concat(Prefix1, 'ontology/', Prefix4),
-  rdf_register_prefix(dho, Prefix4).
+  rdf_register_prefix(dho, Prefix4),
+  
+  atomic_concat(Prefix1, 'measurement/', Prefix5),
+  rdf_register_prefix(dhm, Prefix5).
 
 
 
