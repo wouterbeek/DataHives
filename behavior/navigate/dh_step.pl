@@ -28,7 +28,6 @@ from the characterization of a stepping paradigm is that:
 @version 2014/02-2014/06
 */
 
-:- use_module(library(predicate_options)). % Declarations.
 :- use_module(library(semweb/rdf_db)).
 
 :- use_module(generics(db_ext)).

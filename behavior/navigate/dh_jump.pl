@@ -18,8 +18,6 @@ to a location that need not be structurally related to the former.
 @version 2014/07-2014/08
 */
 
-:- use_module(library(predicate_options)). % Declarations.
-
 :- use_module(generics(flag_ext)).
 :- use_module(pl(pl_log)).
 

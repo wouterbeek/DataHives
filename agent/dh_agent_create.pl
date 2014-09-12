@@ -37,7 +37,6 @@ which is used for storing beliefs the agent has.
 
 :- use_module(library(http/http_path)).
 :- use_module(library(lists)).
-:- use_module(library(predicate_options)). % Declarations.
 :- use_module(library(semweb/rdf_db)).
 
 :- use_module(plRdf(rdf_build)).
