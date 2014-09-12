@@ -36,12 +36,15 @@ Access to the properties of individual agents.
 :- rdf_meta(dh:dh_agent_property(r,?)).
 :- rdf_meta(dh:dh_agent_property(?,r,?)).
 
+:- initialization(init_agent_properties).
+
 
 
 % @tbd Allow thread and graph names to be dissimilar.
 dh:dh_agent_property(dho:graph, Graph):-
   thread_self(Thread),
-  thread_property(Thread, alias(Graph)).
+  rdf(Agent, dho:thread, literal(type(Thread,xsd:anyURI)), dh),
+  rdf(Agent, dho:graph, literal(type(Graph,xsd:anyURI)), dh).
 
 
 %! dh:dh_agent_property(+Agent:iri, +Property:iri, +Value) is semidet.

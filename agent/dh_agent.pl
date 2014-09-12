@@ -60,7 +60,10 @@ dh_agent_rest(Request, HtmlStyle):-
     set(Property),
     (
       rdfs_subproperty_of(Property, dho:agentProperty),
-      \+ rdf_equal(dho:agentProperty, Property)
+      \+ ((
+        rdfs_subproperty_of(Property0, Property),
+        Property0 \== Property
+      ))
     ),
     Properties
   ),
