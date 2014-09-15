@@ -128,6 +128,8 @@ init:-
     'An agent property that is stored in the global environment.',
     dho
   ),
+  
+  % CPU time
   rdfs_assert_property(
     dho:cpuTime,
     dho:agentPropertyGlobal,
@@ -138,6 +140,8 @@ init:-
      since it was created.',
     dho
   ),
+  
+  % Creation
   rdfs_assert_property(
     dho:creation,
     dho:agentPropertyGlobal,
@@ -147,6 +151,8 @@ init:-
     'The date and time at which an agent was created.',
     dho
   ),
+  
+  % Status
   rdfs_assert_property(
     dho:status,
     dho:agentPropertyGlobal,

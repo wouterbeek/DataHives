@@ -36,6 +36,7 @@ They can be accessed with dh_agent_property/2.
 :- use_module(plXsd(xsd_rdf)).
 
 :- use_module(plRdf(rdfs_build2)).
+:- use_module(plRdf_owl(owl_build)).
 
 :- use_module(dh_act(dh_entailment)). % Deductions property.
 :- use_module(dh_agent(dh_agent)).
@@ -43,6 +44,11 @@ They can be accessed with dh_agent_property/2.
 :- use_module(dh_core(dh_cycle)). % Cycle property.
 :- use_module(dh_core(dh_messages)).
 :- use_module(dh_nav(dh_nav)). % Steps property.
+
+:- rdf_register_prefix(
+     'sdmx-dimension',
+     'http://purl.org/linked-data/sdmx/2009/dimension#'
+   ).
 
 :- initialization(init).
 
@@ -110,6 +116,8 @@ init:-
     'An agent property that is stored in a specific agent thread.',
     dho
   ),
+  
+  % Age
   rdfs_assert_property(
     dho:age,
     dho:agentPropertyLocal,
@@ -119,6 +127,9 @@ init:-
     'The duration of the agent\'s lifespan.',
     dho
   ),
+  owl_assert_resource_identity(dho:age, 'sdmx-dimension':age, dho),
+  
+  % Cycles
   rdfs_assert_property(
     dho:cycles,
     dho:agentPropertyLocal,
@@ -129,3 +140,4 @@ init:-
      since it was created.',
     dho
   ).
+

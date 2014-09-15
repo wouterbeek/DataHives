@@ -1,14 +1,10 @@
 :- module(
   dh_stats_core,
   [
-    dh_stat/4, % ?Alias
-               % ?Time:float
-               % ?Agent
-               % ?Value
-    dh_stats_loop/4 % +Alias
-                    % :Goal
+    dh_stats_loop/4 % :Goal
                     % +Agents:list
                     % +Interval:positive_integer
+                    % -Dataset:iri
   ]
 ).
 
@@ -21,32 +17,43 @@ and reading off their results.
 @version 2014/09
 */
 
+:- use_module(library(aggregate)).
+:- use_module(library(lists)).
+:- use_module(library(semweb/rdf_db)).
+
 :- use_module(generics(thread_ext)).
 
-%! dh_stat(?Alias, ?Time:float, ?Agent, ?Value) is nondet.
-% The `Goal` is used to name a specific collection of measurements over time.
+:- use_module(plRdf(datacube)).
+:- use_module(plRdf(rdf_build)).
 
-:- dynamic(dh_stat/4).
-
-:- meta_predicate(dh_stats_loop(+,2,+,+)).
-:- meta_predicate(dh_stats_step(+,2,+)).
+:- meta_predicate(dh_stats_loop(+,1,+,+)).
+:- meta_predicate(dh_stats_step(+,1,+)).
 
 
 
 %! dh_stats_loop(
-%!   +Alias,
 %!   :Goal,
-%!   +Agents:list,
-%!   +Interval:positive_integer
+%!   +Agents:list(iri),
+%!   +Interval:positive_integer,
+%!   -Dataset:iri
 %! ) is det.
 % Runs an intermittent loop of performing measurements every N seconds.
 
-dh_stats_loop(Alias, _, _, _):-
-  once(dh_stat(Alias, _, _, _)), !,
-  existence_error(dh_stats_alias, Alias).
-dh_stats_loop(Alias, Goal, Agents, Interval):-
+dh_stats_loop(Goal, Agents, Interval, Dataset):-
+  rdf_create_next_resource(dataset, dhm, Dataset),
+  rdf_assert_now(Dataset, dct:created, dhm),
+  aggregate_all(
+    set(Slice),
+    (
+      member(Agent, Agents),
+      rdf_create_next_resource(slice, dhm, Slice),
+      rdf_assert(Slice, dho:refAgent, Agent, dhm),
+      rdf_assert(Dataset, qb:slice, Slice, dhm)
+    ),
+    Slices
+  ),
   intermittent_thread(
-    dh_stats_step(Alias, Goal, Agents),
+    dh_stats_step(Alias, Goal, Slices),
     true,
     Interval,
     _,
@@ -54,17 +61,17 @@ dh_stats_loop(Alias, Goal, Agents, Interval):-
   ).
 
 
-%! dh_stats_step(+Alias, :Goal, +Agents:list) is det.
+%! dh_stats_step(+Alias, :Goal, +Slices:ordset(iri)) is det.
 % Performs the measurement defined by `Goal` for all current agent threads,
 % at a single point in time.
 
-dh_stats_step(Alias, Goal, Agents):-
+dh_stats_step(Alias, Goal, Slices):-
   get_time(Time),
   forall(
-    member(Agent, Agents),
+    member(Slice, Slices),
     (
-      call(Goal, Agent, Value),
-      assert(dh_stat(Alias, Time, Agent, Value))
+      assert_observation(Property, Goal, dhm, Observation),
+      rdf_assert(Slice, qd:observation, Observation)
     )
   ).
 

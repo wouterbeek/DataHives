@@ -27,15 +27,20 @@ SELECT ?property ?label WHERE {
 @version 2014/09
 */
 
+:- use_module(library(aggregate)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
+:- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
+:- use_module(library(lambda)).
 :- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(request_ext)).
 
 :- use_module(dh_agent(dh_agent_property)).
+:- use_module(dh_stats(dh_stats_core)).
 :- use_module(dh_web(dh_web_generics)).
 
 
@@ -150,8 +155,78 @@ WHERE {\n\
     "url": SparqlLocation
   });
 });
+// Replace the outdated HTML5 <form> encoding practice with a modern REST+JSON approach.
+$("#statisticsForm").submit(function(event) {
+  event.preventDefault(); // Keep the form from submitting
+  $.ajax({
+    "contentType": "application/json",
+    "data": JSON.stringify({
+        "yProperty":  $("#yProperties option:selected").attr("value"),
+        "xProperty":  $("#xProperties option:selected").attr("value"),
+        "scope":      $("#scopes option:selected").attr("value"),
+        "subscope":   $("#subscopes option:selected").attr("value")
+    }),
+    "dataType": "json",
+    // Reuse <form> attribute: method -> type.
+    "type": $(event.currentTarget).attr("method"),
+    // Reuse <form> attribute: action -> url.
+    "url": $(event.currentTarget).attr("action")
+  });
+});
       |})
     ])
+  ).
+% POST json *
+dh_stats_web(Request, HtmlStyle):-
+  cors_enable,
+  request_filter(Request, post, _/json, _), !,
+  catch(
+    (
+      http_read_json_dict(Request, Dict),
+      atom_string(YProperty, Dict.yProperty),
+      atom_string(XPorperty, Dict.xProperty),
+      atom_string(Scope, Dict.scope),
+      atom_string(Subscope, Dict.subscope)
+    ),
+    Exception,
+    throw(http_reply(bad_request(Exception)))
+  ),
+  dh_perform_measurement(YProperty, XProperty, Scope, Subscope),
+  reply_json_dict(json{}).
+
+% @tbd Allow other XProperties than time.
+dh_perform_measurement(YProperty, _XProperty, Scope, Subscope):-
+  scoped_agents(Scope, Subscope, Agents),
+  dh_stats_loop(
+    \Agent^Value^dh_agent_property(Agent, YProperty, Value),
+    Agents,
+    100, % @tbd Set this via UI if XProperty is time.
+    _Dataset
+  ).
+
+% All agents belonging to the current population.
+scoped_agents('Population', _, Agents):-
+  aggregate_all(
+    set(Agent),
+    rdfs_individual_of(Agent, dho:'Agent'),
+    Agents
+  ).
+% A specific/single agent.
+scoped_agents('Agent', Agent, [Agent]):-
+  nonvar(Agent), !.
+% All agents (whatsoever).
+scoped_agents('Agent', _, Agents):- !,
+  aggregate_all(
+    set(Agent),
+    rdfs_individual_of(Agent, dho:'Agent'),
+    Agents
+  ).
+% All agents of a specific agent definition.
+scoped_agents('AgentDefinition', AgentDefinition, Agents):- !,
+  aggregate_all(
+    set(Agent),
+    rdfs_individual_of(Agent, AgentDefinition),
+    Agents
   ).
 
 

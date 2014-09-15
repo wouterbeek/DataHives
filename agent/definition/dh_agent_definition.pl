@@ -61,7 +61,7 @@ dh_agent_definition(AgentDefinition, Predicates):-
   agent_definition0(AgentDefinition, Predicates).
 
 
-% GET text/html *
+% GET html *
 dh_agent_definition_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinitionLocation),
@@ -170,7 +170,7 @@ $("#agentDefinitionsContainer").on("change", "select", function() {
       |})
     ])
   ).
-% GET text/html PATH
+% GET html PATH
 %
 % Returns 404 if the given agent definition is not known.
 dh_agent_definition_rest(Request, HtmlStyle):-
@@ -235,7 +235,7 @@ $("#createBtn").click(function() {
       |})
     ])
   ).
-% GET application/json *
+% GET json *
 % Returns type/label pairs in JSON format.
 % This can e.g. be used to populate a <select> element in HTML.
 dh_agent_definition_rest(Request, _):-
@@ -251,7 +251,7 @@ dh_agent_definition_rest(Request, _):-
     Dicts
   ),
   reply_json_dict(json{agentDefinitions:Dicts}).
-% GET application/json PATH
+% GET json PATH
 dh_agent_definition_rest(Request, _):-
   cors_enable,
   request_filter(Request, get, _/json, AgentDefinition),

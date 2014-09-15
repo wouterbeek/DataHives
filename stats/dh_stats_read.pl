@@ -3,8 +3,8 @@
   [
     dh_stats_collection/2, % +Alias
                            % -Collection:list(pair(term,list))
-    dh_stats_graph/3 % +Alias
-                     % +Agent
+    dh_stats_graph/3 % +Dataset:iri
+                     % +Agent:iri
                      % -Graph:list
   ]
 ).
@@ -44,15 +44,14 @@ dh_stats_collection(Alias, Collection):-
   ).
 
 
-%! dh_stats_graph(+Alias, +Agent, -Values:list) is det.
+%! dh_stats_graph(+Dataset:iri, +Agent:iri, -Values:list(pair)) is det.
 
-dh_stats_graph(Alias, _, _):-
-  \+ dh_stat(Alias, _, _, _), !,
-  existence_error(dh_stats_alias, Alias).
-dh_stats_graph(Alias, Agent, Values):-
+dh_stats_graph(Dataset, Agent, Values):-
+  rdf(Dataset, qb:slice, Slice, dhm),
+  rdf(Slice, dho:refAgent, Agent, dhm),
   aggregate_all(
-    set(Time-Value),
-    dh_stat(Alias, Time, Agent, Value),
+    set(X-Y),
+    rdf_datatype(Observation, Property, Value, Datatype, Graph)
     Pairs
   ),
   pairs_values(Pairs, Values).
