@@ -14,14 +14,14 @@ has not been exceeded yet.
 @version 2014/07, 2014/09
 */
 
-:- use_module(dh_core(dh_cycle)). % agent_property(cycles)
+:- use_module(dh_agent(dh_agent_property_local)).
 
 
 
 %! aging(+MaxAge:positive_integer) is det.
 
 aging(MaxAge):-
-  dh:dh_agent_property(dho:cycles, Age),
+  age(Age),
   (
     Age == MaxAge
   ->

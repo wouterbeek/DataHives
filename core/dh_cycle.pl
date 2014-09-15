@@ -1,9 +1,10 @@
 :- module(
   dh_cycle,
   [
-    dh_cycle/3 % +Predicates:list(atom)
-               % +InitialTriple:compound
-               % +Options:list(nvpair)
+    dh_cycle/3, % +Predicates:list(atom)
+                % +InitialTriple:compound
+                % +Options:list(nvpair)
+    cycles/1 % ?Cycles:nonneg
   ]
 ).
 
@@ -34,13 +35,6 @@ The navigate-act-communicate cycle for agents in DataHives.
 :- thread_local(number_of_cycles/1).
 
 :- meta_predicate(call_every_n_cycles(+,1)).
-
-:- dynamic(dh_agent_property/2).
-:- multifile(dh_agent_property/2).
-:- dynamic(dh_agent_property/3).
-:- multifile(dh_agent_property/3).
-
-:- initialization(init_agent_properties).
 
 
 
@@ -95,6 +89,7 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   call(Eval),
 
   % Process message queue.
+gtrace,
   process_messages,
 
   increment_number_of_cycles,
@@ -103,48 +98,25 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
 
 
 
+% Agent property
+
+% cycles(+Cycles:nonneg) is semidet.
+% cycles(-Cycles:nonneg) is det.
+
+cycles(Cycles):-
+  number_of_cycles(Cycles), !.
+cycles(0).
+
+
+
 % Helpers
 
 call_every_n_cycles(N, Goal):-
-  dh:dh_agent_property(dho:cycles, M),
+  cycles(M),
   M > 0,
   M mod N =:= 0, !,
   call(Goal, M).
 call_every_n_cycles(_, _).
-
-
-
-% Statistics
-
-perform_measurement(Agent, Goal):-
-  dh_agent_ask(Agent, Goal, Value),
-  rdf_global_id(dho:Goal, Property),
-  rdf(Property, rdfs:range, Datatype, dh),
-  
-  rdf_create_next_resource(measurement, dhm, Measurement),
-  rdf_assert_indiviudal(Measurement, dho:'Measurement', dh),
-  rdf_assert_now(Measurement, dho:created, dh),
-  
-  rdf_assert_datatype_statement(Agent, Property, Value, Datatype, dh),
-
-
-dh:dh_agent_property(Agent, Property, Cycles):-
-  rdf_global_id(dho:cycles, Property),
-  dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(Property), Cycles).
-
-
-init_agent_properties:-
-  rdfs_assert_property(
-    dho:cycles,
-    dho:agentProperty,
-    dho:'Agent',
-    xsd:nonNegativeInteger,
-    cycles,
-    'The number of cycles that have been run for an agent \c
-     since it was created.',
-    dh
-  ).
 
 
 %! increment_number_of_cycles is det.
@@ -168,7 +140,7 @@ increment_number_of_cycles(N):-
 :- multifile(prolog:message//1).
 
 print_number_of_cycles(N):-
-  sleep(10), %DEB
+  sleep(1), %DEB
   print_message(informational, dh_agent_property(cycles,N)).
 
 prolog:message(dh_agent_property(cycles,N)) -->

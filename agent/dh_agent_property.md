@@ -14,22 +14,29 @@ that are assumed to have the agent IRI as their value.
 
 
 
-Perdurant properties
---------------------
+Local/global properties
+-----------------------
 
-Perdurant properties are asserted in the global RDF graph, named `dh`.
-They can be directly read, just as any other RDF triple is read.
-
-The following perdurant properties are defined:
-  - `creation`
-    The `xsd:dateTime` at which an agent was created.
+Local properties are stored within an agent thread.
+Global properties are stoed within the generic agent environment.
 
 
 
-Endurent properties
--------------------
+Dynamic/static
+--------------
 
-Endurant properties cannot be directly read,
-but must be calculated at a specific moment in time.
-They are represented by reified RDF triples.
+Dynamic properties are a function of time.
 
+
+
+Enumeration of all non-core properties
+--------------------------------------
+
+  - age: dynamic,local
+  - cpuTime: dynamic,global
+  - creation: static,global
+  - cycles: dynamic,local
+  - deductions: dynamic,local
+  - effectiveness: dynamic,local
+  - status: dynamic,global
+  - steps: dynamic,local

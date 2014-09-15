@@ -27,12 +27,7 @@ Reexports the navigation stategies in DataHives.
 
 :- thread_local(number_of_steps/1).
 
-:- dynamic(dh:dh_agent_property/2).
-:- multifile(dh:dh_agent_property/2).
-:- dynamic(dh:dh_agent_property/3).
-:- multifile(dh:dh_agent_property/3).
-
-:- initialization(init_agent_properties).
+:- initialization(init).
 
 
 
@@ -54,22 +49,14 @@ increment_number_of_steps(N):-
 
 % AGENT PROPERTY
 
-dh:dh_agent_property(Property, Steps):-
-  rdf_global_id(dho:steps, Property),
-  (   number_of_steps(Steps)
-  ->  true
-  ;   Steps = 0
-  ).
+steps(Steps):-
+  number_of_steps(Steps), !.
+steps(0).
 
-dh:dh_agent_property(Agent, Property, Steps):-
-  rdf_global_id(dho:steps, Property),
-  dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(Property), Steps).
-
-init_agent_properties:-
+init:-
   rdfs_assert_property(
     dho:steps,
-    dho:agentProperty,
+    dho:agentPropertyLocal,
     dho:'Agent',
     xsd:nonNegativeInteger,
     steps,

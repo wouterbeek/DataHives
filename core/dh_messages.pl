@@ -46,6 +46,7 @@ process_messages:-
   call(Command).
 process_messages:-
   thread_peek_message(question(Caller,Question)), !,
+trace,
   thread_get_message(question(Caller,Question)),
   call(Question, Answer),
   thread_self(Me),

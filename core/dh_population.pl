@@ -20,6 +20,7 @@ The population is the collection of all agent threads that are active.
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
+:- use_module(library(lambda)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
@@ -36,7 +37,7 @@ The population is the collection of all agent threads that are active.
 
 :- rdf_meta(dh_population_property(r,?)).
 
-:- initialization(init_population_properties).
+:- initialization(init).
 
 
 
@@ -61,33 +62,24 @@ dh_population_property(dho:size, Value):-
   dh_population_property(dho:members, Agents),
   length(Agents, Value).
 dh_population_property(Property, Value):-
-  rdfs_subproperty_of(Property, dho:agentProperty),
-  rdf(Property, rdfs:range, Datatype0, dh),
-  rdfs_subclass_of(Datatype0, dho:numeric), !,
+  % Retrieve the agents belonging to the current population.
   dh_population_property(dho:members, Agents),
-  aggregate_all(
-    sum(Value0),
-    (
-      member(Agent, Agents),
-      dh:dh_agent_property(Agent, Property, Value0)
-    ),
-    Value
-  ).
-% @tbd Testing only: are *all* agent properties also population properties?
-dh_population_property(Property, Value):-
-  rdfs_subproperty_of(Property, dho:agentProperty), !,
-  dh_population_property(dho:members, Agents),
-  aggregate_all(
-    set(Value0),
-    (
-      member(Agent, Agents),
-      dh:dh_agent_property(Agent, Property, Value0)
-    ),
-    Value
+  
+  % Retrieve the values for the given property: one for each agent.
+  maplist(
+    \Agent^Value^dh_agent_property(Agent, Property, Value),
+    Agents,
+    Values
+  ),
+  
+  % Post-processing on values, based on the property's datatype.
+  (   rdf(Property, rdfs:range, Datatype0, dho),
+      rdfs_subclass_of(Datatype0, dho:numeric)
+  ->  sum_list(Values, Value)
+  ;   Value = Values
   ).
 
-
-init_population_properties:-
+init:-
   rdfs_assert_property(
     dho:members,
     dho:populationProperty,
@@ -95,7 +87,7 @@ init_population_properties:-
     rdf:'Bag',
     members,
     'The members (agents) of a population.',
-    dh
+    dho
   ),
   rdfs_assert_property(
     dho:size,
@@ -104,6 +96,6 @@ init_population_properties:-
     xsd:nonNegativeInteger,
     'population size',
     'The number of agents that belong to a population.',
-    dh
+    dho
   ).
 

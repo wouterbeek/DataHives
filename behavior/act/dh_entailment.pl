@@ -22,7 +22,7 @@ DataHives agents that implement RDFS 1.1 entailment.
 
 :- use_module(dh_agent(dh_agent)).
 :- use_module(dh_agent(dh_agent_create)).
-:- use_module(dh_agent(dh_agent_property)).
+:- use_module(dh_agent(dh_agent_property_local)).
 :- use_module(dh_core(dh_cycle)). % agent_property(cycles)
 :- use_module(dh_core(dh_generics)).
 :- use_module(dh_core(dh_messages)).
@@ -31,12 +31,7 @@ DataHives agents that implement RDFS 1.1 entailment.
 
 :- thread_local(number_of_deductions/1).
 
-:- dynamic(dh:dh_agent_property/2).
-:- multifile(dh:dh_agent_property/2).
-:- dynamic(dh:dh_agent_property/3).
-:- multifile(dh:dh_agent_property/3).
-
-:- initialization(init_agent_properties).
+:- initialization(init).
 
 
 
@@ -52,7 +47,7 @@ deductive_action(DirTriple):-
 
 evaluate_entailment:-
   number_of_deductions(Deductions),
-  dh:dh_agent_property(dho:cycles, Lifetime),
+  cycles(Lifetime),
   Fitness is Deductions / Lifetime,
   (   Fitness < 0.5
   -> thread_exit(done)
@@ -114,22 +109,14 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
 
 % AGENT PROPERTIES
 
-dh:dh_agent_property(Property, Deductions):-
-  rdf_global_id(dho:deductions, Property),
-  (   number_of_deductions(Deductions)
-  ->  true
-  ;   Deductions = 0
-  ).
+deductions(Deductions):-
+  number_of_deductions(Deductions), !.
+deductions(0).
 
-dh:dh_agent_property(Agent, Property, Deductions):-
-  rdf_global_id(dho:deductions, Property),
-  dh_agent(Agent),
-  dh_agent_ask(Agent, dh:dh_agent_property(Property), Deductions).
-
-init_agent_properties:-
+init:-
   rdfs_assert_property(
     dho:deductions,
-    dho:agentProperty,
+    dho:agentPropertyLocal,
     dho:'Agent',
     xsd:nonNegativeInteger,
     deductions,

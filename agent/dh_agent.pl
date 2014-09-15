@@ -35,7 +35,6 @@ Interface to agents in DataHives.
 
 :- use_module(dh_agent(dh_agent_create)).
 :- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_core(dh_generics), []). % RDF namespace.
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_web(dh_web_generics)).
 
@@ -53,32 +52,19 @@ dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
-
-  % Collect all agent properties.
-  % These are the columns of the table.
+gtrace,
   aggregate_all(
     set(Property),
-    (
-      rdfs_subproperty_of(Property, dho:agentProperty),
-      \+ ((
-        rdfs_subproperty_of(Property0, Property),
-        Property0 \== Property
-      ))
-    ),
+    dh_agent_property(Property),
     Properties
   ),
   
   % Create a row for each agent.
   findall(
-    [Label-Agent|Row],
+    [Agent|Values],
     (
       dh_agent(Agent),
-      rdfs_label(Agent, Label),
-      maplist(
-        \Property^Value^(dh:dh_agent_property(Agent, Property, Value)),
-        Properties,
-        Row
-      )
+      maplist(dh_agent_property(Agent), Properties, Values)
     ),
     Rows
   ),
@@ -108,9 +94,9 @@ dh_agent_rest(Request, HtmlStyle):-
   % Reply with a failure code if the agent does not exist.
   http_exists(Request, dh_agent(Agent)),
 
-  findall(
-    [Name,Value],
-    dh:dh_agent_property(Agent, Name, Value),
+  aggregate_all(
+    [Property,Value],
+    dh_agent_property(Agent, Property, Value),
     Rows
   ),
   rdfs_label(Agent, Label),
@@ -176,8 +162,7 @@ dh_agent_properties_json(Agent, json{agent:Agent, agentProperties:Dicts}):-
   findall(
     json{name:Property, type:Datatype, value:Value},
     (
-      dh:dh_agent_property(Agent, Property, Value),
-      rdfs_subproperty_of(Property, dho:agentProperty),
+      dh_agent_property(Agent, Property, Value),
       rdf(Property, rdfs:range, Datatype, dh)
     ),
     Dicts
