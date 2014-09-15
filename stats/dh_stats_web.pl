@@ -46,7 +46,13 @@ dh_stats_web(Request, HtmlStyle):-
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_stats(.), Root), !,
   http_absolute_location(sparql(.), SparqlLocation, []),
+  
+  % @tbd Unify REST and RDFS classes.
+  http_absolute_uri(dh_agent_definition(.), _AgentDefinitionLocation),
+  http_absolute_uri(dh_agent(.), _AgentLocation),
+  
   rdf_current_prefix(dho, DhoNamespace),
+  rdf_current_prefix(rdf, RdfNamespace),
   rdf_current_prefix(rdfs, RdfsNamespace),
   reply_html_page(
     HtmlStyle,
@@ -64,9 +70,9 @@ dh_stats_web(Request, HtmlStyle):-
           select(
             id=scopes,
             [
-              option(value=agent, agent),
-              option(value=agentDefinition, 'agent definition'),
-              option(value=population, population)
+              option(value='Agent', agent),
+              option(value='AgentDefinition', 'agent definition'),
+              option(value='Population', population)
             ]
           ),
           select(id=subscopes, []),
@@ -80,7 +86,7 @@ dh_stats_web(Request, HtmlStyle):-
           )
         ])
       ),
-      \js_script({|javascript(DhoNamespace,RdfsNamespace,SparqlLocation)||
+      \js_script({|javascript(DhoNamespace,RdfNamespace,RdfsNamespace,SparqlLocation)||
 $(document).ready(function() {
   var query = "\
 PREFIX dho: <" + DhoNamespace + ">\n\
@@ -108,6 +114,35 @@ WHERE {\n\
             element["label"]["value"] + "</option>"));
         $("#yProperties").append($("<option value=" +
             element["property"]["value"] + ">" +
+            element["label"]["value"] + "</option>"));
+      });
+    },
+    "type": "get",
+    "url": SparqlLocation
+  });
+});
+$("#scopes").on("change", function() {
+  var query = "\
+PREFIX dho: <" + DhoNamespace + ">\n\
+PREFIX rdf: <" + RdfNamespace + ">\n\
+PREFIX rdfs: <" + RdfsNamespace + ">\n\
+SELECT ?entry ?label\n\
+WHERE {\n\
+  ?entry rdf:type dho:" + $(this).find("option:selected").attr("value") + " .\n\
+  ?entry rdfs:label ?label .\n\
+}\n";
+  $.ajax({
+    "accepts": { "json": "application/sparql-results+json" },
+    "data": [
+        { "name": "entailment", "value": "rdfs"  },
+        { "name": "query",      "value": query   }
+      ],
+    "dataType": "json",
+    "success": function(data) {
+      $("#subscopes").html("");
+      $.each(data["results"]["bindings"], function(index, element) {
+        $("#subscopes").append($("<option value=" +
+            element["entry"]["value"] + ">" +
             element["label"]["value"] + "</option>"));
       });
     },
