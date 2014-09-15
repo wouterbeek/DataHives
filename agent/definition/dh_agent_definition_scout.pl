@@ -22,7 +22,7 @@ Defines the scout bee agent for use in DataHives.
 
 :- initialization((
   http_absolute_uri(dh_agent_definition(scout), AgentDefinition),
-  rdfs_assert_label(AgentDefinition, scout, dh),
+  rdfs_assert_label(AgentDefinition, scout, dho),
   dh_agent_definition(
     AgentDefinition,
     [

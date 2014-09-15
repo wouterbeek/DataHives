@@ -52,7 +52,7 @@ dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
-gtrace,
+  
   aggregate_all(
     set(Property),
     dh_agent_property(Property),

@@ -55,8 +55,8 @@ dh_agent_definition(AgentDefinition):-
 dh_agent_definition(AgentDefinition, Predicates):-
   maplist(ground, [AgentDefinition,Predicates]), !,
   assert(agent_definition0(AgentDefinition, Predicates)),
-  rdf_assert_instance(AgentDefinition, dho:'AgentDefinition', dh),
-  rdfs_assert_subclass(AgentDefinition, dho:'Agent', dh).
+  rdf_assert_instance(AgentDefinition, dho:'AgentDefinition', dho),
+  rdfs_assert_subclass(AgentDefinition, dho:'Agent', dho).
 dh_agent_definition(AgentDefinition, Predicates):-
   agent_definition0(AgentDefinition, Predicates).
 

@@ -89,7 +89,6 @@ dh_cycle([Nav,Act,Com,Eval], InitTriple, Options):-
   call(Eval),
 
   % Process message queue.
-gtrace,
   process_messages,
 
   increment_number_of_cycles,

@@ -18,10 +18,14 @@ Where message queue are being processed.
 @version 2014/06-2014/09
 */
 
+:- use_module(library(debug)).
 :- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(vox_populi)).
 
+:- use_module(dh_agent(dh_agent_property)).
+:- use_module(dh_agent(dh_agent_property_global)).
+:- use_module(dh_agent(dh_agent_property_local)).
 :- use_module(dh_act(dh_entailment)).
 :- use_module(dh_core(dh_cycle)).
 :- use_module(dh_nav(dh_nav)).
@@ -40,16 +44,42 @@ dh_agent_command(Agent, Command):-
   command_thread(Agent, Command).
 
 
+%! process_messages is det.
+% Loops until all staged messages are answered.
+%
+% Messages are either command for the thread to execute
+% or questions for the command to answer.
+
+% Process a command.
 process_messages:-
   thread_peek_message(command(Caller,Command)), !,
   thread_get_message(command(Caller,Command)),
-  call(Command).
+  
+  % DEB
+  debug(db_message, '[C] ~w', [Command]),
+  
+  % Process command.
+  call(Command),
+  
+  % Loop.
+  process_messages.
+% Process a question.
 process_messages:-
   thread_peek_message(question(Caller,Question)), !,
-trace,
   thread_get_message(question(Caller,Question)),
+  
+  % DEB
+  debug(dh_message, '[Q] ~w', [Question]),
+  
+  % Process.
   call(Question, Answer),
+  
+  % Reply.
   thread_self(Me),
-  thread_send_message(Caller, answer(Me,Answer)).
+  thread_send_message(Caller, answer(Me,Answer)),
+  
+  % Loop.
+  process_messages.
+% No more messages to process.
 process_messages.
 

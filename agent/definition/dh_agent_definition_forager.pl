@@ -18,7 +18,7 @@ Defines the forager bee agent for use in DataHives.
 
 :- initialization((
   http_absolute_uri(dh_agent_definition(forager), AgentDefinition),
-  rdfs_assert_label(AgentDefinition, forager, dh),
+  rdfs_assert_label(AgentDefinition, forager, dho),
   dh_agent_definition(
     AgentDefinition,
     [

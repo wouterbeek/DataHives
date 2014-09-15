@@ -2,7 +2,8 @@
   dh_nav,
   [
     increment_number_of_steps/0,
-    increment_number_of_steps/1 % +Increment:integer
+    increment_number_of_steps/1, % +Increment:integer
+    steps/1 % ?Steps:nonneg
   ]
 ).
 
@@ -62,6 +63,6 @@ init:-
     steps,
     'The number of steps an agent has navigated over RDF graphs \c
      since its creation.',
-    dh
+    dho
   ).
 

@@ -1,6 +1,7 @@
 :- module(
   dh_entailment,
   [
+    deductions/1, % ?Deductions:nonneg
     deductive_action/1, % +DirectedTriple:compound
     evaluate_entailment/0
   ]
@@ -122,7 +123,7 @@ init:-
     deductions,
     'The number of deductions that have made by an agent \c
      since it was created.',
-    dh
+    dho
   ).
 
 
