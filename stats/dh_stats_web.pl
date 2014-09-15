@@ -10,6 +10,19 @@
 
 Web-based front-end for statistics in DataHives.
 
+~~~{.sparql}
+PREFIX dho: <http://localhost.localdomain:3020/dh/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?property ?label WHERE {
+  ?property rdfs:subPropertyOf dho:agentProperty .
+  FILTER NOT EXISTS {
+    ?property0 rdfs:subPropertyOf ?property .
+    FILTER (?property0 != ?property)
+  }
+  ?property rdfs:label ?label .
+}
+~~~
+
 @author Wouter Beek
 @version 2014/09
 */
@@ -17,6 +30,8 @@ Web-based front-end for statistics in DataHives.
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
 :- use_module(library(http/http_path)).
+:- use_module(library(http/js_write)).
+:- use_module(library(semweb/rdf_db)).
 
 :- use_module(generics(request_ext)).
 
@@ -30,6 +45,9 @@ dh_stats_web(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_stats(.), Root), !,
+  http_absolute_location(sparql(.), SparqlLocation, []),
+  rdf_current_prefix(dho, DhoNamespace),
+  rdf_current_prefix(rdfs, RdfsNamespace),
   reply_html_page(
     HtmlStyle,
     \dh_stats_head(['']),
@@ -62,30 +80,35 @@ dh_stats_web(Request, HtmlStyle):-
           )
         ])
       ),
-      \js_script({|javascript()||
+      \js_script({|javascript(DhoNamespace,RdfsNamespace,SparqlLocation)||
 $(document).ready(function() {
+  var query = "\n\
+PREFIX dho: <" + DhoNamespace + ">\n\
+PREFIX rdfs: <" + RdfsNamespace + ">\n\
+SELECT ?property ?label\n\
+WHERE {\n\
+  ?property rdfs:subPropertyOf dho:agentProperty .\n\
+  FILTER NOT EXISTS {\n\
+    ?property0 rdfs:subPropertyOf ?property .\n\
+    FILTER (?property0 != ?property)\n\
+  }\n\
+  ?property rdfs:label ?label .\n\
+}\n";
   $.ajax({
+    "accepts": { "json": "application/sparql-results+json" },
+    "data": [{ "name": "query", "value": query }],
     "dataType": "json",
     "success": function(data) {
-      var query = " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\
-                    SELECT ?property\
-                    WHERE {\
-                      ?property rdfs:subPropertyOf dho:agentProperty .\
-                      FILTER NOT EXISTS {\
-                        ?property0 rdfs:subPropertyOf ?property .
-                        FILTER (?property0 != ?property)\
-                      }\
-                   }\";
-      $.each(data["agentDefinitions"], function(index, element) {
-        $("#yProperties").append($("<option value=" + element["agentDefinition"] +
-            ">" + element["label"] + "</option>"));
+      $.each(data["results"]["bindings"], function(index, element) {
+        $("#yProperties").append($("<option value=" +
+            element["property"]["value"] + ">" +
+            element["label"]["value"] + "</option>"));
       });
     },
     "type": "get",
-    "url": AgentDefinitionLocation
+    "url": SparqlLocation
   });
 });
-$("#yProperties").on("change", "select", function() {
       |})
     ])
   ).
