@@ -82,7 +82,7 @@ dh_stats_web(Request, HtmlStyle):-
       ),
       \js_script({|javascript(DhoNamespace,RdfsNamespace,SparqlLocation)||
 $(document).ready(function() {
-  var query = "\n\
+  var query = "\
 PREFIX dho: <" + DhoNamespace + ">\n\
 PREFIX rdfs: <" + RdfsNamespace + ">\n\
 SELECT ?property ?label\n\
@@ -96,10 +96,16 @@ WHERE {\n\
 }\n";
   $.ajax({
     "accepts": { "json": "application/sparql-results+json" },
-    "data": [{ "name": "query", "value": query }],
+    "data": [
+        { "name": "entailment", "value": "rdfs"  },
+        { "name": "query",      "value": query   }
+      ],
     "dataType": "json",
     "success": function(data) {
       $.each(data["results"]["bindings"], function(index, element) {
+        $("#xProperties").append($("<option value=" +
+            element["property"]["value"] + ">" +
+            element["label"]["value"] + "</option>"));
         $("#yProperties").append($("<option value=" +
             element["property"]["value"] + ">" +
             element["label"]["value"] + "</option>"));
