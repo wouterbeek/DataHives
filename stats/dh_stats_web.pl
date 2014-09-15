@@ -33,7 +33,7 @@ dh_stats_web(Request, HtmlStyle):-
   reply_html_page(
     HtmlStyle,
     \dh_stats_head(['']),
-    \dh_body(
+    \dh_body([
       form(
         [action=Root,class=['pure-form'],id=statisticsForm,method=post],
         fieldset([
@@ -61,8 +61,33 @@ dh_stats_web(Request, HtmlStyle):-
             ['Submit']
           )
         ])
-      )
-    )
+      ),
+      \js_script({|javascript()||
+$(document).ready(function() {
+  $.ajax({
+    "dataType": "json",
+    "success": function(data) {
+      var query = " PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\
+                    SELECT ?property\
+                    WHERE {\
+                      ?property rdfs:subPropertyOf dho:agentProperty .\
+                      FILTER NOT EXISTS {\
+                        ?property0 rdfs:subPropertyOf ?property .
+                        FILTER (?property0 != ?property)\
+                      }\
+                   }\";
+      $.each(data["agentDefinitions"], function(index, element) {
+        $("#yProperties").append($("<option value=" + element["agentDefinition"] +
+            ">" + element["label"] + "</option>"));
+      });
+    },
+    "type": "get",
+    "url": AgentDefinitionLocation
+  });
+});
+$("#yProperties").on("change", "select", function() {
+      |})
+    ])
   ).
 
 

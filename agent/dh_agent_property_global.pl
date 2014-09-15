@@ -31,6 +31,10 @@ They can be accessed with dh_agent_property/3.
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
+:- rdf_meta(dh_agent_property_global(r)).
+:- rdf_meta(dh_agent_property_global(r,?)).
+:- rdf_meta(dh_agent_property_global(?,r,?)).
+
 :- use_module(plDcg(dcg_generic)).
 
 :- use_module(plXsd(xsd_rdf)).
@@ -49,10 +53,6 @@ They can be accessed with dh_agent_property/3.
 :- use_module(dh_core(dh_messages)).
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_nav(dh_nav)).
-
-:- rdf_meta(dh_agent_property_global(r)).
-:- rdf_meta(dh_agent_property_global(r,?)).
-:- rdf_meta(dh_agent_property_global(?,r,?)).
 
 :- initialization(init).
 

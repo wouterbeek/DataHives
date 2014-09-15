@@ -29,6 +29,10 @@ They can be accessed with dh_agent_property/2.
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
+:- rdf_meta(dh_agent_property_local(r)).
+:- rdf_meta(dh_agent_property_local(r,?)).
+:- rdf_meta(dh_agent_property_local(?,r,?)).
+
 :- use_module(plXsd(xsd_rdf)).
 
 :- use_module(plRdf(rdfs_build2)).
@@ -40,10 +44,6 @@ They can be accessed with dh_agent_property/2.
 :- use_module(dh_core(dh_messages)).
 :- use_module(dh_nav(dh_nav)). % Steps property.
 
-:- rdf_meta(dh_agent_property_local(r)).
-:- rdf_meta(dh_agent_property_local(r,?)).
-:- rdf_meta(dh_agent_property_local(?,r,?)).
-
 :- initialization(init).
 
 
@@ -52,7 +52,7 @@ They can be accessed with dh_agent_property/2.
 %! age(-Age:nonneg) is det.
 
 age(Age):-
-  % @tbd RDF prefix is not resolved.
+  % @tbd RDF prefix is not resolved!
   rdf_global_id(dho:creation, Property),
   dh_agent_property_global(Property, Creation),
   get_time(Now),
