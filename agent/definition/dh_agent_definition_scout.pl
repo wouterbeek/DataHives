@@ -21,16 +21,14 @@ Defines the scout bee agent for use in DataHives.
 :- use_module(dh_core(dh_generics)).
 
 :- initialization((
-  http_absolute_uri(dh_agent_definition(scout), AgentDefinition),
-  rdfs_assert_label(AgentDefinition, scout, dho),
-  dh_agent_definition(
-    AgentDefinition,
+  register_dh_agent_definition(
+    scout,
     [
       dh_random_jump-"Jump to random locations in the LOD cloud time and again.",
       search_action(instance_of(foaf:'Person'), search_results)-"Search for instances of foaf:Person.",
       spawn_foragers(1, 10)-"Communicate to the pool of foragers whether something has been found or not.",
       no_evaluation,
-      dh_agent_create(AgentDefinition)
+      dh_agent_create(dh:'Agent/Scout')
     ]
   )
 )).

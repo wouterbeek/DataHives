@@ -17,10 +17,8 @@ Defines the forager bee agent for use in DataHives.
 :- use_module(dh_agent_definition(dh_agent_definition)).
 
 :- initialization((
-  http_absolute_uri(dh_agent_definition(forager), AgentDefinition),
-  rdfs_assert_label(AgentDefinition, forager, dho),
-  dh_agent_definition(
-    AgentDefinition,
+  register_dh_agent_definition(
+    forager,
     [
       dh_random_walk-"Walk around randomly. This ensures locality",
       search_action(instance_of(foaf:'Person'), search_results)-"Search for instances of foaf:Person.",

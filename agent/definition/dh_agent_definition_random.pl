@@ -16,10 +16,8 @@ Specification of a randomly traversing agent in DataHives.
 :- use_module(dh_agent_definition(dh_agent_definition)).
 
 :- initialization((
-  http_absolute_uri(dh_agent_definition(random), AgentDefinition),
-  rdfs_assert_label(AgentDefinition, random, dho),
-  dh_agent_definition(
-    AgentDefinition,
+  register_dh_agent_definition(
+    random,
     [
       dh_random_walk,
       no_action,

@@ -33,17 +33,11 @@ init_prefixes:-
   http_absolute_uri(dh(.), Prefix1),
   rdf_register_prefix(dh, Prefix1),
   
-  atomic_concat(Prefix1, 'agent/', Prefix2),
-  rdf_register_prefix(dha, Prefix2),
-  
-  atomic_concat(Prefix1, 'agent_definition/', Prefix3),
-  rdf_register_prefix(dhad, Prefix3),
-  
   atomic_concat(Prefix1, 'ontology/', Prefix4),
   rdf_register_prefix(dho, Prefix4),
   
-  atomic_concat(Prefix1, 'measurement/', Prefix5),
-  rdf_register_prefix(dhm, Prefix5).
+  atomic_concat(Prefix1, 'stats/', Prefix5),
+  rdf_register_prefix('dh-stats', Prefix5).
 
 
 

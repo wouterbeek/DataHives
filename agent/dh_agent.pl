@@ -22,7 +22,7 @@ Interface to agents in DataHives.
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
-:- use_module(library(lambda)).
+:- use_module(generics(lambda_meta)).
 :- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(request_ext)).
@@ -52,13 +52,13 @@ dh_agent_rest(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
-  
+
   aggregate_all(
     set(Property),
     dh_agent_property(Property),
     Properties
   ),
-  
+
   % Create a row for each agent.
   findall(
     [Agent|Values],

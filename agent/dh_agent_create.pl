@@ -37,6 +37,7 @@ which is used for storing beliefs the agent has.
 :- use_module(library(http/http_path)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
+:- use_module(library(uri)).
 
 :- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_random)).
@@ -164,12 +165,17 @@ dh_agent_create(AgentDefinition, Preds, Exit, rdf(S,P,O)):-
 
 dh_agent_create(AgentDefinition, Preds, ExitPred, InitialTriple, Options):-
   % Create the agent resource.
-  rdf_create_next_resource(dh_agent, dh, Agent),
+  atomic_concat(AgentDefinition, '/', Prefix),
+  flag(Prefix, Id1, Id1 + 1),
+  atom_number(Id2, Id1),
+  uri_normalized(Id2, Prefix, Agent),
+
+  % rdf:type
   rdf_assert_instance(Agent, AgentDefinition, dh),
 
   % Construct the agent thread alias / RDF graph name.
   flag(dh_agent, Id, Id),
-  format(atom(Label), 'Agent ~d', [Id]),
+  format(atom(Label), 'agent ~d', [Id]),
   rdfs_assert_label(Agent, Label, dh),
 
   % Create the agent's graph.

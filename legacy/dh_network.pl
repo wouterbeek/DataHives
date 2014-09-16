@@ -41,7 +41,7 @@
 :- use_module(generics(list_ext)).
 :- use_module(xml(xml_dom)).
 
-:- use_module(plDcg(dcg_generic)).
+:- use_module(plDcg(dcg_generics)).
 
 :- use_module(plHtml(html_table)).
 

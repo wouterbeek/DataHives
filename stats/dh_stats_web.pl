@@ -35,7 +35,7 @@ SELECT ?property ?label WHERE {
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
-:- use_module(library(lambda)).
+:- use_module(generics(lambda_meta)).
 :- use_module(library(pairs)).
 :- use_module(library(real)).
 :- use_module(library(semweb/rdf_db)).
@@ -189,7 +189,7 @@ $("#statisticsForm").submit(function(event) {
 dh_stats_web(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, post, _/json, _), !,
-  
+gtrace,
   % Process the contents of the POST request.
   catch(
     (
@@ -213,7 +213,7 @@ dh_stats_web(Request, HtmlStyle):-
     YProperty,
     % @tbd Set this via UI if XProperty is time.
     100,
-    dhm,
+    'dh-stats',
     Datasets
   ),
   

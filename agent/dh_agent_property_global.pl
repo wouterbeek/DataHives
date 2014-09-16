@@ -35,7 +35,7 @@ They can be accessed with dh_agent_property/3.
 :- rdf_meta(dh_agent_property_global(r,?)).
 :- rdf_meta(dh_agent_property_global(?,r,?)).
 
-:- use_module(plDcg(dcg_generic)).
+:- use_module(plDcg(dcg_generics)).
 
 :- use_module(plXsd(xsd_rdf)).
 :- use_module(plXsd_datetime(xsd_dateTime)).

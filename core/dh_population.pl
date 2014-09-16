@@ -20,7 +20,7 @@ The population is the collection of all agent threads that are active.
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
-:- use_module(library(lambda)).
+:- use_module(generics(lambda_meta)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).

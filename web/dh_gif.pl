@@ -28,7 +28,7 @@ using the Graph Interchange Format.
 :- use_module(http(http_download)).
 :- use_module(os(image_ext)).
 
-:- use_module(plDcg(dcg_generic)).
+:- use_module(plDcg(dcg_generics)).
 
 :- use_module(plRdf(rdf_name)). % Meta-DCG.
 

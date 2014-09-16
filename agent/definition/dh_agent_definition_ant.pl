@@ -15,16 +15,14 @@
 :- use_module(dh_agent_definition(dh_agent_definition)).
 
 :- initialization((
-  http_absolute_uri(dh_agent_definition(ant), AgentDefinition),
-  rdfs_assert_label(AgentDefinition, ant, dho),
-  dh_agent_definition(
-    AgentDefinition,
+  register_dh_agent_definition(
+    ant,
     [
       dh_weighted_walk,
       deductive_action,
       update_edge_count,
       evaluate_entailment,
-      dh_agent_create(AgentDefinition)
+      dh_agent_create(dh:'Agent/Ant')
     ]
   )
 )).

@@ -4,8 +4,10 @@
     dh_agent_definition/1, % ?AgentDefinition:url
     dh_agent_definition/2, % ?AgentDefinition:url
                            % ?Predicates:list
-    dh_agent_definition_rest/2 % +Request:list(nvpair)
-                               % +HtmlStyle
+    dh_agent_definition_rest/2, % +Request:list(nvpair)
+                                % +HtmlStyle
+    register_dh_agent_definition/2 % +AgentDefinitionName:atom
+                                   % +Predicates:list
   ]
 ).
 
@@ -25,13 +27,19 @@ Implements agent definitions in DataHives.
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
+:- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
+:- use_module(library(uri)).
 
 :- use_module(generics(request_ext)).
 :- use_module(pl(pl_log)).
 
+:- use_module(plDcg(dcg_content)).
+:- use_module(plDcg(dcg_generics)).
+
 :- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdfs_build)).
+:- use_module(plRdf(rdfs_label_ext)).
 
 :- use_module(dh_core(dh_generics)).
 :- use_module(dh_web(dh_web_generics)).
@@ -48,15 +56,9 @@ dh_agent_definition(AgentDefinition):-
   rdfs_individual_of(AgentDefinition, dho:'AgentDefinition').
 
 
-%! dh_agent_definition(+AgentDefinition:url, +Predicates:list) is det.
 %! dh_agent_definition(+AgentDefinition:url, -Predicates:list) is det.
 %! dh_agent_definition(-AgentDefinition:url, -Predicates:list) is nondet.
 
-dh_agent_definition(AgentDefinition, Predicates):-
-  maplist(ground, [AgentDefinition,Predicates]), !,
-  assert(agent_definition0(AgentDefinition, Predicates)),
-  rdf_assert_instance(AgentDefinition, dho:'AgentDefinition', dho),
-  rdfs_assert_subclass(AgentDefinition, dho:'Agent', dho).
 dh_agent_definition(AgentDefinition, Predicates):-
   agent_definition0(AgentDefinition, Predicates).
 
@@ -260,6 +262,31 @@ dh_agent_definition_rest(Request, _):-
   reply_json_dict(
     json{agentDefinition:AgentDefinition, predicates:PredDicts}
   ).
+
+
+%! register_dh_agent_definition(
+%!   +AgentDefinitionName:atom,
+%!   +Predicates:list
+%! ) is det.
+
+register_dh_agent_definition(Name1, Predicates):-
+  % Construct the agent definition-denoting IRI.
+  dcg_phrase(capitalize, Name1, Name2),
+  atomic_list_concat(['Agent',Name2], '/', Path),
+  rdf_global_id(dh:'', Prefix),
+  uri_normalized(Path, Prefix, AgentDefinition),
+  
+  % rdfs:label
+  rdfs_assert_label(AgentDefinition, Name1, dho),
+  
+  % Register predicates in Prolog DB.
+  assert(agent_definition0(AgentDefinition, Predicates)),
+  
+  % rdf:type
+  rdf_assert_instance(AgentDefinition, dho:'AgentDefinition', dho),
+  
+  % rdfs:subClassOf
+  rdfs_assert_subclass(AgentDefinition, dho:'Agent', dho).
 
 
 
