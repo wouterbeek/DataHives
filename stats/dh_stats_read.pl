@@ -1,11 +1,11 @@
 :- module(
   dh_stats_read,
   [
-    dh_stats_collection/2, % +Alias
-                           % -Collection:list(pair(term,list))
-    dh_stats_graph/3 % +Dataset:iri
-                     % +Agent:iri
-                     % -Graph:list
+    dh_stats_by_dataset/2, % +Dataset:iri
+                           % -AgentValues:pair(iri,list)
+    dh_stats_by_agent_property/3 % +Agent:iri
+                                 % +Property:iri
+                                 % -Values:list
   ]
 ).
 
@@ -20,39 +20,64 @@ performed in DataHives.
 
 :- use_module(library(aggregate)).
 :- use_module(library(error)).
+:- use_module(library(lists)).
 :- use_module(library(pairs)).
+:- use_module(library(semweb/rdf_db)).
 
-:- use_module(dh_stats(dh_stats_core)).
+:- use_module(plRdf_term(rdf_datatype)).
+
+:- rdf_register_prefix(dct, 'http://purl.org/dc/terms/').
+:- rdf_register_prefix(qb, 'http://purl.org/linked-data/cube#').
+:- rdf_register_prefix('sdmx-dimension', 'http://purl.org/linked-data/sdmx/2009/dimension#').
 
 
 
-%! dh_stats_collection(+Alias, -Collection:list(pair(term,list))) is det.
+%! dh_stats_by_dataset(+Dataset:iri, -AgentValues:pair(iri,list)) is det.
 
-dh_stats_collection(Alias, Collection):-
-  aggregate_all(
-    set(Agent),
-    dh_stat(Alias, Agent, _, _),
-    Agents
-  ),
+dh_stats_by_dataset(Dataset, Agent-Values):-
+  once((
+    rdf(Dataset, dct:subject, Agent),
+    rdf(Dataset, qb:structure, DataStructureDefinition),
+    rdf(DataStructureDefinition, qb:component, MeasureComponent),
+    rdf(MeasureComponent, qb:measure, Property),
+    rdf(Property, rdfs:range, Datatype)
+  )),
+  dh_stats0(Dataset, Property, Datatype, Values).
+
+
+
+%! dh_stats_by_agent_property(+Agent:iri, +Property:iri, -Values:list) is det.
+
+dh_stats_by_agent_property(Agent, Property, Values):-
+  % Find a dataset for the given agent and property.
+  % @tbd How to deal with multiple graphs?
+  once((
+    rdf(Dataset, dct:subject, Agent),
+    rdf(Dataset, qb:structure, DataStructureDefinition),
+    rdf(DataStructureDefinition, qb:component, MeasureComponent),
+    rdf(MeasureComponent, qb:measure, Property),
+    rdf(Property, rdfs:range, Datatype)
+  )),
+  dh_stats0(Dataset, Property, Datatype, Values).
+
+
+
+dh_stats0(Dataset, Property, Datatype, Values):-
   findall(
-    Agent-Graph,
+    Time-Value,
     (
-      member(Agent, Agents),
-      dh_stats_graph(Alias, Agent, Graph)
+      rdf(Observation, qb:dataSet, Dataset),
+      % @tbd We currently assume the temporal dimension.
+      rdf_datatype(
+        Observation,
+        'sdmx-dimension':timePeriod,
+        Time,
+        xsd:dateTime
+      ),
+      rdf_datatype(Observation, Property, Value, Datatype)
     ),
-    Collection
-  ).
-
-
-%! dh_stats_graph(+Dataset:iri, +Agent:iri, -Values:list(pair)) is det.
-
-dh_stats_graph(Dataset, Agent, Values):-
-  rdf(Dataset, qb:slice, Slice, dhm),
-  rdf(Slice, dho:refAgent, Agent, dhm),
-  aggregate_all(
-    set(X-Y),
-    rdf_datatype(Observation, Property, Value, Datatype, Graph)
-    Pairs
+    Pairs1
   ),
-  pairs_values(Pairs, Values).
+  keysort(Pairs1, Pairs2),
+  pairs_values(Pairs2, Values).
 

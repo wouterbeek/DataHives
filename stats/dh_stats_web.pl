@@ -28,19 +28,28 @@ SELECT ?property ?label WHERE {
 */
 
 :- use_module(library(aggregate)).
+:- use_module(library(apply)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_cors)).
+:- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
 :- use_module(library(lambda)).
+:- use_module(library(pairs)).
+:- use_module(library(real)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(request_ext)).
+:- use_module(svg(svg_file)).
+:- use_module(xml(xml_dom)).
+
+:- use_module(plTabular(rdf_term_html)).
 
 :- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_stats(dh_stats_core)).
+:- use_module(dh_stats(dh_stats_read)).
+:- use_module(dh_stats(dh_stats_write)).
 :- use_module(dh_web(dh_web_generics)).
 
 
@@ -176,33 +185,97 @@ $("#statisticsForm").submit(function(event) {
       |})
     ])
   ).
-% POST json *
+% POST html *
 dh_stats_web(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, post, _/json, _), !,
+  
+  % Process the contents of the POST request.
   catch(
     (
       http_read_json_dict(Request, Dict),
       atom_string(YProperty, Dict.yProperty),
-      atom_string(XPorperty, Dict.xProperty),
+      atom_string(_XPorperty, Dict.xProperty),
       atom_string(Scope, Dict.scope),
       atom_string(Subscope, Dict.subscope)
     ),
     Exception,
     throw(http_reply(bad_request(Exception)))
   ),
-  dh_perform_measurement(YProperty, XProperty, Scope, Subscope),
-  reply_json_dict(json{}).
-
-% @tbd Allow other XProperties than time.
-dh_perform_measurement(YProperty, _XProperty, Scope, Subscope):-
+  
+  % Tell the server to start making observations.
+  % @tbd Allow other XProperties than time.
+  %      These would not require an intermittend thread /
+  %      observations over time?
   scoped_agents(Scope, Subscope, Agents),
   dh_stats_loop(
-    \Agent^Value^dh_agent_property(Agent, YProperty, Value),
     Agents,
-    100, % @tbd Set this via UI if XProperty is time.
-    _Dataset
+    YProperty,
+    % @tbd Set this via UI if XProperty is time.
+    100,
+    dhm,
+    Datasets
+  ),
+  
+  % Show diagram.
+  reply_html_page(
+    HtmlStyle,
+    \dh_stats_head(['']),
+    \dh_body([
+      h1([
+        \rdf_term_html(dh_stats, YProperty),
+        ' for ',
+        \rdf_term_html(dh_stats, Agents)
+      ]),
+      % Create R graphic.
+      \dh_diagram(Datasets)
+    ])
   ).
+
+
+
+% Helpers
+
+%! add_pair_as_graph(+Pair) is det.
+
+add_pair_as_graph(Agent-Values):-
+  Agent <- Values,
+  <- Agent.
+
+
+%! dh_diagram(+Datasets:list(iri), -Svg:dom) is det.
+
+dh_diagram(Datasets, Svg):-
+  maplist(dh_stats_by_dataset, Datasets, Pairs),
+  absolute_file_name(data(dh_stat), File, [access(write),file_type(svg)]),
+  <- svg(+File),
+  maplist(add_pair_as_graph, Pairs),
+  pairs_keys(Pairs, Agents),
+  plot_r_vars(Agents),
+  <- dev.off(.),
+  file_to_svg(File, Svg).
+
+
+%! dh_diagram(+Datasets:list(iri))// is det.
+
+dh_diagram(Datasets) -->
+  {dh_diagram(Datasets, Svg)},
+  html(\xml_dom_as_atom(Svg)).
+
+
+%! dh_stats_head(+Substrings:list(atom))// is det.
+
+dh_stats_head(Substrings) -->
+  html(\dh_head(['Statistics'|Substrings])).
+
+
+%! plot_r_vars(+Vars:list) is det.
+
+plot_r_vars([]):- !.
+plot_r_vars([Var|Vars]):- !,
+  <- plot(Var),
+  maplist(<- lines, Vars).
+
 
 % All agents belonging to the current population.
 scoped_agents('Population', _, Agents):-
@@ -228,11 +301,4 @@ scoped_agents('AgentDefinition', AgentDefinition, Agents):- !,
     rdfs_individual_of(Agent, AgentDefinition),
     Agents
   ).
-
-
-
-% Helpers
-
-dh_stats_head(Substrings) -->
-  html(\dh_head(['Statistics'|Substrings])).
 

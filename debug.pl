@@ -10,9 +10,9 @@
 :- use_module(library(debug)).
 :- debug(dh).
 
-% Thread monitor.
-:- use_module(library(swi_ide)).
-:- prolog_ide(thread_monitor).
+%%%%% Thread monitor.
+%%%%:- use_module(library(swi_ide)).
+%%%%:- prolog_ide(thread_monitor).
 
 
 % Population-wide predicates for analytics.
