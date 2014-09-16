@@ -50,3 +50,6 @@ init:-
 :- use_module(library(debug)).
 
 :- debug(dh_message).
+:- debug(real).
+:- nodebug(http(request)).
+

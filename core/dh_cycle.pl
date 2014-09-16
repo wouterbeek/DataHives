@@ -140,7 +140,8 @@ increment_number_of_cycles(N):-
 
 print_number_of_cycles(N):-
   sleep(1), %DEB
-  print_message(informational, dh_agent_property(cycles,N)).
+  %print_message(informational, dh_agent_property(cycles,N)),
+  true.
 
 prolog:message(dh_agent_property(cycles,N)) -->
   ['~D cycles.'-[N]].

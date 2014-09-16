@@ -49,15 +49,17 @@ Writes statistics data in DataHives.
 % Runs an intermittent loop of performing measurements every N seconds.
 
 % Multiple agents.
-dh_stats_loop(Agents, Property, Interval, Graph, Dataset):-
+dh_stats_loop(Agents, Property, Interval, Graph, Datasets):-
   is_list(Agents), !,
   maplist(
-    \Agent^dh_stats_loop(Agent, Property, Interval, Graph, Dataset),
-    Agents
+    \Agent^Dataset^dh_stats_loop(Agent, Property, Interval, Graph, Dataset),
+    Agents,
+    Datasets
   ).
 % A single agent.
 dh_stats_loop(Agent, Property, Interval, Graph, Dataset):-
-  rdf_create_next_resource(dataset, 'dh-stats', [dataset], Dataset),
+  rdf_create_next_resource(dataset, 'dh-stats', ['Dataset'], Dataset),
+  rdf_assert_instance(Dataset, qb:'DataSet', Graph),
 
   % dct:subject
   rdf_assert(Dataset, dct:subject, Agent, Graph),

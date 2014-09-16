@@ -35,12 +35,12 @@ SELECT ?property ?label WHERE {
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
-:- use_module(generics(lambda_meta)).
 :- use_module(library(pairs)).
 :- use_module(library(real)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
+:- use_module(generics(lambda_meta)).
 :- use_module(generics(request_ext)).
 :- use_module(svg(svg_file)).
 :- use_module(xml(xml_dom)).
@@ -100,6 +100,7 @@ dh_stats_web(Request, HtmlStyle):-
           )
         ])
       ),
+      \dh_diagrams,
       \js_script({|javascript(DhoNamespace,RdfNamespace,RdfsNamespace,SparqlLocation)||
 $(document).ready(function() {
   var query = "\
@@ -186,10 +187,10 @@ $("#statisticsForm").submit(function(event) {
     ])
   ).
 % POST html *
-dh_stats_web(Request, HtmlStyle):-
+dh_stats_web(Request, _):-
   cors_enable,
   request_filter(Request, post, _/json, _), !,
-gtrace,
+
   % Process the contents of the POST request.
   catch(
     (
@@ -214,23 +215,9 @@ gtrace,
     % @tbd Set this via UI if XProperty is time.
     100,
     'dh-stats',
-    Datasets
+    _Datasets
   ),
-
-  % Show diagram.
-  reply_html_page(
-    HtmlStyle,
-    \dh_stats_head(['']),
-    \dh_body([
-      h1([
-        \rdf_term_html(dhStatistics, YProperty),
-        ' for ',
-        \rdf_term_html(dhStatistics, Agents)
-      ]),
-      % Create R graphic.
-      \dh_diagram(Datasets)
-    ])
-  ).
+  reply_json_dict(json{}).
 
 
 
@@ -252,7 +239,7 @@ dh_diagram(Datasets, Svg):-
   maplist(add_pair_as_graph, Pairs),
   pairs_keys(Pairs, Agents),
   plot_r_vars(Agents),
-  <- dev.off(.),
+  <- devoff,
   file_to_svg(File, Svg).
 
 
@@ -260,7 +247,31 @@ dh_diagram(Datasets, Svg):-
 
 dh_diagram(Datasets) -->
   {dh_diagram(Datasets, Svg)},
-  html(\xml_dom_as_atom(Svg)).
+  html([
+    %h1([
+    %  \rdf_term_html(dhStatistics, YProperty),
+    %  ' for ',
+    %  \rdf_term_html(dhStatistics, Agents)
+    %]),
+    \xml_dom_as_atom(Svg)
+  ]).
+
+
+dh_diagrams -->
+  {
+    aggregate_all(
+      set(Dataset),
+      rdfs_individual_of(Dataset, qb:'DataSet'),
+      Datasets
+    )
+  },
+  dh_diagrams(Datasets).
+
+
+dh_diagrams([]) --> !, [].
+dh_diagrams([H|T]) -->
+  dh_diagram([H]),
+  dh_diagrams(T).
 
 
 %! dh_stats_head(+Substrings:list(atom))// is det.
