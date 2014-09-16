@@ -35,6 +35,7 @@ Interface to agents in DataHives.
 
 :- use_module(dh_agent(dh_agent_create)).
 :- use_module(dh_agent(dh_agent_property)).
+:- use_module(dh_agent_definition(dh_agent_definition)).
 :- use_module(dh_core(dh_population)).
 :- use_module(dh_web(dh_web_generics)).
 
@@ -47,6 +48,12 @@ dh_agent(Agent):-
   rdfs_individual_of(Agent, dho:'Agent').
 
 
+% Agent -> AgentDefinition
+dh_agent_rest(Request, HtmlStyle):-
+  memberchk(path(Path), Request),
+  http_absolute_uri(Path, Location),
+  once(dh_agent_definition(Location)),
+  dh_agent_definition_rest_path(Request, HtmlStyle).
 % GET html *
 dh_agent_rest(Request, HtmlStyle):-
   cors_enable,

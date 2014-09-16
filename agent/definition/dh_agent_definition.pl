@@ -6,6 +6,8 @@
                            % ?Predicates:list
     dh_agent_definition_rest/2, % +Request:list(nvpair)
                                 % +HtmlStyle
+    dh_agent_definition_rest_path/2, % +Request:list(nvpair)
+                                     % +HtmlStyle
     register_dh_agent_definition/2 % +AgentDefinitionName:atom
                                    % +Predicates:list
   ]
@@ -172,10 +174,28 @@ $("#agentDefinitionsContainer").on("change", "select", function() {
       |})
     ])
   ).
+% GET json *
+% Returns type/label pairs in JSON format.
+% This can e.g. be used to populate a <select> element in HTML.
+dh_agent_definition_rest(Request, _):-
+  cors_enable,
+  request_filter(Request, get, _/json, Root),
+  http_absolute_uri(dh_agent_definition(.), Root), !,
+  findall(
+    json{agentDefinition:AgentDefinition, label:Label},
+    (
+      dh_agent_definition(AgentDefinition),
+      rdfs_label(AgentDefinition, Label)
+    ),
+    Dicts
+  ),
+  reply_json_dict(json{agentDefinitions:Dicts}).
+
+
 % GET html PATH
 %
 % Returns 404 if the given agent definition is not known.
-dh_agent_definition_rest(Request, HtmlStyle):-
+dh_agent_definition_rest_path(Request, HtmlStyle):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinition), !,
 
@@ -237,24 +257,8 @@ $("#createBtn").click(function() {
       |})
     ])
   ).
-% GET json *
-% Returns type/label pairs in JSON format.
-% This can e.g. be used to populate a <select> element in HTML.
-dh_agent_definition_rest(Request, _):-
-  cors_enable,
-  request_filter(Request, get, _/json, Root),
-  http_absolute_uri(dh_agent_definition(.), Root), !,
-  findall(
-    json{agentDefinition:AgentDefinition, label:Label},
-    (
-      dh_agent_definition(AgentDefinition),
-      rdfs_label(AgentDefinition, Label)
-    ),
-    Dicts
-  ),
-  reply_json_dict(json{agentDefinitions:Dicts}).
 % GET json PATH
-dh_agent_definition_rest(Request, _):-
+dh_agent_definition_rest_path(Request, _):-
   cors_enable,
   request_filter(Request, get, _/json, AgentDefinition),
   agent_definition0(AgentDefinition, Preds),
@@ -275,16 +279,16 @@ register_dh_agent_definition(Name1, Predicates):-
   atomic_list_concat(['Agent',Name2], '/', Path),
   rdf_global_id(dh:'', Prefix),
   uri_normalized(Path, Prefix, AgentDefinition),
-  
+
   % rdfs:label
   rdfs_assert_label(AgentDefinition, Name1, dho),
-  
+
   % Register predicates in Prolog DB.
   assert(agent_definition0(AgentDefinition, Predicates)),
-  
+
   % rdf:type
   rdf_assert_instance(AgentDefinition, dho:'AgentDefinition', dho),
-  
+
   % rdfs:subClassOf
   rdfs_assert_subclass(AgentDefinition, dho:'Agent', dho).
 

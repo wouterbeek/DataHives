@@ -42,13 +42,17 @@ dh(Request):-
 
 % DataHives: Agent
 
-http:location(dh_agent, dh(agent), []).
+http:location(dh_agent, dh('Agent'), []).
 
 :- use_module(dh_agent(dh_agent)).
 
-cliopatria:menu_item(600=dh/dh_agent, 'DH Agent').
+cliopatria:menu_item(600=dh/dhAgent, 'DH Agent').
 
-:- http_handler(dh_agent(.), dh_agent_rest, [id(dh_agent),prefix,priority(-1)]).
+:- http_handler(
+     dh_agent(.),
+     dh_agent_rest,
+     [id(dhAgent),prefix,priority(-1)]
+   ).
 
 dh_agent_rest(Request):-
   dh_agent_rest(Request, cliopatria(default)).
@@ -56,16 +60,16 @@ dh_agent_rest(Request):-
 
 % DataHives: Agent Definition
 
-http:location(dh_agent_definition, dh(agent_definition), []).
+http:location(dh_agent_definition, dh('AgentDefinition'), []).
 
 :- use_module(dh_agent_definition(dh_agent_definition)).
 
-cliopatria:menu_item(600=dh/dh_agent_definition, 'DH Agent Definition').
+cliopatria:menu_item(600=dh/dhAgentDefinition, 'DH Agent Definition').
 
 :- http_handler(
      dh_agent_definition(.),
      dh_agent_definition_rest,
-     [id(dh_agent_definition),prefix,priority(-1)]
+     [id(dhAgentDefinition),prefix,priority(-1)]
    ).
 
 dh_agent_definition_rest(Request):-
@@ -76,9 +80,9 @@ dh_agent_definition_rest(Request):-
 
 :- use_module(dh_web(dh_agent_graphic)).
 
-cliopatria:menu_item(600=dh/dh_agent_graphic, 'DH Graphic').
+cliopatria:menu_item(600=dh/dhGraphic, 'DH Graphic').
 
-:- http_handler(dh(graphic), dh_agent_graphic, [id(dh_agent_graphic)]).
+:- http_handler(dh('Graphic'), dh_agent_graphic, [id(dhGraphic)]).
 
 dh_agent_graphic(Request):-
   dh_agent_graphic(Request, cliopatria(default)).
@@ -86,16 +90,16 @@ dh_agent_graphic(Request):-
 
 % DataHives: Statistics
 
-http:location(dh_stats, dh(stats), []).
+http:location(dh_stats, dh('Statistics'), []).
 
 :- use_module(dh_stats(dh_stats_web)).
 
-cliopatria:menu_item(600=dh/dh_stats, 'DH Statistics').
+cliopatria:menu_item(600=dh/dhStatistics, 'DH Statistics').
 
 :- http_handler(
      dh_stats(.),
      dh_stats_web,
-     [id(dh_stats),prefix,priority(-1)]
+     [id(dhStatistics),prefix,priority(-1)]
    ).
 
 dh_stats_web(Request):-

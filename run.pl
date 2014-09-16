@@ -54,7 +54,7 @@ rdf_tabular(Request):-
 
 % DataHives: Agent
 
-http:location(dh_agent, dh(agent), []).
+http:location(dh_agent, dh('Agent'), []).
 
 :- use_module(dh_agent(dh_agent)).
 
@@ -68,7 +68,7 @@ dh_agent(Request):-
 
 % DataHives: Agent Definition
 
-http:location(dh_agent_definition, dh(agent_definition), []).
+http:location(dh_agent_definition, dh('AgentDefinition'), []).
 
 :- use_module(dh_agent_definition(dh_agent_definition)).
 
@@ -98,7 +98,7 @@ dh_agent_graphic(Request):-
 
 % DataHives: Statistics
 
-http:location(dh_stats, dh(stats), []).
+http:location(dh_stats, dh('Statistics'), []).
 
 :- use_module(dh_stats(dh_stats_web)).
 

@@ -3,12 +3,21 @@
 % Allow GUI tracer to run in threads.
 :- guitracer.
 
+
+% Debug mode flag.
+
+:- dynamic(user:debug_mode/0).
+:- multifile(user:debug_mode/0).
+user:debug_mode.
+
+
 :- [load].
 
 
 % Debug flag.
 :- use_module(library(debug)).
 :- debug(dh).
+
 
 %%%%% Thread monitor.
 %%%%:- use_module(library(swi_ide)).
@@ -21,14 +30,6 @@
 
 % Allow DataHives graphs and resources to be exported to file.
 :- use_module(dh_debug(dh_export)).
-
-
-% Debug mode flag.
-
-:- dynamic(user:debug_mode/0).
-:- multifile(user:debug_mode/0).
-user:debug_mode.
-
 
 
 % Assert the visum sample RDF graph.

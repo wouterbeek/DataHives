@@ -58,10 +58,10 @@ dh_stats_loop(Agents, Property, Interval, Graph, Dataset):-
 % A single agent.
 dh_stats_loop(Agent, Property, Interval, Graph, Dataset):-
   rdf_create_next_resource(dataset, 'dh-stats', [dataset], Dataset),
-  
+
   % dct:subject
   rdf_assert(Dataset, dct:subject, Agent, Graph),
-  
+
   % qb:structure
   assert_datastructure_definition(
     ['sdmx-dimension':timePeriod],
@@ -71,10 +71,10 @@ dh_stats_loop(Agent, Property, Interval, Graph, Dataset):-
     DataStructureDefinition
   ),
   rdf_assert(Dataset, qb:structure, DataStructureDefinition, Graph),
-  
+
   % dct:created
   rdf_assert_now(Dataset, dct:created, Graph),
-  
+
   % Make observations.
   % Performs the measurement defined by `Goal` for all current agent threads,
   % at a single point in time.
@@ -85,7 +85,7 @@ dh_stats_loop(Agent, Property, Interval, Graph, Dataset):-
       dh_agent_property(Agent, Property),
       Graph
     ),
-    true,
+    fail,
     Interval,
     _,
     []

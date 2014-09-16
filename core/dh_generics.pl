@@ -36,7 +36,7 @@ init_prefixes:-
   atomic_concat(Prefix1, 'ontology/', Prefix4),
   rdf_register_prefix(dho, Prefix4),
   
-  atomic_concat(Prefix1, 'stats/', Prefix5),
+  atomic_concat(Prefix1, 'Statistics/', Prefix5),
   rdf_register_prefix('dh-stats', Prefix5).
 
 

@@ -60,11 +60,11 @@ dh_stats_web(Request, HtmlStyle):-
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_stats(.), Root), !,
   http_absolute_location(sparql(.), SparqlLocation, []),
-  
+
   % @tbd Unify REST and RDFS classes.
   http_absolute_uri(dh_agent_definition(.), _AgentDefinitionLocation),
   http_absolute_uri(dh_agent(.), _AgentLocation),
-  
+
   rdf_current_prefix(dho, DhoNamespace),
   rdf_current_prefix(rdf, RdfNamespace),
   rdf_current_prefix(rdfs, RdfsNamespace),
@@ -202,7 +202,7 @@ gtrace,
     Exception,
     throw(http_reply(bad_request(Exception)))
   ),
-  
+
   % Tell the server to start making observations.
   % @tbd Allow other XProperties than time.
   %      These would not require an intermittend thread /
@@ -216,16 +216,16 @@ gtrace,
     'dh-stats',
     Datasets
   ),
-  
+
   % Show diagram.
   reply_html_page(
     HtmlStyle,
     \dh_stats_head(['']),
     \dh_body([
       h1([
-        \rdf_term_html(dh_stats, YProperty),
+        \rdf_term_html(dhStatistics, YProperty),
         ' for ',
-        \rdf_term_html(dh_stats, Agents)
+        \rdf_term_html(dhStatistics, Agents)
       ]),
       % Create R graphic.
       \dh_diagram(Datasets)
