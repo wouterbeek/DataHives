@@ -1,28 +1,30 @@
 :- module(conf_dh, []).
 
-http:location(dh, cliopatria(dh), []).
-
 :- use_module(library(settings)).
 
 :- set_setting_default(http:public_host, 'localhost.localdomain').
 :- set_setting_default(http:public_port, setting(http:port)).
-
-:- use_module(library(http/html_head)).
-:- use_module(library(http/http_dispatch)).
-:- use_module(library(http/http_path)). % http:location/3 registrations
 
 :- if(\+ current_module(load_project)).
   :- ensure_loaded('../debug').
   %:- ensure_loaded('../load').
 :- endif.
 
+:- use_module(library(http/html_head)).
+:- use_module(library(http/http_dispatch)).
+
 :- use_module(cliopatria(hooks)).
 
-:- multifile(http:location/3).
+:- multifile(cliopatria:menu_item/2).
+
 :- dynamic(http:location/3).
+:- multifile(http:location/3).
 
 :- dynamic(user:file_search_path/2).
 :- multifile(user:file_search_path/2).
+
+http:location(dh, cliopatria(dh), []).
+
 
 
 % DataHives: Home

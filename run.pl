@@ -25,7 +25,7 @@
 :- use_module(plServer(app_server)).
 :- use_module(plServer(web_modules)). % Web module registration.
 
-:- start_app_server([]).
+:- start_app_server([port(8888)]).
 
 
 % DataHives: home.
