@@ -20,11 +20,11 @@ that prefers edges with higher weights.
 :- use_module(library(pairs)).
 :- use_module(library(random)).
 
-:- use_module(dh_act(dh_act)).
-:- use_module(dh_com(dh_com)).
-:- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_nav(dh_step)).
-:- use_module(dh_nav(dh_walk)).
+:- use_module(dh(behavior/action/dh_act)).
+:- use_module(dh(behavior/communication/dh_com)).
+:- use_module(dh(behavior/communication/dh_edge_weight)).
+:- use_module(dh(behavior/navigation/dh_step)).
+:- use_module(dh(behavior/navigation/dh_walk)).
 
 
 

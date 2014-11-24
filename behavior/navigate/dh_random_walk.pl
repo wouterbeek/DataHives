@@ -17,8 +17,8 @@ that uses the LOD stepping paradigm.
 
 :- use_module(library(random)).
 
-:- use_module(dh_nav(dh_step)).
-:- use_module(dh_nav(dh_walk)).
+:- use_module(dh(beh/nav/dh_step)).
+:- use_module(dh(beh/nav/dh_walk)).
 
 
 

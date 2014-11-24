@@ -18,8 +18,8 @@ Combined access to global and local agent properties.
 
 :- use_module(library(semweb/rdfs)).
 
-:- use_module(dh_agent(dh_agent_property_global)).
-:- use_module(dh_agent(dh_agent_property_local)).
+:- use_module(dh(agent/dh_agent_property_global)).
+:- use_module(dh(agent/dh_agent_property_local)).
 
 
 

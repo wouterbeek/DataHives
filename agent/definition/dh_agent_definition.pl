@@ -39,12 +39,11 @@ Implements agent definitions in DataHives.
 :- use_module(plDcg(dcg_content)).
 :- use_module(plDcg(dcg_generics)).
 
-:- use_module(plRdf(rdf_build)).
-:- use_module(plRdf(rdfs_build)).
-:- use_module(plRdf(rdfs_label_ext)).
+:- use_module(plRdf(api/rdf_build)).
+:- use_module(plRdf(api/rdfs_build)).
 
-:- use_module(dh_core(dh_generics)).
-:- use_module(dh_web(dh_web_generics)).
+:- use_module(dh(core/dh_generics)).
+:- use_module(dh(web/dh_web_generics)).
 
 :- dynamic(agent_definition0/2).
 :- multifile(agent_definition0/2).

@@ -39,15 +39,12 @@ which is used for storing beliefs the agent has.
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(uri)).
 
-:- use_module(plRdf(rdf_build)).
 :- use_module(plRdf(rdf_random)).
-:- use_module(plRdf(rdfs_label_ext)).
-:- use_module(plRdf_term(rdf_datatype)).
-:- use_module(plRdf_term(rdf_dateTime)).
+:- use_module(plRdf(api/rdf_build)).
 
-:- use_module(dh_agent_definition(dh_agent_definition)).
-:- use_module(dh_core(dh_cycle)).
-:- use_module(dh_core(dh_messages)).
+:- use_module(dh(agent/definition/dh_agent_definition)).
+:- use_module(dh(core/dh_cycle)).
+:- use_module(dh(core/dh_messages)).
 
 :- predicate_options(dh_agent_create/4, 4, [
      pass_to(dh_cycle/3, 3)

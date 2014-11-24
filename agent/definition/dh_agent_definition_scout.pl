@@ -14,11 +14,11 @@ Defines the scout bee agent for use in DataHives.
 
 :- use_module(plRdf(rdfs_label_ext)).
 
-:- use_module(dh_act(dh_search)).
-:- use_module(dh_agent_definition(dh_agent_definition)).
-:- use_module(dh_agent_definition(dh_agent_definition_forager)).
-:- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_core(dh_generics)).
+:- use_module(dh(agent/definition/dh_agent_definition)).
+:- use_module(dh(agent/definition/dh_agent_definition_forager)).
+:- use_module(dh(beh/act/dh_search)).
+:- use_module(dh(beh/com/dh_edge_weight)).
+:- use_module(dh(core/dh_generics)).
 
 :- initialization((
   register_dh_agent_definition(

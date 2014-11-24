@@ -22,7 +22,7 @@ where in the absence of an edge count the edge's weight is 0.
 @version 2014/04-2014/06
 */
 
-:- use_module(dh_core(dh_generics)).
+:- use_module(dh(core/dh_generics)).
 
 %! edge_count0(+Triple:compound, +Count:integer) is semidet.
 %! edge_count0(+Triple:compound, -Count:integer) is semidet.

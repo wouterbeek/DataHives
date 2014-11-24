@@ -35,15 +35,15 @@ They can be accessed with dh_agent_property/2.
 
 :- use_module(plXsd(xsd_rdf)).
 
-:- use_module(plRdf(rdfs_build2)).
-:- use_module(plRdf_owl(owl_build)).
+:- use_module(plRdf(api/rdfs_build2)).
+:- use_module(plRdf(owl/owl_build)).
 
-:- use_module(dh_act(dh_entailment)). % Deductions property.
-:- use_module(dh_agent(dh_agent)).
-:- use_module(dh_agent(dh_agent_property_global)).
-:- use_module(dh_core(dh_cycle)). % Cycle property.
-:- use_module(dh_core(dh_messages)).
-:- use_module(dh_nav(dh_nav)). % Steps property.
+:- use_module(dh(agent/dh_agent)).
+:- use_module(dh(agent/dh_agent_property_global)).
+:- use_module(dh(beh/act/dh_entailment)). % Deductions property.
+:- use_module(dh(beh/nav/dh_nav)). % Steps property.
+:- use_module(dh(core/dh_cycle)). % Cycle property.
+:- use_module(dh(core/dh_messages)).
 
 :- rdf_register_prefix(
      'sdmx-dimension',

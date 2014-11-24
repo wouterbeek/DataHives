@@ -25,7 +25,7 @@ Predicates for exporting DataHives content.
 
 :- use_module(plGraphViz(gv_file)).
 
-:- use_module(dh_web(dh_gif)).
+:- use_module(dh(web/dh_gif)).
 
 
 

@@ -10,9 +10,7 @@
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_path)).
 
-:- use_module(plRdf(rdfs_label_ext)).
-
-:- use_module(dh_agent_definition(dh_agent_definition)).
+:- use_module(dh(agent/definition/dh_agent_definition)).
 
 :- initialization((
   register_dh_agent_definition(

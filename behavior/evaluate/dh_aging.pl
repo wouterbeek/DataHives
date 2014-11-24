@@ -14,7 +14,7 @@ has not been exceeded yet.
 @version 2014/07, 2014/09
 */
 
-:- use_module(dh_agent(dh_agent_property_local)).
+:- use_module(dh(agent/dh_agent_property_local)).
 
 
 

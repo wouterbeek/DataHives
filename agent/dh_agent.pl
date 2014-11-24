@@ -22,10 +22,11 @@ Interface to agents in DataHives.
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
-:- use_module(generics(lambda_meta)).
 :- use_module(library(semweb/rdfs)).
 
-:- use_module(generics(request_ext)).
+:- use_module(generics(lambda_meta)).
+
+:- use_module(plHttp(request_ext)).
 
 :- use_module(plHtml(html)).
 :- use_module(plHtml(html_pl_term)).
@@ -33,11 +34,11 @@ Interface to agents in DataHives.
 
 :- use_module(plTabular(rdf_html_table)).
 
-:- use_module(dh_agent(dh_agent_create)).
-:- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_agent_definition(dh_agent_definition)).
-:- use_module(dh_core(dh_population)).
-:- use_module(dh_web(dh_web_generics)).
+:- use_module(dh(agent/dh_agent_create)).
+:- use_module(dh(agent/dh_agent_property)).
+:- use_module(dh(agent/definition/dh_agent_definition)).
+:- use_module(dh(core/dh_population)).
+:- use_module(dh(web/dh_web_generics)).
 
 
 
@@ -155,7 +156,9 @@ dh_agent_rest(Request, _):-
 
 
 
-% Helpers
+
+
+% HELPERS
 
 dh_agent_head(Substrings) -->
   html(\dh_head(['Agent'|Substrings])).

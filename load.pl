@@ -7,17 +7,30 @@
 
 :- use_module(load_project).
 :- load_project([
+     lodCache,
+     mt-'ModelTheory',
      plc-'Prolog-Library-Collection',
      plDcg,
-     lodCache,
      plGraph,
-     plXsd,
-     plRdf,
-     plHtml,
-     plServer,
-     plSparql,
+     plGraphDraw,
      plGraphViz,
+     plHtml,
+     plHttp,
+     plLangTag,
+     plLattice,
+     plLatticeDraw,
+     plRdf,
+     plServer,
+     plSet,
+     plSparql,
+     plSvg,
      plTabular
+     plTms,
+     plTree,
+     plTreeDraw,
+     plUri,
+     plXml,
+     plXsd
 ]).
 
 % Allow tests to be run from the top-level.

@@ -21,13 +21,13 @@ Simple test predicates for running programs in DataHives.
 :- use_module(generics(meta_ext)).
 
 :- use_module(plRdf(rdf_gc)).
-:- use_module(plRdf(rdf_graph_name)).
-:- use_module(plRdf(rdf_script)).
-:- use_module(plRdf_ser(rdf_serial)).
+:- use_module(plRdf(debug/rdf_script)).
+:- use_module(plRdf(graph/rdf_graph_name)).
+:- use_module(plRdf(management/rdf_load_any)).
 
-:- use_module(plSparql_query(sparql_query_random)).
+:- use_module(plSparql(query/sparql_query_random)).
 
-:- use_module(dh_agent(dh_agent_create)).
+:- use_module(dh(agent/dh_agent_create)).
 
 
 

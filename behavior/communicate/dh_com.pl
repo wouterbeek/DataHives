@@ -23,10 +23,10 @@ Communication predicates for agents in DataHives.
 :- use_module(library(http/http_path)).
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(dh_act(dh_search)).
-:- use_module(dh_agent(dh_agent_create)).
-:- use_module(dh_core(dh_generics)).
-:- reexport(dh_com(dh_edge_weight)).
+:- use_module(dh(agent/dh_agent_create)).
+:- use_module(dh(beh/act/dh_search)).
+:- use_module(dh(core/dh_generics)).
+:- reexport(dh(beh/com/dh_edge_weight)).
 
 
 

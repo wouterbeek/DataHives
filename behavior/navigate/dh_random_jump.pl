@@ -17,9 +17,9 @@
 
 :- use_module(plRdf(rdf_random)).
 
-:- use_module(plSparql_query(sparql_query_random)).
+:- use_module(plSparql(query/sparql_query_random)).
 
-:- use_module(dh_nav(dh_jump)).
+:- use_module(dh(beh/nav/dh_jump)).
 
 
 

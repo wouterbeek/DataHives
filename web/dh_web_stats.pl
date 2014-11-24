@@ -17,8 +17,8 @@ in DataHives.
 
 :- use_module(library(http/html_write)).
 
-:- use_module(dh_stats(dh_stats)).
-:- use_module(dh_web(dh_web_generics)).
+:- use_module(dh(stats/dh_stats)).
+:- use_module(dh(web/dh_web_generics)).
 
 
 

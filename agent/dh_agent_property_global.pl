@@ -31,10 +31,6 @@ They can be accessed with dh_agent_property/3.
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
-:- rdf_meta(dh_agent_property_global(r)).
-:- rdf_meta(dh_agent_property_global(r,?)).
-:- rdf_meta(dh_agent_property_global(?,r,?)).
-
 :- use_module(plDcg(dcg_generics)).
 
 :- use_module(plXsd(xsd_rdf)).
@@ -44,15 +40,19 @@ They can be accessed with dh_agent_property/3.
 :- use_module(plRdf(rdfs_build2)).
 :- use_module(plRdf_term(rdf_datatype)).
 
-:- use_module(dh_act(dh_entailment)).
-:- use_module(dh_agent(dh_agent)).
-:- use_module(dh_agent(dh_agent_create)).
-:- use_module(dh_agent(dh_agent_property_local)).
-:- use_module(dh_core(dh_cycle)).
-:- use_module(dh_core(dh_generics)). % RDF prefix
-:- use_module(dh_core(dh_messages)).
-:- use_module(dh_core(dh_population)).
-:- use_module(dh_nav(dh_nav)).
+:- use_module(dh(agent/dh_agent)).
+:- use_module(dh(agent/dh_agent_create)).
+:- use_module(dh(agent/dh_agent_property_local)).
+:- use_module(dh(beh/act/dh_entailment)).
+:- use_module(dh(beh/nav/dh_nav)).
+:- use_module(dh(core/dh_cycle)).
+:- use_module(dh(core/dh_generics)). % RDF prefix
+:- use_module(dh(core/dh_messages)).
+:- use_module(dh(core/dh_population)).
+
+:- rdf_meta(dh_agent_property_global(r)).
+:- rdf_meta(dh_agent_property_global(r,?)).
+:- rdf_meta(dh_agent_property_global(?,r,?)).
 
 :- initialization(init).
 

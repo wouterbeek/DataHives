@@ -16,7 +16,7 @@ Evaluation predicates for DataHives agents.
 
 :- use_module(library(random)).
 
-:- reexport(dh_eval(dh_aging)).
+:- reexport(dh(beh/eval/dh_aging)).
 
 
 

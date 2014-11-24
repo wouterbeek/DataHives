@@ -19,17 +19,16 @@ Writes statistics data in DataHives.
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
-:- use_module(generics(lambda_meta)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 
+:- use_module(generics(lambda_meta)).
 :- use_module(generics(thread_ext)).
 
-:- use_module(plRdf(datacube)).
-:- use_module(plRdf(rdf_build)).
-:- use_module(plRdf_term(rdf_dateTime)).
+:- use_module(plRdf(api/rdf_build)).
+:- use_module(plRdf(vocabulary/datacube)).
 
-:- use_module(dh_agent(dh_agent_property)).
+:- use_module(dh(agent/dh_agent_property)).
 
 :- rdf_meta(dh_stats_loop(+,r,+,+,-)).
 

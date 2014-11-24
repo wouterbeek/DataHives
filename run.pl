@@ -56,7 +56,7 @@ rdf_tabular(Request):-
 
 http:location(dh_agent, dh('Agent'), []).
 
-:- use_module(dh_agent(dh_agent)).
+:- use_module(dh(agent/dh_agent)).
 
 user:web_module('DH Agents', dh_agent).
 
@@ -70,7 +70,7 @@ dh_agent(Request):-
 
 http:location(dh_agent_definition, dh('AgentDefinition'), []).
 
-:- use_module(dh_agent_definition(dh_agent_definition)).
+:- use_module(dh(agent/definition/dh_agent_definition)).
 
 user:web_module('DH Agent Definitions', dh_agent_definition).
 
@@ -86,7 +86,7 @@ dh_agent_definition(Request):-
 
 % DataHives: Graphic
 
-:- use_module(dh_web(dh_agent_graphic)).
+:- use_module(dh(web/dh_agent_graphic)).
 
 user:web_module('DH Agent Graphic', dh_agent_graphic).
 
@@ -100,7 +100,7 @@ dh_agent_graphic(Request):-
 
 http:location(dh_stats, dh('Statistics'), []).
 
-:- use_module(dh_stats(dh_stats_web)).
+:- use_module(dh(stats/dh_stats_web)).
 
 user:web_module('DH Statistics', dh_stats_web).
 
@@ -113,5 +113,5 @@ dh_stats_web(Request):-
 % The part of the initialization that requires HTTP handlers to be set.
 
 % Load the agent definitions.
-:- ensure_loaded(dh_agent_definition(dh_agent_definition_init)).
+:- ensure_loaded(dh(agent/definition/dh_agent_definition_init)).
 

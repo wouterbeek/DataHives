@@ -27,8 +27,8 @@ are not instances of walking.
 
 :- use_module(pl(pl_log)).
 
-:- use_module(dh_core(dh_generics)).
-:- use_module(dh_nav(dh_nav)).
+:- use_module(dh(core/dh_generics)).
+:- use_module(dh(nav/dh_nav)).
 
 %! backtrack(?DirectedTriple:compound) is det.
 
@@ -67,20 +67,18 @@ are not instances of walking.
 
 dh_walk(Nav, dir(From,Dir,Link,To), Options):-
   backtrack(dir(_,_,_,From)),
-  (
-    dh_step(Nav, dir(From,Dir,Link,To), Options)
-  ->
-    % Normal navigation is possible: there is no need to use
-    % the backtrack option. Update the backtrack option for future use.
-    retract(backtrack(_)),
-    assert(backtrack(dir(From,Dir,Link,To)))
-  ;
-    % Use the backtrack assertion to navigate.
-    retract(backtrack(dir(To,InvDir,Link,From))),
-    invert_direction(InvDir, Dir),
-    assert(backtrack(dir(From,Dir,Link,To)))
+  (   dh_step(Nav, dir(From,Dir,Link,To), Options)
+  ->  % Normal navigation is possible: there is no need to use
+      % the backtrack option. Update the backtrack option for future use.
+      retract(backtrack(_)),
+      assert(backtrack(dir(From,Dir,Link,To)))
+  ;   % Use the backtrack assertion to navigate.
+      retract(backtrack(dir(To,InvDir,Link,From))),
+      invert_direction(InvDir, Dir),
+      assert(backtrack(dir(From,Dir,Link,To)))
   ),
   increment_number_of_steps.
+
 
 
 %! dh_step(
@@ -114,15 +112,12 @@ dh_step(Nav, dir(From,Direction,Link,To), Options):-
   
   % Find the direction of movement,
   % prefering forward movement in the case of symmetric links.
-  (
-    Triple = rdf(From,Link,To)
-  ->
-    Direction = forward
-  ;
-    Triple = rdf(To,Link,From)
-  ->
-    Direction = backward
+  (   Triple = rdf(From,Link,To)
+  ->  Direction = forward
+  ;   Triple = rdf(To,Link,From)
+  ->  Direction = backward
   ).
+
 
 
 %! set_backtrack(?DirectedTriple:compound) is det.

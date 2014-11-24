@@ -23,12 +23,12 @@ Where message queue are being processed.
 
 :- use_module(generics(vox_populi)).
 
-:- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_agent(dh_agent_property_global)).
-:- use_module(dh_agent(dh_agent_property_local)).
-:- use_module(dh_act(dh_entailment)).
-:- use_module(dh_core(dh_cycle)).
-:- use_module(dh_nav(dh_nav)).
+:- use_module(dh(agent/dh_agent_property)).
+:- use_module(dh(agent/dh_agent_property_global)).
+:- use_module(dh(agent/dh_agent_property_local)).
+:- use_module(dh(beh/act/dh_entailment)).
+:- use_module(dh(beh/nav/dh_nav)).
+:- use_module(dh(core/dh_cycle)).
 
 
 

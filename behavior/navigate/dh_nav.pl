@@ -17,12 +17,12 @@ Reexports the navigation stategies in DataHives.
 
 :- use_module(plRdf(rdfs_build2)).
 
-:- reexport(dh_nav(dh_random_jump)).
-:- reexport(dh_nav(dh_random_walk)).
-:- reexport(dh_nav(dh_weighted_walk)).
+:- reexport(dh(beh/nav/dh_random_jump)).
+:- reexport(dh(beh/nav/dh_random_walk)).
+:- reexport(dh(beh/nav/dh_weighted_walk)).
 
-:- use_module(dh_agent(dh_agent)).
-:- use_module(dh_core(dh_messages)).
+:- use_module(dh(agent/dh_agent)).
+:- use_module(dh(core/dh_messages)).
 
 %! number_of_steps(-NumberOfSteps:nonneg) is det.
 

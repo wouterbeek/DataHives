@@ -19,8 +19,8 @@
 
 :- use_module(plGraphViz(gv_file)).
 
-:- use_module(dh_web(dh_gif)).
-:- use_module(dh_web(dh_web_generics)).
+:- use_module(dh(web/dh_gif)).
+:- use_module(dh(web/dh_web_generics)).
 
 :- html_resource(css('gv_interactive.css'), []).
 :- html_resource(js('gv_interactive.js'), []).

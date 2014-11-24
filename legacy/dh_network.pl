@@ -39,9 +39,10 @@
 
 :- use_module(generics(db_ext)).
 :- use_module(generics(list_ext)).
-:- use_module(xml(xml_dom)).
 
 :- use_module(plDcg(dcg_generics)).
+
+:- use_module(plXml(xml_dom)).
 
 :- use_module(plHtml(html_table)).
 
@@ -49,15 +50,14 @@
 
 :- use_module(plGraphViz(gv_file)).
 
-:- use_module(plRdf(rdf_dataset)).
-:- use_module(plRdf(rdf_graph)).
 :- use_module(plRdf(rdf_name)).
 :- use_module(plRdf(rdf_random)).
-:- use_module(plRdf_term(rdf_term)).
+:- use_module(plRdf(graph/rdf_dataset)).
+:- use_module(plRdf(graph/rdf_graph)).
 
-:- use_module(plRdfDev(rdf_html_table)).
+:- use_module(plTabular(rdf_html_table)).
 
-:- use_module(dh_web(dh_web_generics)).
+:- use_module(dh(web/dh_web_generics)).
 
 :- http_handler(dh(connected_hives), connected_hives, []).
 

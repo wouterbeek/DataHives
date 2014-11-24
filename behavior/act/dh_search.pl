@@ -22,8 +22,8 @@
 
 :- use_module(lodCache(lod_cache)).
 
-:- use_module(dh_agent(dh_agent_property_local)).
-:- use_module(dh_core(dh_generics)).
+:- use_module(dh(agent/dh_agent_property_local)).
+:- use_module(dh(core/dh_generics)).
 
 
 

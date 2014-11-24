@@ -25,17 +25,17 @@ user:debug_mode.
 
 
 % Population-wide predicates for analytics.
-:- use_module(dh_core(dh_population)).
+:- use_module(dh(core/dh_population)).
 
 
 % Allow DataHives graphs and resources to be exported to file.
-:- use_module(dh_debug(dh_export)).
+:- use_module(dh(debug/dh_export)).
 
 
 % Assert the visum sample RDF graph.
 
 :- use_module(plRdf(rdf_gc)).
-:- use_module(plRdf(rdf_script)).
+:- use_module(plRdf(debug/rdf_script)).
 
 :- initialization(init).
 

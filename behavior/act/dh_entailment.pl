@@ -17,16 +17,16 @@ DataHives agents that implement RDFS 1.1 entailment.
 
 :- use_module(library(semweb/rdf_db)).
 
-:- use_module(plRdf(rdfs_build2)).
-:- use_module(plRdf_ent(rdf_bnode_map)).
-:- use_module(plRdf_ent(rdf_entailment_patterns)).
+:- use_module(plRdf(api/rdfs_build2)).
+:- use_module(plRdf(entailment/rdf_bnode_map)).
+:- use_module(plRdf(entailment/rdf_entailment_patterns)).
 
-:- use_module(dh_agent(dh_agent)).
-:- use_module(dh_agent(dh_agent_create)).
-:- use_module(dh_agent(dh_agent_property_local)).
-:- use_module(dh_core(dh_cycle)). % agent_property(cycles)
-:- use_module(dh_core(dh_generics)).
-:- use_module(dh_core(dh_messages)).
+:- use_module(dh(agent/dh_agent)).
+:- use_module(dh(agent/dh_agent_create)).
+:- use_module(dh(agent/dh_agent_property_local)).
+:- use_module(dh(core/dh_cycle)). % agent_property(cycles)
+:- use_module(dh(core/dh_generics)).
+:- use_module(dh(core/dh_messages)).
 
 %! number_of_deductions(?Deductions:nonneg) is nondet.
 

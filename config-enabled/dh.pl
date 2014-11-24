@@ -32,7 +32,7 @@ http:location(dh, cliopatria(dh), []).
 user:file_search_path(css, dh_web(css)).
 user:file_search_path(js, dh_web(js)).
 
-:- use_module(dh_web(dh_web)).
+:- use_module(dh(web/dh_web)).
 
 cliopatria:menu_item(600=dh/dh, 'DataHives').
 
@@ -46,7 +46,7 @@ dh(Request):-
 
 http:location(dh_agent, dh('Agent'), []).
 
-:- use_module(dh_agent(dh_agent)).
+:- use_module(dh(agent/dh_agent)).
 
 cliopatria:menu_item(600=dh/dhAgent, 'DH Agent').
 
@@ -64,7 +64,7 @@ dh_agent_rest(Request):-
 
 http:location(dh_agent_definition, dh('AgentDefinition'), []).
 
-:- use_module(dh_agent_definition(dh_agent_definition)).
+:- use_module(dh(agent/definition/dh_agent_definition)).
 
 cliopatria:menu_item(600=dh/dhAgentDefinition, 'DH Agent Definition').
 
@@ -80,7 +80,7 @@ dh_agent_definition_rest(Request):-
 
 % DataHives: Graphic
 
-:- use_module(dh_web(dh_agent_graphic)).
+:- use_module(dh(web/dh_agent_graphic)).
 
 cliopatria:menu_item(600=dh/dhGraphic, 'DH Graphic').
 
@@ -94,7 +94,7 @@ dh_agent_graphic(Request):-
 
 http:location(dh_stats, dh('Statistics'), []).
 
-:- use_module(dh_stats(dh_stats_web)).
+:- use_module(dh(stats/dh_stats_web)).
 
 cliopatria:menu_item(600=dh/dhStatistics, 'DH Statistics').
 
@@ -134,5 +134,5 @@ user:body(plTabular, Body) -->
 % The part of the initialization that requires HTTP handlers to be set.
 
 % Load the agent definitions.
-:- ensure_loaded(dh_agent_definition(dh_agent_definition_init)).
+:- ensure_loaded(dh(agent/definition/dh_agent_definition_init)).
 

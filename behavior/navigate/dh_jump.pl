@@ -21,7 +21,7 @@ to a location that need not be structurally related to the former.
 :- use_module(generics(flag_ext)).
 :- use_module(pl(pl_log)).
 
-:- use_module(dh_nav(dh_nav)).
+:- use_module(dh(beh/nav/dh_nav)).
 
 :- meta_predicate(dh_jump(2,-,+)).
 

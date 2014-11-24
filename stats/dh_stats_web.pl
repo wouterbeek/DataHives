@@ -42,15 +42,17 @@ SELECT ?property ?label WHERE {
 
 :- use_module(generics(lambda_meta)).
 :- use_module(generics(request_ext)).
-:- use_module(svg(svg_file)).
-:- use_module(xml(xml_dom)).
+
+:- use_module(plSvg(svg_file)).
+
+:- use_module(plXml(xml_dom)).
 
 :- use_module(plTabular(rdf_term_html)).
 
-:- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_stats(dh_stats_read)).
-:- use_module(dh_stats(dh_stats_write)).
-:- use_module(dh_web(dh_web_generics)).
+:- use_module(dh(agent/dh_agent_property)).
+:- use_module(dh(stats/dh_stats_read)).
+:- use_module(dh(stats/dh_stats_write)).
+:- use_module(dh(web/dh_web_generics)).
 
 
 

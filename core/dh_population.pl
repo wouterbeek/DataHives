@@ -20,20 +20,20 @@ The population is the collection of all agent threads that are active.
 
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
-:- use_module(generics(lambda_meta)).
 :- use_module(library(lists)).
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library(semweb/rdfs)).
 
+:- use_module(generics(lambda_meta)).
 :- use_module(generics(thread_ext)).
 :- use_module(generics(vox_populi)).
 
-:- use_module(plRdf(rdfs_build2)).
+:- use_module(plRdf(api/rdfs_build2)).
 
-:- use_module(dh_agent(dh_agent)).
-:- use_module(dh_agent(dh_agent_create)).
-:- use_module(dh_agent(dh_agent_property)).
-:- use_module(dh_com(dh_edge_weight)).
+:- use_module(dh(agent/dh_agent)).
+:- use_module(dh(agent/dh_agent_create)).
+:- use_module(dh(agent/dh_agent_property)).
+:- use_module(dh(beh/com/dh_edge_weight)).
 
 :- rdf_meta(dh_population_property(r,?)).
 

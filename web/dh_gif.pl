@@ -24,16 +24,18 @@ using the Graph Interchange Format.
 
 :- use_module(generics(list_ext)).
 :- use_module(generics(typecheck)).
-:- use_module(generics(uri_ext)).
-:- use_module(http(http_download)).
 :- use_module(os(image_ext)).
 
 :- use_module(plDcg(dcg_generics)).
 
+:- use_module(plUri(uri_ext)).
+
+:- use_module(plHttp(http_download_file)).
+
 :- use_module(plRdf(rdf_name)). % Meta-DCG.
 
-:- use_module(dh_com(dh_edge_weight)).
-:- use_module(dh_com(dh_com)).
+:- use_module(dh(beh/com/dh_edge_weight)).
+:- use_module(dh(beh/com/dh_com)).
 
 :- predicate_options(dh_graph/2, 2, [
      pass_to(dh_graph/3, 3)

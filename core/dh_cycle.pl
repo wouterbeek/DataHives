@@ -20,11 +20,11 @@ The navigate-act-communicate cycle for agents in DataHives.
 
 :- use_module(plRdf(rdfs_build2)).
 
-:- use_module(dh_agent(dh_agent)).
-:- use_module(dh_beh(dh_beh)).
-:- use_module(dh_core(dh_generics)).
-:- use_module(dh_core(dh_messages)).
-:- use_module(dh_nav(dh_walk)).
+:- use_module(dh(agent/dh_agent)).
+:- use_module(dh(beh/dh_beh)).
+:- use_module(dh(beh/nav/dh_walk)).
+:- use_module(dh(core/dh_generics)).
+:- use_module(dh(core/dh_messages)).
 
 %! creation(-DateTime:integer) is semidet.
 

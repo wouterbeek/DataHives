@@ -29,10 +29,10 @@ Count languages and datatypes used in literals.
 
 :- use_module(plRdf(rdf_name)).
 
-:- use_module(plRdfDev(rdf_html_table)).
+:- use_module(plTabular(rdf_html_table)).
 
-:- use_module(dh_nav(dh_random_walk)).
-:- use_module(dh_web(dh_web_generics)).
+:- use_module(dh(beh/nav/dh_random_walk)).
+:- use_module(dh(web/dh_web_generics)).
 
 :- http_handler(dh(literal_tag), dh_lit_tag, []).
 
