@@ -64,7 +64,7 @@ dh_agent_rest(Request):-
 
 http:location(dh_agent_definition, dh('AgentDefinition'), []).
 
-:- use_module(dh(agent/definition/dh_agent_definition)).
+:- use_module(dh(agent/def/dh_agent_definition)).
 
 cliopatria:menu_item(600=dh/dhAgentDefinition, 'DH Agent Definition').
 
@@ -129,10 +129,4 @@ rdf_tabular(Request):-
 user:body(plTabular, Body) -->
   html_requires(css(plTabular)),
   user:body(cliopatria(default), Body).
-
-
-% The part of the initialization that requires HTTP handlers to be set.
-
-% Load the agent definitions.
-:- ensure_loaded(dh(agent/definition/dh_agent_definition_init)).
 

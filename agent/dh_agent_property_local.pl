@@ -23,17 +23,11 @@ Global agent properties are defined in [dh_agent_property_global].
 They can be accessed with dh_agent_property/2.
 
 @author Wouter Beek
-@version 2014/09
+@version 2014/09, 2014/11
 */
 
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(semweb/rdfs)).
-
-:- rdf_meta(dh_agent_property_local(r)).
-:- rdf_meta(dh_agent_property_local(r,?)).
-:- rdf_meta(dh_agent_property_local(?,r,?)).
-
-:- use_module(plXsd(xsd_rdf)).
 
 :- use_module(plRdf(api/rdfs_build2)).
 :- use_module(plRdf(owl/owl_build)).
@@ -44,6 +38,10 @@ They can be accessed with dh_agent_property/2.
 :- use_module(dh(beh/nav/dh_nav)). % Steps property.
 :- use_module(dh(core/dh_cycle)). % Cycle property.
 :- use_module(dh(core/dh_messages)).
+
+:- rdf_meta(dh_agent_property_local(r)).
+:- rdf_meta(dh_agent_property_local(r,?)).
+:- rdf_meta(dh_agent_property_local(?,r,?)).
 
 :- rdf_register_prefix(
      'sdmx-dimension',
@@ -106,7 +104,6 @@ graph_self(Graph):-
 
 
 init:-
-  xsd_assert_schema,
   rdfs_assert_property(
     dho:agentPropertyLocal,
     dho:agentProperty,

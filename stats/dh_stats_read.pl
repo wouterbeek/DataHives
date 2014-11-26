@@ -15,16 +15,16 @@ Predicates for reading off statistic results from various measurements
 performed in DataHives.
 
 @author Wouter Beek
-@version 2014/09
+@version 2014/09, 2014/11
 */
 
 :- use_module(library(aggregate)).
 :- use_module(library(error)).
 :- use_module(library(lists)).
 :- use_module(library(pairs)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
-:- use_module(plRdf_term(rdf_datatype)).
+:- use_module(plRdf(api/rdf_read)).
 
 :- rdf_register_prefix(dct, 'http://purl.org/dc/terms/').
 :- rdf_register_prefix(qb, 'http://purl.org/linked-data/cube#').
@@ -68,13 +68,14 @@ dh_stats0(Dataset, Property, Datatype, Values):-
     (
       rdf(Observation, qb:dataSet, Dataset),
       % @tbd We currently assume the temporal dimension.
-      rdf_datatype(
+      rdf_typed_literal(
         Observation,
         'sdmx-dimension':timePeriod,
         Time,
-        xsd:dateTime
+        xsd:dateTime,
+        _
       ),
-      rdf_datatype(Observation, Property, Value, Datatype)
+      rdf_typed_literal(Observation, Property, Value, Datatype, _)
     ),
     Pairs1
   ),

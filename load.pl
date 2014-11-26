@@ -24,7 +24,7 @@
      plSet,
      plSparql,
      plSvg,
-     plTabular
+     plTabular,
      plTms,
      plTree,
      plTreeDraw,
@@ -34,5 +34,5 @@
 ]).
 
 % Allow tests to be run from the top-level.
-:- user:use_module(dh_test(dh_test)).
+:- user:use_module(dh(test/dh_test)).
 

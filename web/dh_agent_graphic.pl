@@ -15,9 +15,11 @@
 :- use_module(library(http/html_head)).
 :- use_module(library(http/html_write)).
 
-:- use_module(xml(xml_dom)).
+:- use_module(plXml(xml_dom)).
 
 :- use_module(plGraphViz(gv_file)).
+
+:- use_module(plGraphDraw(svg_gv)).
 
 :- use_module(dh(web/dh_gif)).
 :- use_module(dh(web/dh_web_generics)).
@@ -39,7 +41,7 @@ dh_agent_graphic(_, HtmlStyle):-
 dh_agent_graphic_body -->
   {
     dh_graph(Gif, []),
-    gif_to_svg_dom(Gif, SvgDom, [method(dot)])
+    graph_to_svg_dom(Gif, SvgDom, [method(dot)])
   },
   html([
     \html_requires(css('gv_interactive.css')),

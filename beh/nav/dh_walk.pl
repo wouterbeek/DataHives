@@ -23,12 +23,12 @@ are not instances of walking.
 @version 2014/02-2014/08
 */
 
-:- use_module(library(semweb/rdf_db)). % Declarations.
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])). % Declarations.
 
 :- use_module(pl(pl_log)).
 
+:- use_module(dh(beh/nav/dh_nav)).
 :- use_module(dh(core/dh_generics)).
-:- use_module(dh(nav/dh_nav)).
 
 %! backtrack(?DirectedTriple:compound) is det.
 

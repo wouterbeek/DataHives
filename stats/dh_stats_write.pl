@@ -20,12 +20,13 @@ Writes statistics data in DataHives.
 :- use_module(library(aggregate)).
 :- use_module(library(apply)).
 :- use_module(library(lists)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(generics(lambda_meta)).
 :- use_module(generics(thread_ext)).
 
 :- use_module(plRdf(api/rdf_build)).
+:- use_module(plRdf(term/rdf_datetime)).
 :- use_module(plRdf(vocabulary/datacube)).
 
 :- use_module(dh(agent/dh_agent_property)).
@@ -57,8 +58,13 @@ dh_stats_loop(Agents, Property, Interval, Graph, Datasets):-
   ).
 % A single agent.
 dh_stats_loop(Agent, Property, Interval, Graph, Dataset):-
-  rdf_create_next_resource(dataset, 'dh-stats', ['Dataset'], Dataset),
-  rdf_assert_instance(Dataset, qb:'DataSet', Graph),
+  rdf_create_next_resource(
+    'dh-stats',
+    ['Dataset'],
+    qb:'DataSet',
+    Graph,
+    Dataset
+  ),
 
   % dct:subject
   rdf_assert(Dataset, dct:subject, Agent, Graph),
@@ -84,7 +90,8 @@ dh_stats_loop(Agent, Property, Interval, Graph, Dataset):-
       Dataset,
       Property,
       dh_agent_property(Agent, Property),
-      Graph
+      Graph,
+      _
     ),
     fail,
     Interval,

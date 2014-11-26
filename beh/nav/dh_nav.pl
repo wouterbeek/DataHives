@@ -15,7 +15,7 @@ Reexports the navigation stategies in DataHives.
 @version 2104/07-2014/09
 */
 
-:- use_module(plRdf(rdfs_build2)).
+:- use_module(plRdf(api/rdfs_build2)).
 
 :- reexport(dh(beh/nav/dh_random_jump)).
 :- reexport(dh(beh/nav/dh_random_walk)).

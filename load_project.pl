@@ -16,7 +16,7 @@ Generic code for loading a project:
   * Load the index of subprojects onto the file search path.
 
 @author Wouter Beek
-@version 2014/11/22
+@version 2014/11/26
 */
 
 :- use_module(library(ansi_term)). % Colorized terminal messages.
@@ -72,7 +72,11 @@ load_subproject_file_search_path(_, ChildFsp, _):-
   user:file_search_path(ChildFsp, _).
 load_subproject_file_search_path(ParentFsp, ChildFsp, ChildDir):-
   Spec =.. [ParentFsp,ChildDir],
-  absolute_file_name(Spec, _, [access(read),file_type(directory)]), !,
+  absolute_file_name(
+    Spec,
+    _,
+    [access(read),file_errors(fail),file_type(directory)]
+  ), !,
   assert(user:file_search_path(ChildFsp, Spec)).
 load_subproject_file_search_path(_, ChildFsp, ChildDir):-
   print_message(warning, missing_subproject_directory(ChildFsp,ChildDir)).

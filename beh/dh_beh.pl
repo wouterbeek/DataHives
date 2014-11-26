@@ -9,7 +9,7 @@ Imports all behaviors defined in DataHives.
 */
 
 :- reexport(dh(beh/act/dh_act)).
-:- reexport(dh(beh/com(dh_com)).
-:- reexport(dh(beh/eval(dh_eval)).
-:- reexport(dh(beh/nav(dh_nav)).
+:- reexport(dh(beh/com/dh_com)).
+:- reexport(dh(beh/eval/dh_eval)).
+:- reexport(dh(beh/nav/dh_nav)).
 

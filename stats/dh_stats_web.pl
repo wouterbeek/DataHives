@@ -37,15 +37,16 @@ SELECT ?property ?label WHERE {
 :- use_module(library(http/js_write)).
 :- use_module(library(pairs)).
 :- use_module(library(real)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(semweb/rdfs)).
 
 :- use_module(generics(lambda_meta)).
-:- use_module(generics(request_ext)).
 
-:- use_module(plSvg(svg_file)).
+:- use_module(plHttp(request_ext)).
 
 :- use_module(plXml(xml_dom)).
+
+:- use_module(plSvg(svg_file)).
 
 :- use_module(plTabular(rdf_term_html)).
 

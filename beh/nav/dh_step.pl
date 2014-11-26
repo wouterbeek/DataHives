@@ -25,15 +25,15 @@ from the characterization of a stepping paradigm is that:
      and on a locally loaded graph.
 
 @author Wouter Beek
-@version 2014/02-2014/06
+@version 2014/02-2014/06, 2014/11
 */
 
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(generics(db_ext)).
 
 :- use_module(plRdf(rdf_gc)). % Run graph garbage collection.
-:- use_module(plRdf(rdf_read)).
+:- use_module(plRdf(api/rdf_read)).
 
 :- use_module(lodCache(lod_cache_egograph)).
 
@@ -94,7 +94,7 @@ from the characterization of a stepping paradigm is that:
 dh_step(TripleSelection, Resource, Triple, Options):-
   option(graph(Graph), Options), !,
   option(direction(Direction), Options, both),
-  rdf_direction(Direction, Resource, Graph, Triples),
+  rdf_direction_triples(Resource, Direction, Triples, Graph),
   dh_select_triple(TripleSelection, Triples, Triple).
 % Remote LOD lookup: blank node.
 dh_step(_, Resource, _, _):-

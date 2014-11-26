@@ -1,0 +1,180 @@
+@prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Named toplevel resources (49)
+
+xsd:ENTITIES
+        rdfs:subClassOf xsd:anySimpleType .
+
+xsd:ENTITY
+        rdfs:subClassOf xsd:NCName .
+
+xsd:ID
+        rdfs:subClassOf xsd:NCName .
+
+xsd:IDREF
+        rdfs:subClassOf xsd:NCName .
+
+xsd:IDREFS
+        rdfs:subClassOf xsd:anySimpleType .
+
+xsd:NCName
+        rdfs:subClassOf xsd:Name .
+
+xsd:NMTOKEN
+        rdfs:subClassOf xsd:normalizedString .
+
+xsd:NMTOKENS
+        rdfs:subClassOf xsd:anySimpleType .
+
+xsd:NOTATION
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:Name
+        rdfs:subClassOf xsd:token .
+
+xsd:QName
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:anyAtomicType
+        rdfs:subClassOf xsd:anySimpleType .
+
+xsd:anySimpleType
+        rdfs:subClassOf xsd:anyType .
+
+xsd:anyURI
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:base64Binary
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:boolean
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:byte
+        rdfs:subClassOf xsd:short .
+
+xsd:date
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlDate> .
+
+xsd:dateTime
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlDate> .
+
+xsd:dateTimeStamp
+        rdfs:subClassOf xsd:dateTime .
+
+xsd:decimal
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlNumeric> .
+
+xsd:double
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlNumeric> .
+
+xsd:duration
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:float
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlNumeric> .
+
+xsd:gDay
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlDate> .
+
+xsd:gMonth
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlDate> .
+
+xsd:gMonthDay
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlDate> .
+
+xsd:gYear
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlDate> .
+
+xsd:gYearMonth
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType ,
+                        <http://www.wouterbeek.com/xsd/ontology.owlDate> .
+
+xsd:hexBinary
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:int
+        rdfs:subClassOf xsd:long .
+
+xsd:integer
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:decimal .
+
+xsd:language
+        rdfs:subClassOf xsd:token .
+
+xsd:long
+        rdfs:subClassOf xsd:integer .
+
+xsd:negativeInteger
+        rdfs:subClassOf xsd:nonPositiveInteger .
+
+xsd:nonNegativeInteger
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:integer .
+
+xsd:nonPositiveInteger
+        rdfs:subClassOf xsd:integer .
+
+xsd:normalizedString
+        rdfs:subClassOf xsd:string .
+
+xsd:positiveInteger
+        rdfs:subClassOf xsd:nonNegativeInteger .
+
+xsd:short
+        rdfs:subClassOf xsd:int .
+
+xsd:string
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:time
+        a rdfs:Datatype ;
+        rdfs:subClassOf xsd:anyAtomicType .
+
+xsd:token
+        rdfs:subClassOf xsd:normalizedString .
+
+xsd:unsignedByte
+        rdfs:subClassOf xsd:unsignedShort .
+
+xsd:unsignedInt
+        rdfs:subClassOf xsd:unsignedLong .
+
+xsd:unsignedLong
+        rdfs:subClassOf xsd:nonNegativeInteger .
+
+xsd:unsignedShort
+        rdfs:subClassOf xsd:unsignedInt .
+
+<http://www.wouterbeek.com/xsd/ontology.owlDate>
+        rdfs:subClassOf xsd:anyType .
+
+<http://www.wouterbeek.com/xsd/ontology.owlNumeric>
+        rdfs:subClassOf xsd:anyType .

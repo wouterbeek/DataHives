@@ -36,7 +36,7 @@ Interface to agents in DataHives.
 
 :- use_module(dh(agent/dh_agent_create)).
 :- use_module(dh(agent/dh_agent_property)).
-:- use_module(dh(agent/definition/dh_agent_definition)).
+:- use_module(dh(agent/def/dh_agent_definition)).
 :- use_module(dh(core/dh_population)).
 :- use_module(dh(web/dh_web_generics)).
 
@@ -113,7 +113,7 @@ dh_agent_rest(Request, HtmlStyle):-
     \dh_agent_head([Label]),
     \dh_body(
       \html_table(
-        html(['Overview of agent ', \html_link(Agent-Label), '.']),
+        html(['Overview of agent ', \html_link(Agent,Label), '.']),
         Rows,
         [header_row(false),index(false)]
       )

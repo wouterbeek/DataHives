@@ -35,7 +35,7 @@
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(lists)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(generics(db_ext)).
 :- use_module(generics(list_ext)).
@@ -45,6 +45,8 @@
 :- use_module(plXml(xml_dom)).
 
 :- use_module(plHtml(html_table)).
+
+:- use_module(plGraphDraw(svg_gv)).
 
 :- use_module(plServer(web_modules)).
 
@@ -195,7 +197,7 @@ connected_hives(_Request):-
     label('Overview of connected DataHives'),
     overlap(false)
   ],
-  gif_to_svg_dom(graph(Vs,Es,G_Attrs), SvgDom, [method(sfdp)]),
+  graph_to_svg_dom(graph(Vs,Es,G_Attrs), SvgDom, [method(sfdp)]),
   reply_html_page(
     plServer_style,
     \dh_head(['Network']),

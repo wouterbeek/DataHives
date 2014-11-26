@@ -15,7 +15,7 @@ DataHives agents that implement RDFS 1.1 entailment.
 @version 2014/06-2014/09
 */
 
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(plRdf(api/rdfs_build2)).
 :- use_module(plRdf(entailment/rdf_bnode_map)).
@@ -64,9 +64,9 @@ evaluate_entailment:-
 
 rdf_assert_entailment(rdf(U1,V,W)):-
   % Literals that are not yet replaced by blank nodes
-  % are added to the blank node map here.
+  %  are added to the blank node map.
   (   rdf_is_literal(U1)
-  ->  term_to_bnode(user, U1, U2)
+  ->  term_set_bnode(user, U1, U2)
   ;   U2 = U1
   ),
 
@@ -96,9 +96,9 @@ rdf_entailment_pattern_match(Premise1, rdf(U1,V,W)):-
   ),
 
   % Use the existing blank node map
-  % to replace literals with their blank node proxy.
+  %  to replace literals with their blank node proxy.
   (   rdf_is_literal(U1),
-      term_to_bnode(user, U1, U2)
+      term_get_bnode(user, U1, U2)
   ->  true
   ;   U2 = U1
   ),

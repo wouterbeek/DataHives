@@ -21,7 +21,7 @@ Communication predicates for agents in DataHives.
 :- use_module(library(ansi_term)).
 :- use_module(library(apply)).
 :- use_module(library(http/http_path)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(dh(agent/dh_agent_create)).
 :- use_module(dh(beh/act/dh_search)).

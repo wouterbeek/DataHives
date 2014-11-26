@@ -16,7 +16,7 @@ Testing a non-standard agent property.
 :- use_module(plRdf(rdf_build2)).
 
 :- use_module(dh(agent/dh_agent_property_local)).
-:- use_module(dh(behavior/navigate/dh_nav)).
+:- use_module(dh(beh/nav/dh_nav)).
 
 :- initialization(init).
 

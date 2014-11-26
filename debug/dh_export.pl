@@ -19,7 +19,7 @@ Predicates for exporting DataHives content.
 */
 
 :- use_module(library(option)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(os(datetime_ext)).
 
@@ -71,7 +71,7 @@ dh_export_graph(File):-
 dh_export_graph(File, Options):-
   ensure_file(File, Options),
   dh_graph(Gif, Options),
-  gif_to_gv_file(Gif, File, Options).
+  graph_to_gv_file(Gif, File, Options).
 
 
 dh_export_resource(Resource, File, Options):-
@@ -82,7 +82,7 @@ dh_export_resource(Resource, File, Options):-
     Es
   ),
   dh_gif:dh_graph(0, Es, Gif, Options),
-  gif_to_gv_file(Gif, File, Options).
+  graph_to_gv_file(Gif, File, Options).
 
 
 

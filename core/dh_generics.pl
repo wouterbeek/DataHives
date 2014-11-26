@@ -21,23 +21,14 @@
 Generic predicates that are used in DataHives.
 
 @author Wouter Beek
-@version 2014/06, 2014/08-2014/09
+@version 2014/06, 2014/08-2014/09, 2014/11
 */
 
-:- use_module(library(http/http_path)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(plRdf(management/rdf_load_any)).
 
-:- initialization(init_prefixes).
+:- initialization(init_xsdo).
 
-init_prefixes:-
-  http_absolute_uri(dh(.), Prefix1),
-  rdf_register_prefix(dh, Prefix1),
-  
-  atomic_concat(Prefix1, 'ontology/', Prefix4),
-  rdf_register_prefix(dho, Prefix4),
-  
-  atomic_concat(Prefix1, 'Statistics/', Prefix5),
-  rdf_register_prefix('dh-stats', Prefix5).
+
 
 
 
@@ -111,4 +102,16 @@ invert_directed_triple(dir(From,Dir,Link,To), dir(To,InvDir,Link,From)):-
 
 invert_direction(backward, forward).
 invert_direction(forward, backward).
+
+
+
+
+
+% INITIALIZATION
+
+% XSD ontology used in agent (local/global) properties.
+
+init_xsdo:-
+  absolute_file_name(xsdo, File, [file_type(turtle)]),
+  rdf_load_any(File, [graph(xsdo)]).
 

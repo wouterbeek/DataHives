@@ -17,13 +17,14 @@ Support for random RDF triples coming from DBpedia.
 :- use_module(library(http/http_client)).
 :- use_module(library(memfile)).
 :- use_module(library(random)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(sgml)).
 :- use_module(library(uri)).
 :- use_module(library(xpath)).
 
 :- use_module(generics(typecheck)).
-:- use_module(nlp(dictionary)).
+
+:- use_module(plNlp(dictionary)).
 
 :- use_module(plRdf(rdf_prefixes)). % Namespace declarations.
 

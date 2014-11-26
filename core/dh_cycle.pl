@@ -18,7 +18,7 @@ The navigate-act-communicate cycle for agents in DataHives.
 
 :- use_module(generics(flag_ext)).
 
-:- use_module(plRdf(rdfs_build2)).
+:- use_module(plRdf(api/rdfs_build2)).
 
 :- use_module(dh(agent/dh_agent)).
 :- use_module(dh(beh/dh_beh)).
@@ -140,7 +140,7 @@ increment_number_of_cycles(N):-
 
 print_number_of_cycles(N):-
   sleep(1), %DEB
-  %print_message(informational, dh_agent_property(cycles,N)),
+  print_message(informational, dh_agent_property(cycles,N)),
   true.
 
 prolog:message(dh_agent_property(cycles,N)) -->

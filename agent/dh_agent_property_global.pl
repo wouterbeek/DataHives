@@ -25,20 +25,19 @@ Local agent properties are defined in [dh_agent_property_local].
 They can be accessed with dh_agent_property/3.
 
 @author Wouter Beek
-@version 2014/08-2014/09
+@version 2014/08-2014/09, 2014/11
 */
 
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(semweb/rdfs)).
 
 :- use_module(plDcg(dcg_generics)).
 
-:- use_module(plXsd(xsd_rdf)).
-:- use_module(plXsd_datetime(xsd_dateTime)).
-:- use_module(plXsd_datetime(xsd_dateTime_support)).
+:- use_module(plXsd(datetime/xsd_dateTime)).
+:- use_module(plXsd(datetime/xsd_dateTime_support)).
 
-:- use_module(plRdf(rdfs_build2)).
-:- use_module(plRdf_term(rdf_datatype)).
+:- use_module(plRdf(api/rdf_read)).
+:- use_module(plRdf(api/rdfs_build2)).
 
 :- use_module(dh(agent/dh_agent)).
 :- use_module(dh(agent/dh_agent_create)).
@@ -74,7 +73,7 @@ cpuTime(Agent, CpuTime):-
 %! creation(-Agent:iri, -Creation:float) is nondet.
 
 creation(Agent, Creation):-
-  rdf_datatype(Agent, dho:creation, Creation0, xsd:dateTime, dh),
+  rdf_typed_literal(Agent, dho:creation, Creation0, xsd:dateTime, dh),
   timeOnTimeline(Creation0, Creation).
 
 
@@ -118,7 +117,6 @@ status(Agent, Status):-
 
 
 init:-
-  xsd_assert_schema,
   rdfs_assert_property(
     dho:agentPropertyGlobal,
     dho:agentProperty,

@@ -29,15 +29,16 @@ Implements agent definitions in DataHives.
 :- use_module(library(http/http_json)).
 :- use_module(library(http/http_path)).
 :- use_module(library(http/js_write)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(semweb/rdfs)).
 :- use_module(library(uri)).
 
-:- use_module(generics(request_ext)).
 :- use_module(pl(pl_log)).
 
 :- use_module(plDcg(dcg_content)).
 :- use_module(plDcg(dcg_generics)).
+
+:- use_module(plHttp(request_ext)).
 
 :- use_module(plRdf(api/rdf_build)).
 :- use_module(plRdf(api/rdfs_build)).
@@ -47,6 +48,8 @@ Implements agent definitions in DataHives.
 
 :- dynamic(agent_definition0/2).
 :- multifile(agent_definition0/2).
+
+
 
 
 

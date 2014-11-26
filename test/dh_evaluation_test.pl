@@ -16,7 +16,7 @@ Evaluation / comparison of the different kind of agents
 @version 2014/06-2014/07
 */
 
-:- use_module(dh_test(dh_test)).
+:- use_module(dh(test/dh_test)).
 
 
 

@@ -67,3 +67,6 @@
 [submodule "plXml"]
 	path = plXml
 	url = https://github.com/wouterbeek/plXml.git
+[submodule "ModelTheory"]
+	path = ModelTheory
+	url = https://github.com/wouterbeek/ModelTheory.git

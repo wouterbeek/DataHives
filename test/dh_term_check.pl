@@ -17,7 +17,7 @@ Program that checks RDF terms and that runs on the DataHives architecture.
 :- use_module(library(apply)).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_dispatch)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 :- use_module(library(uri)).
 
 :- use_module(plHtml(html_table)).

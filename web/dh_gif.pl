@@ -12,7 +12,7 @@ Produces descriptions of graphs in DataHives
 using the Graph Interchange Format.
 
 @author Wouter Beek
-@version 2014/04-2014/07
+@version 2014/04-2014/07, 2014/11
 */
 
 :- use_module(library(aggregate)).
@@ -20,7 +20,7 @@ using the Graph Interchange Format.
 :- use_module(library(lists)).
 :- use_module(library(option)).
 :- use_module(library(ordsets)).
-:- use_module(library(semweb/rdf_db)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
 
 :- use_module(generics(list_ext)).
 :- use_module(generics(typecheck)).
@@ -28,14 +28,15 @@ using the Graph Interchange Format.
 
 :- use_module(plDcg(dcg_generics)).
 
+:- use_module(plUri(image_uri)).
 :- use_module(plUri(uri_ext)).
 
-:- use_module(plHttp(http_download_file)).
+:- use_module(plHttp(download_to_file)).
 
 :- use_module(plRdf(rdf_name)). % Meta-DCG.
 
-:- use_module(dh(beh/com/dh_edge_weight)).
 :- use_module(dh(beh/com/dh_com)).
+:- use_module(dh(beh/com/dh_edge_weight)).
 
 :- predicate_options(dh_graph/2, 2, [
      pass_to(dh_graph/3, 3)
@@ -77,12 +78,15 @@ using the Graph Interchange Format.
 
 
 
-% Edges
+
+
+% EDGES
 
 %! dh_edge(-Triple:triple(or([bnode,iri,literal]))) is nondet.
 
 dh_edge(S-P-O):-
   edge_count(rdf(S,P,O), _).
+
 
 
 %! dh_edge_term(
@@ -102,6 +106,7 @@ dh_edge_term(MaxCount, Vs, E, edge(FromId,ToId,Attrs3), Options):-
   dh_edge_term_penwidth(MaxCount, E, Attrs2, Attrs3, Options).
 
 
+
 %! dh_edge_term_penwidth(
 %!   +Edge:compound,
 %!   +FromAttributes:list(nvpair),
@@ -113,6 +118,7 @@ dh_edge_term_label(_-P-_, Attrs, [label=Label|Attrs], Options):-
   option(edge_label(true), Options, true), !,
   dcg_with_output_to(atom(Label), rdf_term_name(P)).
 dh_edge_term_label(_, Attrs, Attrs, _).
+
 
 
 %! dh_edge_term_penwidth(
@@ -132,7 +138,9 @@ dh_edge_term_penwidth(MaxCount, S-P-O, Attrs, [penwidth=Penwidth|Attrs], _):-
 
 
 
-% Graphs
+
+
+% GRAPHS
 
 %! dh_graph(-Gif, +Options:list(nvpair)) is det.
 % The following options are supported:
@@ -158,6 +166,7 @@ dh_graph(Gif, Options):-
   dh_graph(MaxCount, Gif, Options).
 
 
+
 %! dh_graph(
 %!   +MaxCount:positive_integer,
 %!   -Gif:compound,
@@ -173,6 +182,7 @@ dh_graph(MaxCount, Gif, Options):-
   dh_graph(MaxCount, Es, Gif, Options).
 
 
+
 %! dh_graph(
 %!   +MaxCount:positive_integer,
 %!   +Edges:ordset(triple(or([bnode,iri,literal]))),
@@ -183,6 +193,7 @@ dh_graph(MaxCount, Gif, Options):-
 dh_graph(MaxCount, Es, Gif, Options):-
   edges_to_vertices(Es, Vs),
   dh_graph(MaxCount, Vs, Es, Gif, Options).
+
 
 
 %! dh_graph(
@@ -214,6 +225,7 @@ dh_graph(MaxCount, Vs, Es, graph(VTerms,ETerms,Attrs2), Options):-
   dh_graph_directed(Attrs1, Attrs2, Options).
 
 
+
 %! dh_graph_directed(
 %!   +FromAttributes:list(nvpair),
 %!   -ToAttributes:list(nvpair),
@@ -225,7 +237,9 @@ dh_graph_directed(Attrs, [directed=Directed|Attrs], Options):-
 
 
 
-% Vertices
+
+
+% VERTICES
 
 %! dh_vertex(-Vertex:or([bnode,iri,literal])) is nondet.
 
@@ -233,6 +247,7 @@ dh_vertex(V):-
   edge_count(rdf(V,_,_), _).
 dh_vertex(V):-
   edge_count(rdf(_,_,V), _).
+
 
 
 %! dh_vertex_term(
@@ -249,6 +264,7 @@ dh_vertex_term(Vs, V, vertex(Id,V,Attrs3), Options):-
   dh_vertex_term_label(V, Attrs2, Attrs3, Options).
 
 
+
 %! dh_vertex_term_image(
 %!   +Vertex,
 %!   +FromAttributes:list(nvpair),
@@ -258,17 +274,15 @@ dh_vertex_term(Vs, V, vertex(Id,V,Attrs3), Options):-
 
 dh_vertex_term_image(V, Attrs, [image=CacheFile|Attrs], Options):-
   option(vertex_image(true), Options, true),
-  image_url(V), !,
+  is_image_uri(V), !,
   rdf_global_id(V, Url),
-  url_nested_file(data(.), Url, CacheFile),
-  (
-    access_file(CacheFile, exist), !
-  ;
-    download_to_file(Url, CacheFile, []), !
-  ;
-    fail
+  uri_nested_file(data(.), Url, CacheFile),
+  (   access_file(CacheFile, exist), !
+  ;   download_to_file(Url, CacheFile, []), !
+  ;   fail
   ).
 dh_vertex_term_image(_, Attrs, Attrs, _).
+
 
 
 %! dh_vertex_term_label(
@@ -285,7 +299,9 @@ dh_vertex_term_label(_, Attrs, Attrs, _).
 
 
 
-% Helpers
+
+
+% HELPERS
 
 edges_to_vertices([], []):- !.
 edges_to_vertices([S-_-O|T], S3):-

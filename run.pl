@@ -1,5 +1,33 @@
 % Standalone startup for DataHives.
 
+% DataHives: initializes prefixes.
+% Must appear before DataHives modules are loaded.
+
+:- use_module(library(http/http_path)).
+:- use_module(library(semweb/rdf_db), except([rdf_node/1])).
+
+:- multifile(http:location/3).
+:- dynamic(http:location/3).
+
+http:location(dh, root(dh), []).
+
+init_prefixes:-
+  Prefix1 = 'http://localhost:8888/',
+  
+  % dh
+  rdf_register_prefix(dh, Prefix1),
+  
+  % dho
+  atomic_concat(Prefix1, 'ontology/', Prefix4),
+  rdf_register_prefix(dho, Prefix4),
+  
+  % dh-stats
+  atomic_concat(Prefix1, 'stats/', Prefix5),
+  rdf_register_prefix('dh-stats', Prefix5).
+:- init_prefixes.
+
+
+
 :- use_module(library(http/http_dispatch)).
 
 :- if(current_prolog_flag(argv, ['--debug'])).
@@ -7,9 +35,6 @@
 :- else.
   :- ensure_loaded(load).
 :- endif.
-
-:- multifile(http:location/3).
-:- dynamic(http:location/3).
 
 :- dynamic(user:web_module/2).
 :- multifile(user:web_module/2).
@@ -21,16 +46,12 @@
 :- use_module(load_project).
 :- load_subproject(dh, plServer).
 
-:- use_module(plServer(plServer)).
-:- use_module(plServer(app_server)).
-:- use_module(plServer(web_modules)). % Web module registration.
+:- use_module(plServer/plServer).
+:- use_module(plServer/app_server).
+:- use_module(plServer/web_modules). % Web module registration.
 
 :- start_app_server([port(8888)]).
 
-
-% DataHives: home.
-
-http:location(dh, root(dh), []).
 
 
 % plTabular
@@ -52,6 +73,7 @@ rdf_tabular(Request):-
    ).
 
 
+
 % DataHives: Agent
 
 http:location(dh_agent, dh('Agent'), []).
@@ -60,28 +82,30 @@ http:location(dh_agent, dh('Agent'), []).
 
 user:web_module('DH Agents', dh_agent).
 
-:- http_handler(dh_agent(.), dh_agent, [prefix,priority(-1)]).
+:- http_handler(dh_agent(.), dh_agent_rest, [prefix,priority(-1)]).
 
-dh_agent(Request):-
-  dh_agent(Request, plServer_style).
+dh_agent_rest(Request):-
+  dh_agent_rest(Request, plServer_style).
+
 
 
 % DataHives: Agent Definition
 
 http:location(dh_agent_definition, dh('AgentDefinition'), []).
 
-:- use_module(dh(agent/definition/dh_agent_definition)).
+:- use_module(dh(agent/def/dh_agent_definition)).
 
 user:web_module('DH Agent Definitions', dh_agent_definition).
 
 :- http_handler(
      dh_agent_definition(.),
-     dh_agent_definition,
+     dh_agent_definition_rest,
      [prefix,priority(-1)]
    ).
 
-dh_agent_definition(Request):-
-  dh_agent_definition(Request, plServer_style).
+dh_agent_definition_rest(Request):-
+  dh_agent_definition_rest(Request, plServer_style).
+
 
 
 % DataHives: Graphic
@@ -96,6 +120,7 @@ dh_agent_graphic(Request):-
   dh_agent_graphic(Request, plServer_style).
 
 
+
 % DataHives: Statistics
 
 http:location(dh_stats, dh('Statistics'), []).
@@ -108,10 +133,4 @@ user:web_module('DH Statistics', dh_stats_web).
 
 dh_stats_web(Request):-
   dh_stats_web(Request, plServer_style).
-
-
-% The part of the initialization that requires HTTP handlers to be set.
-
-% Load the agent definitions.
-:- ensure_loaded(dh(agent/definition/dh_agent_definition_init)).
 
