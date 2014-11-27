@@ -4,10 +4,8 @@
     dh_agent_definition/1, % ?AgentDefinition:url
     dh_agent_definition/2, % ?AgentDefinition:url
                            % ?Predicates:list
-    dh_agent_definition_rest/2, % +Request:list(nvpair)
-                                % +HtmlStyle
-    dh_agent_definition_rest_path/2, % +Request:list(nvpair)
-                                     % +HtmlStyle
+    dh_agent_definition_rest/1, % +Request:list(nvpair)
+    dh_agent_definition_rest_path/1, % +Request:list(nvpair)
     register_dh_agent_definition/2 % +AgentDefinitionName:atom
                                    % +Predicates:list
   ]
@@ -18,7 +16,7 @@
 Implements agent definitions in DataHives.
 
 @author Wouter Beek
-@version 2014/09
+@version 2014/09, 2014/11
 */
 
 :- use_module(library(aggregate)).
@@ -49,6 +47,17 @@ Implements agent definitions in DataHives.
 :- dynamic(agent_definition0/2).
 :- multifile(agent_definition0/2).
 
+:- dynamic(http:location/3).
+:- multifile(http:location/3).
+
+http:location(dh_agent_definition, dh('AgentDefinition'), []).
+
+:- http_handler(
+     dh_agent_definition(.),
+     dh_agent_definition_rest,
+     [id(dhAgentDef),prefix,priority(-1)]
+   ).
+
 
 
 
@@ -68,12 +77,13 @@ dh_agent_definition(AgentDefinition, Predicates):-
 
 
 % GET html *
-dh_agent_definition_rest(Request, HtmlStyle):-
+dh_agent_definition_rest(Request):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinitionLocation),
   http_absolute_uri(dh_agent_definition(.), AgentDefinitionLocation), !,
   http_absolute_uri(dh_agent(.), AgentLocation),
   http_absolute_location(sparql(.), SparqlLocation, []),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
     HtmlStyle,
     \dh_agent_definition_head([]),
@@ -179,7 +189,7 @@ $("#agentDefinitionsContainer").on("change", "select", function() {
 % GET json *
 % Returns type/label pairs in JSON format.
 % This can e.g. be used to populate a <select> element in HTML.
-dh_agent_definition_rest(Request, _):-
+dh_agent_definition_rest(Request):-
   cors_enable,
   request_filter(Request, get, _/json, Root),
   http_absolute_uri(dh_agent_definition(.), Root), !,
@@ -197,7 +207,7 @@ dh_agent_definition_rest(Request, _):-
 % GET html PATH
 %
 % Returns 404 if the given agent definition is not known.
-dh_agent_definition_rest_path(Request, HtmlStyle):-
+dh_agent_definition_rest_path(Request):-
   cors_enable,
   request_filter(Request, get, _/html, AgentDefinition), !,
 
@@ -209,6 +219,7 @@ dh_agent_definition_rest_path(Request, HtmlStyle):-
 
   rdfs_label(AgentDefinition, Label),
   http_absolute_uri(dh_agent(.), AgentLocation),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
     HtmlStyle,
     \dh_agent_definition_head([Label]),
@@ -260,7 +271,7 @@ $("#createBtn").click(function() {
     ])
   ).
 % GET json PATH
-dh_agent_definition_rest_path(Request, _):-
+dh_agent_definition_rest_path(Request):-
   cors_enable,
   request_filter(Request, get, _/json, AgentDefinition),
   agent_definition0(AgentDefinition, Preds),
@@ -296,7 +307,9 @@ register_dh_agent_definition(Name1, Predicates):-
 
 
 
-% Helpers
+
+
+% HELPERS
 
 def_pairs([], []):- !.
 def_pairs([Predicate0-Documentation|T], [Dict|Dicts]):- !,

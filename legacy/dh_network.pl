@@ -198,8 +198,9 @@ connected_hives(_Request):-
     overlap(false)
   ],
   graph_to_svg_dom(graph(Vs,Es,G_Attrs), SvgDom, [method(sfdp)]),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
-    plServer_style,
+    HtmlStyle,
     \dh_head(['Network']),
     html([
       \rdf_html_table(

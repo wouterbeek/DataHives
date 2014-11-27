@@ -1,8 +1,7 @@
 :- module(
   dh_stats_web,
   [
-    dh_stats_web/2 % +Request:list(nvpair)
-                   % +HtmlStyle
+    dh_stats_web/1 % +Request:list(nvpair)
   ]
 ).
 
@@ -24,7 +23,7 @@ SELECT ?property ?label WHERE {
 ~~~
 
 @author Wouter Beek
-@version 2014/09
+@version 2014/09, 2014/11
 */
 
 :- use_module(library(aggregate)).
@@ -55,10 +54,23 @@ SELECT ?property ?label WHERE {
 :- use_module(dh(stats/dh_stats_write)).
 :- use_module(dh(web/dh_web_generics)).
 
+:- dynamic(http:location/3).
+:- multifile(http:location/3).
+
+http:location(dh_stats, dh('Stats'), []).
+
+:- http_handler(
+     dh_stats(.),
+     dh_stats_web,
+     [id(dhStats),prefix,priority(-1)]
+   ).
+
+
+
 
 
 % GET html *
-dh_stats_web(Request, HtmlStyle):-
+dh_stats_web(Request):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_stats(.), Root), !,
@@ -71,6 +83,7 @@ dh_stats_web(Request, HtmlStyle):-
   rdf_current_prefix(dho, DhoNamespace),
   rdf_current_prefix(rdf, RdfNamespace),
   rdf_current_prefix(rdfs, RdfsNamespace),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
     HtmlStyle,
     \dh_stats_head(['']),
@@ -224,7 +237,9 @@ dh_stats_web(Request, _):-
 
 
 
-% Helpers
+
+
+% HELPERS
 
 %! add_pair_as_graph(+Pair) is det.
 
@@ -252,9 +267,9 @@ dh_diagram(Datasets) -->
   {dh_diagram(Datasets, Svg)},
   html([
     %h1([
-    %  \rdf_term_html(dhStatistics, YProperty),
+    %  \rdf_term_html(dhStats, YProperty),
     %  ' for ',
-    %  \rdf_term_html(dhStatistics, Agents)
+    %  \rdf_term_html(dhStats, Agents)
     %]),
     \xml_dom_as_atom(Svg)
   ]).

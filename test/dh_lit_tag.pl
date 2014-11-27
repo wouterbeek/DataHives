@@ -89,8 +89,9 @@ dh_lit_tag(_Request):-
     ),
     Rows
   ),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
-    plServer_style,
+    HtmlStyle,
     \dh_head(['Language tags']),
     \rdf_html_table(
       [header_column(true),header_row(true),location(dh_literal_tag)],

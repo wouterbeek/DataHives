@@ -2,8 +2,7 @@
   dh_agent,
   [
     dh_agent/1, % ?Agent:url
-    dh_agent_rest/2 % +Request:list(nvpair)
-                    % +HtmlStyle
+    dh_agent_rest/1 % +Request:list(nvpair)
   ]
 ).
 
@@ -12,7 +11,7 @@
 Interface to agents in DataHives.
 
 @author Wouter Beek
-@version 2014/09
+@version 2014/09, 2014/11
 */
 
 :- use_module(library(aggregate)).
@@ -40,6 +39,21 @@ Interface to agents in DataHives.
 :- use_module(dh(core/dh_population)).
 :- use_module(dh(web/dh_web_generics)).
 
+:- meta_predicate(http_exists(+,0)).
+
+:- dynamic(http:location/3).
+:- multifile(http:location/3).
+
+http:location(dh_agent, dh('Agent'), []).
+
+:- http_handler(
+     dh_agent(.),
+     dh_agent_rest,
+     [id(dhAgent),prefix,priority(-1)]
+   ).
+
+
+
 
 
 %! dh_agent(+Agent:url) is semidet.
@@ -50,13 +64,13 @@ dh_agent(Agent):-
 
 
 % Agent -> AgentDefinition
-dh_agent_rest(Request, HtmlStyle):-
+dh_agent_rest(Request):-
   memberchk(path(Path), Request),
   http_absolute_uri(Path, Location),
   once(dh_agent_definition(Location)),
-  dh_agent_definition_rest_path(Request, HtmlStyle).
+  dh_agent_definition_rest_path(Request).
 % GET html *
-dh_agent_rest(Request, HtmlStyle):-
+dh_agent_rest(Request):-
   cors_enable,
   request_filter(Request, get, _/html, Root),
   http_absolute_uri(dh_agent(.), Root), !,
@@ -78,6 +92,7 @@ dh_agent_rest(Request, HtmlStyle):-
   ),
 
   dh_population_property(dho:size, Size),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
     HtmlStyle,
     \dh_agent_head(['Overview']),
@@ -95,7 +110,7 @@ dh_agent_rest(Request, HtmlStyle):-
   ).
 % GET html PATH
 % Returns 404 (Not Found) is the agent does not exist on the server.
-dh_agent_rest(Request, HtmlStyle):-
+dh_agent_rest(Request):-
   cors_enable,
   request_filter(Request, get, _/html, Agent), !,
 
@@ -108,6 +123,7 @@ dh_agent_rest(Request, HtmlStyle):-
     Rows
   ),
   rdfs_label(Agent, Label),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
     HtmlStyle,
     \dh_agent_head([Label]),
@@ -120,7 +136,7 @@ dh_agent_rest(Request, HtmlStyle):-
     )
   ).
 % GET json *
-dh_agent_rest(Request, _):-
+dh_agent_rest(Request):-
   cors_enable,
   request_filter(Request, get, _/json, Root),
   http_absolute_uri(dh_agent(.), Root), !,
@@ -131,7 +147,7 @@ dh_agent_rest(Request, _):-
   ),
   reply_json_dict(json{agentProperties:Dicts}).
 % GET json PATH
-dh_agent_rest(Request, _):-
+dh_agent_rest(Request):-
   cors_enable,
   request_filter(Request, get, _/json, Agent), !,
   http_exists(Request, dh_agent(Agent)),
@@ -140,7 +156,7 @@ dh_agent_rest(Request, _):-
 % POST json *
 %
 % Returns 400 (Bad Request)
-dh_agent_rest(Request, _):-
+dh_agent_rest(Request):-
   cors_enable,
   request_filter(Request, post, _/json, _), !,
   catch(
@@ -180,7 +196,7 @@ dh_agent_properties_json(Agent, json{agent:Agent, agentProperties:Dicts}):-
 
 
 %! http_exists(+Request:list(nvpair), :Goal) is det.
-:- meta_predicate(http_exists(+,0)).
+
 http_exists(_, Goal):-
   Goal, !.
 http_exists(Request, _):-

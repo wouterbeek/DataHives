@@ -71,8 +71,9 @@ top_triples_web(_Request, N):-
     member(K-V, TruncatedList),
     Rows
   ),
+  user:current_html_style(HtmlStyle),
   reply_html_page(
-    plServer_style,
+    HtmlStyle,
     \dh_head(['Triple count']),
     html(
       \rdf_html_table(

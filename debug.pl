@@ -53,3 +53,7 @@ init:-
 :- debug(real).
 :- nodebug(http(request)).
 
+
+
+% Allow tests to be run from the top-level.
+:- user:use_module(dh(test/dh_test)).
