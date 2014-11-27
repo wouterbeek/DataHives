@@ -2,6 +2,15 @@
 
 
 
+% Load modules.
+:- if(current_prolog_flag(argv, ['--debug'])).
+  :- ensure_loaded(debug).
+:- else.
+  :- ensure_loaded(load).
+:- endif.
+
+
+
 % Start a plServer.
 
 :- use_module(load_project).
@@ -46,12 +55,3 @@ user:web_module('DH Agent Graphic', dh_agent_graphic).
 
 % Register DataHives Statistics  Web handler.
 user:web_module('DH Statistics', dh_stats_web).
-
-
-
-% Load modules.
-:- if(current_prolog_flag(argv, ['--debug'])).
-  :- ensure_loaded(debug).
-:- else.
-  :- ensure_loaded(load).
-:- endif.

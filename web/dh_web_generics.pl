@@ -18,8 +18,6 @@ that implement the DataHives Web-based front-end.
 :- use_module(library(http/html_head)).
 :- use_module(library(http/html_write)).
 
-:- ensure_loaded(plServer(style)).
-
 :- html_meta(dh_body(html,?,?)).
 
 :- dynamic(user:file_search_path/2).

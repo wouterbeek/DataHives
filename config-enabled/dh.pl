@@ -48,3 +48,9 @@ cliopatria:menu_item(600=dh/dhStats, 'DH Statistics').
 :- else.
   :- ensure_loaded('../load').
 :- endif.
+
+
+
+% In ClioPatria mode the plServer is not used, but the HTML resources
+%  it defined are needed.
+:- ensure_loaded(plServer(style)).
