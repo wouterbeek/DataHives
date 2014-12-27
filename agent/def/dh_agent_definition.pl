@@ -16,7 +16,7 @@
 Implements agent definitions in DataHives.
 
 @author Wouter Beek
-@version 2014/09, 2014/11
+@version 2014/09, 2014/11-2014/12
 */
 
 :- use_module(library(aggregate)).
@@ -33,6 +33,7 @@ Implements agent definitions in DataHives.
 
 :- use_module(pl(pl_log)).
 
+:- use_module(plDcg(dcg_atom)).
 :- use_module(plDcg(dcg_content)).
 :- use_module(plDcg(dcg_generics)).
 
@@ -288,7 +289,7 @@ dh_agent_definition_rest_path(Request):-
 
 register_dh_agent_definition(Name1, Predicates):-
   % Construct the agent definition-denoting IRI.
-  dcg_phrase(capitalize, Name1, Name2),
+  dcg_phrase(atom_capitalize, Name1, Name2),
   atomic_list_concat(['Agent',Name2], '/', Path),
   rdf_global_id(dh:'', Prefix),
   uri_normalized(Path, Prefix, AgentDefinition),

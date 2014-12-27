@@ -59,7 +59,8 @@ init_prefixes:-
      plXsd
 ]).
 
-
+% Load generic resources for Web pages.
+:- use_module(plServer(templates/template_generics)).
 
 % Register plTabular Web handler.
 :- use_module(plTabular(rdf_tabular)).
@@ -75,3 +76,5 @@ init_prefixes:-
 
 % Register DataHives Statistics  Web handler.
 :- use_module(dh(stats/dh_stats_web)).
+
+:- ensure_loaded(dh(agent/def/dh_agent_definition_init)).

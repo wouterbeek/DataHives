@@ -11,7 +11,7 @@
 Interface to agents in DataHives.
 
 @author Wouter Beek
-@version 2014/09, 2014/11
+@version 2014/09, 2014/11-2014/12
 */
 
 :- use_module(library(aggregate)).
@@ -23,13 +23,13 @@ Interface to agents in DataHives.
 :- use_module(library(http/http_path)).
 :- use_module(library(semweb/rdfs)).
 
-:- use_module(generics(lambda_meta)).
-
 :- use_module(plHttp(request_ext)).
 
 :- use_module(plHtml(html)).
 :- use_module(plHtml(html_pl_term)).
 :- use_module(plHtml(html_table)).
+
+:- use_module(plRdf(debug/rdf_script)).
 
 :- use_module(plTabular(rdf_html_table)).
 
@@ -51,6 +51,8 @@ http:location(dh_agent, dh('Agent'), []).
      dh_agent_rest,
      [id(dhAgent),prefix,priority(-1)]
    ).
+
+:- initialization(assert_visum(_)).
 
 
 
