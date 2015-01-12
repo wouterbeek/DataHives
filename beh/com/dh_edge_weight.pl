@@ -19,7 +19,7 @@ where in the absence of an edge count the edge's weight is 0.
 
 @author Wouter Beek
 @author Baudouin Duthoit
-@version 2014/04-2014/06
+@version 2014/04-2014/06, 2015/01
 */
 
 :- use_module(dh(core/dh_generics)).
@@ -76,7 +76,9 @@ reset_edge_count:-
 % Wrapper around update_edge_count/2 updating the edge count by 1.
 
 update_edge_count(DirectedTripleOrTriple):-
+  ground(DirectedTripleOrTriple), !,
   update_edge_count(1, DirectedTripleOrTriple).
+update_edge_count(_).
 
 %! update_edge_count(
 %!   +Update:integer,

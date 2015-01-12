@@ -11,7 +11,7 @@
 Interface to agents in DataHives.
 
 @author Wouter Beek
-@version 2014/09, 2014/11-2014/12
+@version 2014/09, 2014/11-2015/01
 */
 
 :- use_module(library(aggregate)).
@@ -30,6 +30,8 @@ Interface to agents in DataHives.
 :- use_module(plHtml(html_table)).
 
 :- use_module(plRdf(debug/rdf_script)).
+
+:- use_module(plSparql(query/sparql_query_random)).
 
 :- use_module(plTabular(rdf_html_table)).
 
@@ -169,7 +171,9 @@ dh_agent_rest(Request):-
     Exception,
     throw(http_reply(bad_request(Exception)))
   ),
-  dh_agent_create(AgentDefinition, graph(visum)),
+  %%%dh_agent_create(AgentDefinition, graph(visum)),
+  sparql_query_random_triple(dbpedia, rdf(S,P,O)),
+  dh_agent_create(AgentDefinition, rdf(S,P,O)),
   reply_json_dict(json{}).
 
 

@@ -30,7 +30,7 @@ meta([content(1),'http-equiv'(refresh)], [])
 
 :- use_module(plGraphDraw(svg_gv)).
 
-:- use_module(dh(web/dh_gif)).
+:- use_module(dh(web/dh_export_graph)).
 :- use_module(dh(web/dh_web_generics)).
 
 :- html_resource(css('gv_interactive.css'), []).
@@ -53,8 +53,8 @@ dh_agent_graphic(_):-
 
 dh_agent_graphic_body -->
   {
-    dh_graph(ExportG, []),
-    export_graph_to_svg_dom(ExportG, SvgDom, [method(dot)])
+    dh_export_graph(ExportGraph, []),
+    export_graph_to_svg_dom(ExportGraph, SvgDom, [method(dot)])
   },
   html([
     \html_requires(css('gv_interactive.css')),

@@ -1,8 +1,8 @@
 :- module(
-  dh_gif,
+  dh_export_graph,
   [
-    dh_graph/2 % -ExportGraph:compound
-               % +Options:list(nvpair)
+    dh_export_graph/2 % -ExportGraph:compound
+                      % +Options:list(nvpair)
   ]
 ).
 
@@ -12,7 +12,7 @@ Produces descriptions of graphs in DataHives
 using the Graph Interchange Format.
 
 @author Wouter Beek
-@version 2014/04-2014/07, 2014/11-2014/12
+@version 2014/04-2014/07, 2014/11-2015/01
 */
 
 :- use_module(library(aggregate)).
@@ -35,13 +35,13 @@ using the Graph Interchange Format.
 :- use_module(dh(beh/com/dh_com)).
 :- use_module(dh(beh/com/dh_edge_weight)).
 
-:- predicate_options(dh_graph/2, 2, [
-     pass_to(dh_graph/3, 3)
+:- predicate_options(dh_export_graph/2, 2, [
+     pass_to(dh_export_graph/3, 3)
    ]).
-:- predicate_options(dh_graph/3, 3, [
-     pass_to(dh_graph/4, 4)
+:- predicate_options(dh_export_graph/3, 3, [
+     pass_to(dh_export_graph/4, 4)
    ]).
-:- predicate_options(dh_graph/4, 4, [
+:- predicate_options(dh_export_graph/4, 4, [
      pass_to(build_export_graph/4, 4)
    ]).
 
@@ -69,9 +69,9 @@ dh_edge_penwidth(MaxCount, edge(S,P,O), Penwidth):-
 
 
 
-%! dh_graph(-ExportGraph:compound, +Options:list(nvpair)) is det.
+%! dh_export_graph(-ExportGraph:compound, +Options:list(nvpair)) is det.
 
-dh_graph(ExportGraph, Options):-
+dh_export_graph(ExportGraph, Options):-
   % A special case occurs when there is no graph.
   (   aggregate_all(
         max(Count),
@@ -81,39 +81,39 @@ dh_graph(ExportGraph, Options):-
   ->  true
   ;   MaxCount = 0
   ),
-  dh_graph(MaxCount, ExportGraph, Options).
+  dh_export_graph(MaxCount, ExportGraph, Options).
 
 
 
-%! dh_graph(
+%! dh_export_graph(
 %!   +MaxCount:positive_integer,
 %!   -ExportGraph:compound,
 %!   +Options:list(nvpair)
 %! ) is det.
 
-dh_graph(MaxCount, ExportGraph, Options):-
+dh_export_graph(MaxCount, ExportGraph, Options):-
   aggregate_all(
     set(edge(S,P,O)),
     edge_count(rdf(S,P,O), _),
     Es
   ),
-  dh_graph(MaxCount, Es, ExportGraph, Options).
+  dh_export_graph(MaxCount, Es, ExportGraph, Options).
 
 
 
-%! dh_graph(
+%! dh_export_graph(
 %!   +MaxCount:positive_integer,
 %!   +Edges:ordset(compound),
 %!   -ExportGraph:compound,
 %!   +Options:list(nvpair)
 %! ) is det.
 
-dh_graph(MaxCount, Es, ExportGraph, Options1):-
+dh_export_graph(MaxCount, Es, ExportGraph, Options1):-
   merge_options(
     Options1,
     [
       edge_label(dh_edge_label),
-      edge_label(dh_edge_penwidth(MaxCount)),
+      edge_penwidth(dh_edge_penwidth(MaxCount)),
       graph_directed(true),
       vertex_image(dh_vertex_image),
       vertex_label(dh_vertex_label)
