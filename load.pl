@@ -12,12 +12,12 @@ init_prefixes:-
   rdf_register_prefix(dh, Prefix1),
   
   % dho
-  atomic_concat(Prefix1, 'ontology/', Prefix4),
-  rdf_register_prefix(dho, Prefix4),
+  atomic_concat(Prefix1, 'ontology/', Prefix2),
+  rdf_register_prefix(dho, Prefix2),
   
   % dh-stats
-  atomic_concat(Prefix1, 'stats/', Prefix5),
-  rdf_register_prefix('dh-stats', Prefix5).
+  atomic_concat(Prefix1, 'stats/', Prefix3),
+  rdf_register_prefix('dh-stats', Prefix3).
 :- init_prefixes.
 
 

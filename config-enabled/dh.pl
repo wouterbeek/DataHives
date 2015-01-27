@@ -52,5 +52,5 @@ cliopatria:menu_item(600=dh/dhStats, 'DH Statistics').
 
 
 % In ClioPatria mode the plServer is not used, but the HTML resources
-%  it defined are needed.
+% it defines are needed.
 :- ensure_loaded(plServer(style)).
