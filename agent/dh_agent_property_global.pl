@@ -25,7 +25,7 @@ Local agent properties are defined in [dh_agent_property_local].
 They can be accessed with dh_agent_property/3.
 
 @author Wouter Beek
-@version 2014/08-2014/09, 2014/11
+@version 2014/08-2014/09, 2014/11-2014/12
 */
 
 :- use_module(library(semweb/rdf_db), except([rdf_node/1])).
@@ -33,8 +33,8 @@ They can be accessed with dh_agent_property/3.
 
 :- use_module(plDcg(dcg_generics)).
 
-:- use_module(plXsd(datetime/xsd_dateTime)).
-:- use_module(plXsd(datetime/xsd_dateTime_support)).
+:- use_module(plXsd(dateTime/xsd_dateTime)).
+:- use_module(plXsd(dateTime/xsd_dateTime_functions)).
 
 :- use_module(plRdf(api/rdf_read)).
 :- use_module(plRdf(api/rdfs_build2)).

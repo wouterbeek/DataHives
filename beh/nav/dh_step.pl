@@ -109,7 +109,7 @@ dh_step(TripleSelection, Resource, Triple, Options):-
   % First we assert all triples that describe the given resource
   % (i.e., the depth-1 description or complete ego-graph).
   lod_cache_egograph(Resource, Triples, Options),
-  
+
   % Then we pick one of those triples according to some method.
   dh_select_triple(TripleSelection, Triples, Triple).
 

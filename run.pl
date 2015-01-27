@@ -16,7 +16,6 @@
 :- use_module(load_project).
 :- load_subproject(dh, plServer).
 
-:- use_module(plServer/plServer).
 :- use_module(plServer/app_server).
 :- use_module(plServer/web_modules). % Web module registration.
 
@@ -33,7 +32,7 @@ http:location(dh, root(dh), []).
 
 
 % Current HTML style set to plServer style.
-user:current_html_style(plServer_style).
+user:current_html_style(menu_page).
 
 
 
@@ -45,10 +44,10 @@ user:current_html_style(plServer_style).
 user:web_module(plTabular, rdf_tabular).
 
 % Register DataHives Agent Web handler.
-user:web_module('DH Agents', dh_agent).
+user:web_module('DH Agents', dhAgent).
 
 % Register DataHives Agent Definition Web handler.
-user:web_module('DH Agent Definitions', dh_agent_definition).
+user:web_module('DH Agent Definitions', dhAgentDef).
 
 % Register DataHives Graphic Web handler.
 user:web_module('DH Agent Graphic', dh_agent_graphic).

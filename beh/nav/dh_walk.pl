@@ -107,9 +107,8 @@ dh_walk(Nav, dir(From,Dir,Link,To), Options):-
 dh_step(Nav, dir(From,Direction,Link,To), Options):-
   % The nativation goal produces a single proposition,
   % where location `From` appears as either the subject or the object term.
-  
   run_print_messages(call(Nav, From, Triple, Options)),
-  
+
   % Find the direction of movement,
   % prefering forward movement in the case of symmetric links.
   (   Triple = rdf(From,Link,To)

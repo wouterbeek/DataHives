@@ -56,9 +56,8 @@ suspicious_terms(Terms):-
 
 suspicious_terms_web(_Request):-
   suspicious_terms(Terms),
-  user:current_html_style(HtmlStyle),
   reply_html_page(
-    HtmlStyle,
+    menu_page,
     \dh_head(['Term check']),
     html(
       \rdf_html_table(

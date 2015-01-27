@@ -1,12 +1,5 @@
 :- module(conf_dh, []).
 
-/*
-:- use_module(library(settings)).
-
-:- set_setting_default(http:public_host, 'localhost.localdomain').
-:- set_setting_default(http:public_port, setting(http:port)).
-*/
-
 
 
 % DataHives HTTP root location.
@@ -49,8 +42,3 @@ cliopatria:menu_item(600=dh/dhStats, 'DH Statistics').
   :- ensure_loaded('../load').
 :- endif.
 
-
-
-% In ClioPatria mode the plServer is not used, but the HTML resources
-% it defines are needed.
-:- ensure_loaded(plServer(style)).

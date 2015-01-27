@@ -12,11 +12,12 @@ Generic predicates that are reused by modules
 that implement the DataHives Web-based front-end.
 
 @author Wouter Beek
-@version 2014/09, 2014/11
+@version 2014/09, 2014/11-2014/12
 */
 
 :- use_module(library(http/html_head)).
 :- use_module(library(http/html_write)).
+:- use_module(library(http/http_dispatch)).
 
 :- html_meta(dh_body(html,?,?)).
 
@@ -26,8 +27,13 @@ that implement the DataHives Web-based front-end.
 user:file_search_path(css, dh(web/css)).
 user:file_search_path(js, dh(web/js)).
 
+:- http_handler(/, dh_main, [id(dh_main),prefix,priority(-10)]).
 
 
+
+dh_main(_):-
+  user:current_html_style(HtmlStyle),
+  reply_html_page(HtmlStyle, \dh_head(['Main']), \dh_body([])).
 
 
 dh_body(Content) -->

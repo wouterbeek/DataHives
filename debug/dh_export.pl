@@ -1,12 +1,12 @@
 :- module(
   dh_export,
   [
-    dh_export_graph/1, % ?File:atom
-    dh_export_graph/2, % ?File:atom
-                       % +Options:list(nvpair)
-    dh_export_resource/3 % +Resource:iri
-                         % ?File:atom
-                         % +Options:list(nvpair)
+    dh_export_graph_to_file/1, % ?File:atom
+    dh_export_graph_to_file/2, % ?File:atom
+                               % +Options:list(nvpair)
+    dh_export_resource_to_file/3 % +Resource:iri
+                                 % ?File:atom
+                                 % +Options:list(nvpair)
   ]
 ).
 
@@ -15,7 +15,7 @@
 Predicates for exporting DataHives content.
 
 @author Wouter Beek
-@version 2014/07
+@version 2014/07, 2015/01
 */
 
 :- use_module(library(option)).
@@ -25,19 +25,19 @@ Predicates for exporting DataHives content.
 
 :- use_module(plGraphViz(gv_file)).
 
-:- use_module(dh(web/dh_gif)).
+:- use_module(dh(web/dh_export_graph)).
 
 
 
-%! dh_export_graph(+File:atom) is det.
-% Wrapper around dh_export_graph/2 which exports to
+%! dh_export_graph_to_file(+File:atom) is det.
+% Wrapper around dh_export_graph_to_file/2 which exports to
 % a minimally marked up DOT file.
 %
 % This can e.g. be used to export the DataHives graph for use in
 % a tool for graph analysis.
 
-dh_export_graph(File):-
-  dh_export_graph(
+dh_export_graph_to_file(File):-
+  dh_export_graph_to_file(
     File,
     [
       edge_label(false),
@@ -49,7 +49,7 @@ dh_export_graph(File):-
     ]
   ).
 
-%! dh_export_graph(+File:atom, +Options:list(nvpair)) is det.
+%! dh_export_graph_to_file(+File:atom, +Options:list(nvpair)) is det.
 % The following options are supported:
 %   * =|edge_label(+DrawLabel:boolean)|=
 %     Default: `true`.
@@ -68,21 +68,21 @@ dh_export_graph(File):-
 %   * =|vertex_label(+DrawLabel:boolean)|=
 %     Default: `true`.
 
-dh_export_graph(File, Options):-
+dh_export_graph_to_file(File, Options):-
   ensure_file(File, Options),
-  dh_graph(Gif, Options),
-  graph_to_gv_file(Gif, File, Options).
+  dh_export_graph(ExportGraph, Options),
+  graph_to_gv_file(ExportGraph, File, Options).
 
 
-dh_export_resource(Resource, File, Options):-
+dh_export_resource_to_file(Resource, File, Options):-
   ensure_file(File, Options),
   findall(
     S-P-O,
     rdf(S, P, O, Resource),
     Es
   ),
-  dh_gif:dh_graph(0, Es, Gif, Options),
-  graph_to_gv_file(Gif, File, Options).
+  dh_export_graph(0, Es, ExportGraph, Options),
+  graph_to_gv_file(ExportGraph, File, Options).
 
 
 
